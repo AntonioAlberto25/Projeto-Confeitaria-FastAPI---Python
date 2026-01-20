@@ -10,3 +10,10 @@
 
 5 - git pull origin main -> Baixar commits do GitHub
 
+6 - Criar branch secundária = git checkout -b "feature/minha-tarefa"
+
+7 - Subir branch = git push -u origin "feature/minha-tarefa"
+
+8 - Para atualizar: git checkout main
+                    git pull origin main
+
