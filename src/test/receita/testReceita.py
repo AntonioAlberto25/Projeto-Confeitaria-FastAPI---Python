@@ -1,5 +1,5 @@
 import pytest
-from src.omain.entity.receita.receita import Receita
+from src.domain.entity.receita.receita import Receita
 
 def test_preco_invalido():
     receitaNova = Receita()
