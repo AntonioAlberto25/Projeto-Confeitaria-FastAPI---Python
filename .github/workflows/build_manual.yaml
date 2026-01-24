@@ -28,4 +28,4 @@ jobs:
       # Passo 4: Executar testes
       - name: Executar testes
         run: |
-          python -m unittest discover -s srv/test -p "test*.py"
+          pytest
