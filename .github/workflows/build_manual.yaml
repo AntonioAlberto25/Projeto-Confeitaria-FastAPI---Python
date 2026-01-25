@@ -29,4 +29,13 @@ jobs:
       # Passo 4: Executar testes
       - name: Executar testes
         run: |
-          python -m pytest -v
+          export PYTHONPATH=Projeto-Confeitaria-FastAPI---Python
+          pytest --cov=src --cov-fail-under=80 --cov-report=html -v
+      
+      - name: Upload relatório de cobertura
+        uses: actions/upload-artifact@v3
+        with:
+          name: cobertura-html
+          path: htmlcov
+
+
