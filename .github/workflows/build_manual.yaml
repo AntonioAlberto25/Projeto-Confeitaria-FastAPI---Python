@@ -29,4 +29,4 @@ jobs:
       # Passo 4: Executar testes
       - name: Executar testes
         run: |
-          pytest -v
+          python -m pytest -v
