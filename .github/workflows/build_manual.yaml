@@ -33,7 +33,7 @@ jobs:
           pytest --cov=src --cov-fail-under=80 --cov-report=html -v
       
       - name: Upload relatório de cobertura
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cobertura-html
           path: htmlcov
