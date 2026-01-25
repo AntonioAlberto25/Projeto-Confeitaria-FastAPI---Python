@@ -30,7 +30,7 @@ jobs:
       - name: Executar testes
         run: |
           export PYTHONPATH=Projeto-Confeitaria-FastAPI---Python
-          pytest --cov=Projeto-Confeitaria-FastAPI---Python --cov-fail-under=80 --cov-report=html -v
+          python -m pytest --cov=Projeto-Confeitaria-FastAPI---Python --cov-fail-under=80 --cov-report=html -v
       
       - name: Upload relatório de cobertura
         uses: actions/upload-artifact@v4
