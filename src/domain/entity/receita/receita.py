@@ -14,7 +14,7 @@ class Receita:
 
     @nome.setter
     def nome(self, valor: str) -> None:
-        if(valor.trim()==""):
+        if(valor.strip()==""):
             raise("Nome deve ter valor")
         self.__nome = valor
 
