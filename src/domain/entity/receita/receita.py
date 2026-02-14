@@ -1,4 +1,5 @@
 from datetime import datetime
+import re
 
 class Receita:
     def __init__(self):
@@ -7,6 +8,7 @@ class Receita:
         self.__descricao = None
         self.__dataCriacao = None
         self.__rendimento = None
+        self.__idUsuario = None
 
     @property
     def nome(self) -> str:
@@ -55,3 +57,14 @@ class Receita:
         if valor is not None and valor <= 0:
             raise ValueError("O rendimento deve ser maior que zero.")
         self.__rendimento = valor
+
+    @property
+    def idUsuario(self) ->int:
+        return self.__idUsuario
+    
+    @idUsuario.setter
+    def idUsuario(self,idUsuario:int) -> None:
+        if(idUsuario is None or idUsuario==0):
+            raise("Receita tem que ser atrelada ao usuario")
+        self.__idUsuario = idUsuario
+

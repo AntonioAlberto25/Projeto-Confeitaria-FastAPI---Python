@@ -11,3 +11,8 @@ def test_rendimento_valido():
     receita.rendimento = 30
     assert receita.rendimento == 30
     assert receita.rendimento == 29
+
+def test_cpf_usuario():
+    receitaNova = Receita()
+    receitaNova.idUsuario=2
+    assert receitaNova.idUsuario==2
