@@ -20,6 +20,7 @@ O Sistema de Gestão para Confeitaria é uma aplicação web centralizada criada
 ### 4.1. Autenticação e Gestão de Usuários (Integração Clerk)
 * O sistema deve permitir o cadastro e login de usuários (Confeiteiros/Administradores) de forma segura utilizando o provedor Clerk.
 * Recuperação de senha e gestão de perfil de usuário.
+* O cadastro de usuário faz parte do escopo da v1 (via auto-cadastro habilitado no Clerk ou convite administrativo, conforme configuração do tenant).
 
 ### 4.2. Gestão de Receitas e Fichas Técnicas
 * **Criar Receita:** Nome, descrição, tempo de preparo, rendimento (em porções) e preço de venda sugerido.
@@ -29,6 +30,7 @@ O Sistema de Gestão para Confeitaria é uma aplicação web centralizada criada
 ### 4.3. Gestão de Pedidos
 * **Registro de Pedido:** Cadastrar novo pedido informando cliente, data de entrega, status (Pendente, Em Produção, Concluído, Cancelado), e as receitas solicitadas.
 * **Painel de Produção:** Visão resumida dos pedidos do dia/semana para facilitar a organização da produção.
+* **Regra de Status:** Todo pedido deve ser criado com status inicial **Pendente**. Transições permitidas: Pendente -> Em Produção -> Concluído, com opção de Cancelado a partir de estados não concluídos.
 
 ### 4.4. Gestão de Estoque Básico (Integração Supabase)
 * **Cadastro de Ingredientes:** Cadastrar insumos básicos com nome, unidade de medida (kg, g, l, ml, unidades) e quantidade em estoque.
