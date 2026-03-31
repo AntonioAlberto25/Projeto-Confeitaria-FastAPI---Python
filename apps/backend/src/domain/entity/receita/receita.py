@@ -67,4 +67,3 @@ class Receita:
         if(idUsuario is None or idUsuario==0):
             raise("Receita tem que ser atrelada ao usuario")
         self.__idUsuario = idUsuario
-

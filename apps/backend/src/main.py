@@ -22,3 +22,8 @@ app.add_middleware(
 )
 
 app.include_router(health_router)
+
+
+@app.get("/", tags=["root"])
+def hello_world():
+    return {"message": "Hello, World!"}
