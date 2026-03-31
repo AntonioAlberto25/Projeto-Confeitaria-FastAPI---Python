@@ -1,4 +1,4 @@
-﻿# Especificação Técnica - Sistema de Gestão para Confeitaria
+# Especificação Técnica - Sistema de Gestão para Confeitaria
 
 ## 1. Visão Geral do Projeto
 
@@ -199,15 +199,36 @@ PATCH /pedidos/{id}/status
 
 ---
 
-## 7. Tecnologias e Integrações
+## 7. Tecnologias e Arquitetura de Integração
 
-- **Backend:** FastAPI
-- **Linguagem:** Python 3.x
+### 7.1 Stack Tecnológico
+- **Frontend:** Next.js (React)
+- **Backend:** FastAPI (Python 3.x)
 - **Banco de dados:** Supabase (PostgreSQL)
 - **Autenticação:** Clerk
-- **Testes:** pytest
+- **Testes:** pytest (Backend) / Jest ou Vitest (Frontend)
 - **Deploy:** Vercel
 - **CI/CD:** GitHub Actions (ou integração nativa da Vercel)
+
+### 7.2 Padrões de Integração Next.js x FastAPI
+
+A comunicação entre a interface (Next.js) e a API (FastAPI) seguirá os seguintes padrões:
+
+1. **Autenticação e Sessão (Clerk):** 
+   - O Next.js gerencia o estado de autenticação utilizando os fluxos e componentes base do Clerk.
+   - O cliente (frontend) obtém um token JWT de sessão atual e o envia via cabeçalho HTTP (`Authorization: Bearer <token>`) em todas as requisições protegidas direcionadas ao backend.
+   - O FastAPI, através de uma dependência (Dependency Injection), valida criptograficamente a assinatura deste JWT (via JWKS público do Clerk), extraindo de forma segura metadados como `user_id`.
+
+2. **CORS (Cross-Origin Resource Sharing):**
+   - O backend FastAPI define as políticas de `CORSMiddleware` restringindo ou autorizando origens ativas (ex: `localhost:3000` em desenvolvimento e domínio customizado no Vercel). Isso viabiliza interações seguras client-side.
+
+3. **Estratégia de Fetching e Estado (Next.js App Router):**
+   - **React Server Components (RSC):** Utilizados para páginas de visualização ou dashboards (ex: painéis de pedidos pendentes). O servidor Next.js faz a requisição diretamente ao FastAPI, pré-renderizando resultados e ocultando possíveis complexidades do cliente.
+   - **Client Components & Data Mutation:** Em interfaces muito interativas (como ajustar itens de uma receita dinamicamente ou manipular tabelas), os dados serão trazidos/atualizados preferencialmente invocando a API FastAPI através de bibliotecas de gerenciamento de estado server-state (como TanStack React Query SWR), para lidar eficientemente com cache no navegador, refetching em foco e estados de loading.
+   - **Server Actions:** Podem atuar como um BFF leve (Backend For Frontend), recebendo submissões de formulário no lado servidor (Next.js) e compondo a chamada final para o FastAPI, encapsulando segredos se aplicável.
+
+4. **Tipagem Estática Ponto a Ponto (Contratos OpenAPI):**
+   - O frontend de Next.js com TypeScript consumirá o schema OpenAPI gerado automaticamente pelo FastAPI (em `/openapi.json`) para derivar os tipos (interfaces/types do TypeScript) via geradores (ex: `openapi-typescript` ou orval). Isso garante que mudanças em DTOs/Schemas no backend imediatamente apontem erros de linting em tempo de build no frontend caso ocorram quebras de contrato.
 
 ---
 
