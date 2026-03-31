@@ -1,0 +1,20 @@
+.env
+.env.local
+node_modules/
+dist/
+build/
+__pycache__/
+*.pyc
+*.pyo
+.vscode/
+.agent/
+.agents/
+
+# Monorepo — Next.js
+apps/frontend/.next/
+apps/frontend/out/
+
+# Monorepo — Python
+apps/backend/__pycache__/
+apps/backend/.venv/
+apps/backend/*.egg-info/

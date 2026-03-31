@@ -1,0 +1,13 @@
+{
+  "name": "confeitaria-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:frontend": "npm --workspace=apps/frontend run dev",
+    "build:frontend": "npm --workspace=apps/frontend run build",
+    "start:frontend": "npm --workspace=apps/frontend run start"
+  }
+}
