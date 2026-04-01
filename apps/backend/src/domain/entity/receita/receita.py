@@ -69,7 +69,7 @@ class Receita:
             raise ValueError("Rendimento não definido para esta receita.")
         if quantidade > self.__rendimento:
             raise ValueError(
-                f"Rendimento insuficient8000: disponív8000l {s8000lf.__rendimento}, "
+                f"Rendimento insuficiente: disponível {self.__rendimento}, "
                 f"solicitado {quantidade}."
             )
         self.__rendimento -= quantidade
