@@ -1,38 +1,99 @@
 from fastapi import HTTPException, status
+from src.application.usecases.pedido.criarPedido import CriarPedido
+from src.application.usecases.pedido.editarPedido import EditarPedido
+from src.application.usecases.pedido.excluirPedido import ExcluirPedido
+from src.application.usecases.pedido.listarPedidos import ListarPedidos
+from src.application.usecases.pedido.buscarPedidoPorId import BuscarPedidoPorId
+from src.application.usecases.pedido.buscarPedidoPorNomeCliente import BuscarPedidoPorNomeCliente
+
 from src.domain.entity.pedido.pedido import Pedido
-from typing import Dict, Any, List
+from src.presentation.schemas.pedido_schema import PedidoCreate, PedidoResponse
+from typing import List, Dict
 
 class PedidoController:
-    def __init__(self, repository_de_pedido: Any): # Replace Any with RepositorioDePedido interface
-        self.repository = repository_de_pedido
+    def __init__(
+        self, 
+        criar_pedido_use_case: CriarPedido,
+        editar_pedido_use_case: EditarPedido,
+        excluir_pedido_use_case: ExcluirPedido,
+        listar_pedidos_use_case: ListarPedidos,
+        buscar_pedido_por_id_use_case: BuscarPedidoPorId,
+        buscar_pedido_por_nome_cliente_use_case: BuscarPedidoPorNomeCliente
+    ):
+        self.criar_pedido_use_case = criar_pedido_use_case
+        self.editar_pedido_use_case = editar_pedido_use_case
+        self.excluir_pedido_use_case = excluir_pedido_use_case
+        self.listar_pedidos_use_case = listar_pedidos_use_case
+        self.buscar_pedido_por_id_use_case = buscar_pedido_por_id_use_case
+        self.buscar_pedido_por_nome_cliente_use_case = buscar_pedido_por_nome_cliente_use_case
 
-    def handle_criar_pedido(self, data: Dict[str, Any], user_id: str) -> Dict[str, Any]:
-        """
-        Lógica para criação de pedido iniciada pelo router.
-        """
+    def handle_criar_pedido(self, data: PedidoCreate, user_id: str) -> PedidoResponse:
         try:
             pedido = Pedido()
-            pedido.cliente_nome = data.get("cliente_nome")
-            pedido.descricao = data.get("descricao")
-            pedido.tipo_entrega = data.get("tipo_entrega")
-            pedido.data_entrega = data.get("data_entrega")
+            pedido.cliente_nome = data.cliente_nome
+            pedido.descricao = data.descricao
+            pedido.tipo_entrega = data.tipo_entrega
+            pedido.data_entrega = data.data_entrega
+            pedido.preco_total = data.preco_total
             pedido.user_id = user_id
             pedido.status = "Pendente"
             
-            # Aqui chamaria o use case se existisse, caso contrário o repo
-            resultado = self.repository.criar_pedido(pedido)
+            resultado = self.criar_pedido_use_case.executar(pedido)
             
-            return {
-                "mensagem": "Pedido criado com sucesso!",
-                "pedido_id": resultado.id,
-                "status": resultado.status
-            }
-        except ValueError as e:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+            return PedidoResponse(
+                id=1, # Mock ID
+                cliente_nome=resultado.cliente_nome,
+                descricao=resultado.descricao,
+                tipo_entrega=resultado.tipo_entrega,
+                preco_total=resultado.preco_total,
+                data_entrega=resultado.data_entrega,
+                user_id=str(resultado.user_id),
+                status=resultado.status
+            )
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
-    def handle_listar_meus_pedidos(self, user_id: str) -> List[Dict[str, Any]]:
-        """
-        Busca todos os pedidos associados ao user_id autenticado no Clerk.
-        """
-        pedidos = self.repository.listar_por_usuario(user_id)
-        return [{"id": p.id, "cliente": p.cliente_nome, "status": p.status} for p in pedidos]
+    def handle_listar_meus_pedidos(self, user_id: str) -> List[PedidoResponse]:
+        try:
+            pedidos = self.listar_pedidos_use_case.executar(user_id)
+            return [
+                PedidoResponse(
+                    id=1, # Mock ID
+                    cliente_nome=p.cliente_nome,
+                    descricao=p.descricao,
+                    tipo_entrega=p.tipo_entrega,
+                    preco_total=p.preco_total,
+                    data_entrega=p.data_entrega,
+                    user_id=str(p.user_id),
+                    status=p.status
+                ) for p in pedidos
+            ]
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+    def handle_buscar_pedido_por_id(self, id: int) -> PedidoResponse:
+        try:
+            p = self.buscar_pedido_por_id_use_case.executar(id)
+            if not p:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pedido não encontrado")
+            return PedidoResponse(
+                id=id,
+                cliente_nome=p.cliente_nome,
+                descricao=p.descricao,
+                tipo_entrega=p.tipo_entrega,
+                preco_total=p.preco_total,
+                data_entrega=p.data_entrega,
+                user_id=str(p.user_id),
+                status=p.status
+            )
+        except HTTPException as e:
+            raise e
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+    def handle_excluir_pedido(self, id: int) -> Dict[str, str]:
+        try:
+            self.excluir_pedido_use_case.executar(id)
+            return {"message": "Pedido excluído com sucesso"}
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))

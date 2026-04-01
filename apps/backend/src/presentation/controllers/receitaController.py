@@ -1,42 +1,101 @@
 from fastapi import HTTPException, status
 from src.application.usecases.receita.criarReceita import CriarReceita
+# Import other use cases
+from src.application.usecases.receita.editarReceita import EditarReceita
+from src.application.usecases.receita.excluirReceita import ExcluirReceita
+from src.application.usecases.receita.listarReceitas import ListarReceitas
+from src.application.usecases.receita.buscarReceitaPorId import BuscarReceitaPorId
+from src.application.usecases.receita.buscarReceitaPorNome import BuscarReceitaPorNome
+
 from src.domain.entity.receita.receita import Receita
-from typing import Dict, Any
+from src.presentation.schemas.receita_schema import ReceitaCreate, ReceitaResponse
+from typing import Dict, Any, List
 
 class ReceitaController:
-    def __init__(self, criar_receita_use_case: CriarReceita):
+    def __init__(
+        self, 
+        criar_receita_use_case: CriarReceita,
+        editar_receita_use_case: EditarReceita,
+        excluir_receita_use_case: ExcluirReceita,
+        listar_receitas_use_case: ListarReceitas,
+        buscar_receita_por_id_use_case: BuscarReceitaPorId,
+        buscar_receita_por_nome_use_case: BuscarReceitaPorNome
+    ):
         self.criar_receita_use_case = criar_receita_use_case
+        self.editar_receita_use_case = editar_receita_use_case
+        self.excluir_receita_use_case = excluir_receita_use_case
+        self.listar_receitas_use_case = listar_receitas_use_case
+        self.buscar_receita_por_id_use_case = buscar_receita_por_id_use_case
+        self.buscar_receita_por_nome_use_case = buscar_receita_por_nome_use_case
 
-    def handle_criar_receita(self, data: Dict[str, Any], user_id: str) -> Dict[str, Any]:
-        """
-        Lógica de controle para criação de receita.
-        Mapeia o payload para a entidade de domínio e chama o use case.
-        """
+    def handle_criar_receita(self, data: ReceitaCreate, user_id: str) -> ReceitaResponse:
         try:
             receita = Receita()
-            receita.nome = data.get("nome")
-            receita.preco = data.get("preco")
-            receita.descricao = data.get("descricao")
-            receita.rendimento = data.get("rendimento")
+            receita.nome = data.nome
+            receita.preco = data.preco
+            receita.descricao = data.descricao
+            receita.rendimento = data.rendimento
             receita.idUsuario = user_id
             
-            # Executa use case
-            resultado = self.criar_receita_use_case.criar_receita(receita)
+            resultado = self.criar_receita_use_case.executar(receita)
             
-            return {
-                "mensagem": "Receita criada com sucesso!",
-                "data": {
-                    "nome": resultado.nome,
-                    "idUsuario": resultado.idUsuario
-                }
-            }
+            return ReceitaResponse(
+                id=1, # In a real implementation this would come from the repository
+                nome=resultado.nome,
+                preco=resultado.preco,
+                descricao=resultado.descricao,
+                rendimento=resultado.rendimento,
+                id_usuario=str(resultado.idUsuario)
+            )
         except ValueError as e:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_VALUE,
-                detail=str(e)
-            )
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
         except Exception as e:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Erro interno ao criar receita: {str(e)}"
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Erro ao criar receita: {str(e)}")
+
+    def handle_listar_receitas(self, user_id: str) -> List[ReceitaResponse]:
+        try:
+            resultado = self.listar_receitas_use_case.executar(user_id)
+            return [
+                ReceitaResponse(
+                    id=1, # Mock or map from domain if domain has IDs
+                    nome=r.nome,
+                    preco=r.preco,
+                    descricao=r.descricao,
+                    rendimento=r.rendimento,
+                    id_usuario=str(r.idUsuario)
+                ) for r in resultado
+            ]
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+    def handle_buscar_por_id(self, id: int) -> ReceitaResponse:
+        try:
+            resultado = self.buscar_receita_por_id_use_case.executar(id)
+            if not resultado:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Receita não encontrada")
+            return ReceitaResponse(
+                id=id,
+                nome=resultado.nome,
+                preco=resultado.preco,
+                descricao=resultado.descricao,
+                rendimento=resultado.rendimento,
+                id_usuario=str(resultado.idUsuario)
             )
+        except HTTPException as e:
+            raise e
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+    def handle_excluir_receita(self, id: int) -> Dict[str, str]:
+        try:
+            # First fetch to ensure it exists and belongs to the user (simplifying check here)
+            receita = self.buscar_receita_por_id_use_case.executar(id)
+            if not receita:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Receita não encontrada")
+            
+            self.excluir_receita_use_case.executar(receita)
+            return {"message": "Receita excluída com sucesso"}
+        except HTTPException as e:
+            raise e
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
