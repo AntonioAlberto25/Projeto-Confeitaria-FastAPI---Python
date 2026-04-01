@@ -2,7 +2,7 @@ from datetime import date
 from decimal import Decimal
 
 
-class Order:
+class Pedido:
     def __init__(self):
         self.__id = None
         self.__cliente_nome = None
