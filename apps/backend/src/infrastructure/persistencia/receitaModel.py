@@ -1,15 +1,9 @@
 from sqlalchemy import Column, Integer, String, Text, Numeric
-from sqlalchemy.orm import DeclarativeBase
-
-
-class Base(DeclarativeBase):
-    pass
-
+from src.infrastructure.persistencia.database import Base
 
 class ReceitaModel(Base):
     """
     Modelo de persistência para a entidade Receita.
-    Mapeia a tabela 'receitas' no PostgreSQL (Supabase).
     O campo id_usuario é o ID do Clerk (string).
     """
     __tablename__ = "receitas"
@@ -19,4 +13,4 @@ class ReceitaModel(Base):
     preco = Column(Numeric(10, 2), nullable=True)
     descricao = Column(Text, nullable=True)
     rendimento = Column(Integer, nullable=True)
-    id_usuario = Column(Integer, nullable=False)
+    id_usuario = Column(String, nullable=False) # Clerk ID
