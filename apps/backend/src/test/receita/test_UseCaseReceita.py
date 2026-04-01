@@ -16,7 +16,7 @@ def test_criar_receita_chama_repositorio():
     usecase = CriarReceita(repositorio_mock)
 
     # Act: chama o usecase
-    resultado = usecase.criar_receita(receita_fake)
+    resultado = usecase.executar(receita_fake)
 
     # Assert: verifica se o repositório foi chamado corretamente
     repositorio_mock.criar_receita.assert_called_once_with(receita_fake)
