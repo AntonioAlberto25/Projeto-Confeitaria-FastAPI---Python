@@ -90,8 +90,8 @@ def test_status_valido():
 
 def test_user_id_valido():
     pedido = Pedido()
-    pedido.user_id = "user_2abc123"
-    assert pedido.user_id == "user_2abc123"
+    pedido.user_id = 42
+    assert pedido.user_id == 42
 
 
 # ── estado inicial ────────────────────────────────────────────────────────────

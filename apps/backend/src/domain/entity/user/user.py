@@ -10,12 +10,12 @@ class User:
         self.__created_at = datetime.now()
 
     @property
-    def id(self) -> str:
+    def id(self) -> int:
         return self.__id
 
     @id.setter
-    def id(self, value: str) -> None:
-        if not value or value.strip() == "":
+    def id(self, value: int) -> None:
+        if value is None:
             raise ValueError("ID do usuário é obrigatório")
         self.__id = value
 

@@ -22,9 +22,10 @@ class RepositorioDeReceita(ABC):
         pass
 
     @abstractmethod
-    def listar_por_usuario(self, user_id: str) -> List[Receita]:
+    def listar_por_usuario(self, user_id: int) -> List[Receita]:
+        """Retorna todas as receitas do usuário autenticado. (RF010, RF014)"""
         pass
 
     @abstractmethod
-    def buscar_por_nome(self, user_id: str, nome: str) -> List[Receita]:
+    def buscar_por_nome(self, user_id: int, nome: str) -> List[Receita]:
         pass

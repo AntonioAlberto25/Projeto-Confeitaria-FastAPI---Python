@@ -20,5 +20,5 @@ class PedidoModel(Base):
     tipo_entrega = Column(String, nullable=True)
     preco_total = Column(Numeric(10, 2), nullable=True)
     data_entrega = Column(Date, nullable=True)
-    user_id = Column(String, nullable=False)
+    user_id = Column(Integer, nullable=False)
     status = Column(String, nullable=True, default="Pendente")

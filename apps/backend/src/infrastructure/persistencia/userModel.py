@@ -15,7 +15,7 @@ class UserModel(Base):
     """
     __tablename__ = "usuarios"
 
-    id = Column(String, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     email = Column(String, nullable=False, unique=True)
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=True)

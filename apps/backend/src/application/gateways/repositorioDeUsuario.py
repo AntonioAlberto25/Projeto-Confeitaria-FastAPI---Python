@@ -19,9 +19,6 @@ class RepositorioDeUsuario(ABC):
         pass
 
     @abstractmethod
-    def buscar_por_id(self, id: str) -> Optional[User]:
-        """
-        Retorna o perfil local do usuário pelo ID do Clerk,
-        ou None caso ainda não possua projeção local.
-        """
+    def buscar_por_id(self, id: int) -> Optional[User]:
+        """Retorna o perfil do usuário pelo ID, ou None se não encontrado."""
         pass

@@ -19,4 +19,4 @@ class ReceitaModel(Base):
     preco = Column(Numeric(10, 2), nullable=True)
     descricao = Column(Text, nullable=True)
     rendimento = Column(Integer, nullable=True)
-    id_usuario = Column(String, nullable=False)
+    id_usuario = Column(Integer, nullable=False)

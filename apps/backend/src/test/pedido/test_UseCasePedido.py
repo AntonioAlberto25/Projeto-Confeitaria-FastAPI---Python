@@ -14,7 +14,7 @@ def _pedido_fake() -> Pedido:
     pedido.tipo_entrega = "Entrega em domicílio"
     pedido.preco_total = Decimal("350.00")
     pedido.data_entrega = date(2026, 6, 15)
-    pedido.user_id = "user_2abc123"
+    pedido.user_id = 42
     pedido.status = "Pendente"
     return pedido
 
@@ -47,7 +47,7 @@ def test_criar_pedido_retorna_o_pedido_criado():
 
     assert resultado.cliente_nome == "Maria Silva"
     assert resultado.status == "Pendente"
-    assert resultado.user_id == "user_2abc123"
+    assert resultado.user_id == 42
 
 
 def test_criar_pedido_nao_chama_repositorio_mais_de_uma_vez():

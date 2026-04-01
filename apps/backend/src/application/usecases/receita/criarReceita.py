@@ -1,10 +1,10 @@
-from src.application.gateways.repositorioDeReceita import RepostorioDeReceita
+from src.application.gateways.repositorioDeReceita import RepositorioDeReceita
 from src.domain.entity.receita.receita import Receita
 
 
 
 class CriarReceita():
-    def __init__(self, repositorioDeReceita: RepostorioDeReceita):
+    def __init__(self, repositorioDeReceita: RepositorioDeReceita):
         self.__repositorioDeReceita = repositorioDeReceita
        
     def criar_receita(self, receita: Receita) -> Receita:

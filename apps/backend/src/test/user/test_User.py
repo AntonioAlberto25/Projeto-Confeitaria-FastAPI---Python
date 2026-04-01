@@ -3,13 +3,13 @@ from src.domain.entity.user.user import User
 
 def test_user_creation_valid():
     user = User()
-    user.id = "user_123"
+    user.id = 1
     user.email = "test@example.com"
     user.first_name = "Jhonatas"
     user.last_name = "Junior"
     user.role = "Admin"
     
-    assert user.id == "user_123"
+    assert user.id == 1
     assert user.email == "test@example.com"
     assert user.first_name == "Jhonatas"
     assert user.last_name == "Junior"
@@ -29,7 +29,7 @@ def test_user_invalid_role():
     with pytest.raises(ValueError, match="Papel inválido"):
         user.role = "Hacker"
 
-def test_user_empty_id():
+def test_user_id_none_levanta_erro():
     user = User()
     with pytest.raises(ValueError, match="ID do usuário é obrigatório"):
-        user.id = " "
+        user.id = None
