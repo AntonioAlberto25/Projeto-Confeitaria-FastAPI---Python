@@ -18,3 +18,4 @@ apps/frontend/out/
 apps/backend/__pycache__/
 apps/backend/.venv/
 apps/backend/*.egg-info/
+.pytest_cache/
