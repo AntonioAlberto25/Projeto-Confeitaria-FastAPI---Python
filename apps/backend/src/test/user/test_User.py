@@ -11,8 +11,8 @@ def test_user_creation_valid():
     
     assert user.id == "user_123"
     assert user.email == "test@example.com"
-    assert user.first_name == "Guilherme"
-    assert user.last_name == "Lima"
+    assert user.first_name == "Jhonatas"
+    assert user.last_name == "Junior"
     assert user.role == "Admin"
 
 def test_user_creation_default_role():
