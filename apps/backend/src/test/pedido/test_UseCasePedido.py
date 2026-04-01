@@ -3,6 +3,11 @@ from unittest.mock import Mock
 from decimal import Decimal
 from datetime import date
 from src.application.usecases.pedido.criarPedido import CriarPedido
+from src.application.usecases.pedido.listarPedidos import ListarPedidos
+from src.application.usecases.pedido.buscarPedidoPorId import BuscarPedidoPorId
+from src.application.usecases.pedido.buscarPedidoPorNomeCliente import BuscarPedidoPorNomeCliente
+from src.application.usecases.pedido.editarPedido import EditarPedido
+from src.application.usecases.pedido.excluirPedido import ExcluirPedido
 from src.domain.entity.pedido.pedido import Pedido
 
 
@@ -59,3 +64,62 @@ def test_criar_pedido_nao_chama_repositorio_mais_de_uma_vez():
     usecase.criar_pedido(pedido_fake)
 
     assert repositorio_mock.criar_pedido.call_count == 1
+
+def test_listar_pedidos_chama_repositorio():
+    repositorio_mock = Mock()
+    user_id = "user_123"
+    pedidos_fake = [_pedido_fake()]
+    repositorio_mock.listar_por_usuario.return_value = pedidos_fake
+
+    usecase = ListarPedidos(repositorio_mock)
+    resultado = usecase.executar(user_id)
+
+    repositorio_mock.listar_por_usuario.assert_called_once_with(user_id)
+    assert resultado == pedidos_fake
+
+def test_buscar_pedido_por_id_chama_repositorio():
+    repositorio_mock = Mock()
+    pedido_id = 123
+    pedido_fake = _pedido_fake()
+    repositorio_mock.buscar_pedido_por_id.return_value = pedido_fake
+
+    usecase = BuscarPedidoPorId(repositorio_mock)
+    resultado = usecase.executar(pedido_id)
+
+    repositorio_mock.buscar_pedido_por_id.assert_called_once_with(pedido_id)
+    assert resultado == pedido_fake
+
+def test_buscar_pedido_por_nome_cliente_chama_repositorio():
+    repositorio_mock = Mock()
+    user_id = "user_123"
+    nome = "Maria"
+    pedidos_fake = [_pedido_fake()]
+    repositorio_mock.buscar_por_nome_cliente.return_value = pedidos_fake
+
+    usecase = BuscarPedidoPorNomeCliente(repositorio_mock)
+    resultado = usecase.executar(user_id, nome)
+
+    repositorio_mock.buscar_por_nome_cliente.assert_called_once_with(user_id, nome)
+    assert resultado == pedidos_fake
+
+def test_editar_pedido_chama_repositorio():
+    repositorio_mock = Mock()
+    pedido_fake = _pedido_fake()
+    repositorio_mock.editar_pedido.return_value = pedido_fake
+
+    usecase = EditarPedido(repositorio_mock)
+    resultado = usecase.executar(pedido_fake)
+
+    repositorio_mock.editar_pedido.assert_called_once_with(pedido_fake)
+    assert resultado == pedido_fake
+
+def test_excluir_pedido_chama_repositorio():
+    repositorio_mock = Mock()
+    pedido_id = 123
+    repositorio_mock.excluir_pedido.return_value = True
+
+    usecase = ExcluirPedido(repositorio_mock)
+    resultado = usecase.executar(pedido_id)
+
+    repositorio_mock.excluir_pedido.assert_called_once_with(pedido_id)
+    assert resultado is True
