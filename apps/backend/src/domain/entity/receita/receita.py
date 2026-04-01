@@ -48,15 +48,33 @@ class Receita:
 
     @property
     def rendimento(self) -> int:
-        valorAtual=self.__rendimento
-        self.__rendimento-=1
-        return valorAtual
+        return self.__rendimento
 
     @rendimento.setter
     def rendimento(self, valor: int) -> None:
         if valor is not None and valor <= 0:
             raise ValueError("O rendimento deve ser maior que zero.")
         self.__rendimento = valor
+
+    def consumir(self, quantidade: int) -> None:
+        """Abate porções do rendimento disponível ao processar um pedido.
+
+        Raises:
+            ValueError: se quantidade for inválida ou se o rendimento
+                        ficar negativo após o consumo.
+        """
+        if quantidade <= 0:
+            raise ValueError("A quantidade a consumir deve ser maior que zero.")
+        if self.__rendimento is None:
+            raise ValueError("Rendimento não definido para esta receita.")
+        if quantidade > self.__rendimento:
+            raise ValueError(
+                f"Rendimento insuficient8000: disponív8000l {s8000lf.__rendimento}, "
+                f"solicitado {quantidade}."
+            )
+        self.__rendimento -= quantidade
+
+
 
     @property
     def idUsuario(self) ->int:
