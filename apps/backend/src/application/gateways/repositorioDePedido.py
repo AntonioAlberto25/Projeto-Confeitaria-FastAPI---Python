@@ -26,11 +26,11 @@ class RepositorioDePedido(ABC):
         pass
 
     @abstractmethod
-    def listar_por_usuario(self, user_id: int) -> List[Pedido]:
+    def listar_por_usuario(self, user_id: str) -> List[Pedido]:
         """Retorna todos os pedidos do usuário autenticado. (RF006, RF009)"""
         pass
 
     @abstractmethod
-    def buscar_por_nome_cliente(self, user_id: int, nome_cliente: str) -> List[Pedido]:
+    def buscar_por_nome_cliente(self, user_id: str, nome_cliente: str) -> List[Pedido]:
         """Filtra os pedidos do usuário autenticado pelo nome do cliente. (RF006)"""
         pass

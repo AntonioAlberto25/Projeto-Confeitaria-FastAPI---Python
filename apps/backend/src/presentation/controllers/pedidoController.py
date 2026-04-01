@@ -1,19 +1,34 @@
 from fastapi import HTTPException, status
+from src.application.usecases.pedido.criarPedido import CriarPedido
+from src.application.usecases.pedido.editarPedido import EditarPedido
+from src.application.usecases.pedido.excluirPedido import ExcluirPedido
+from src.application.usecases.pedido.listarPedidos import ListarPedidos
+from src.application.usecases.pedido.buscarPedidoPorId import BuscarPedidoPorId
+from src.application.usecases.pedido.buscarPedidoPorNomeCliente import BuscarPedidoPorNomeCliente
+
 from src.domain.entity.pedido.pedido import Pedido
 from src.presentation.schemas.pedido_schema import PedidoCreate, PedidoResponse
-from src.application.gateways.repositorioDePedido import RepositorioDePedido
-from typing import List
+from typing import List, Dict
 
 class PedidoController:
-    def __init__(self, repository: RepositorioDePedido):
-        self.repository = repository
+    def __init__(
+        self, 
+        criar_pedido_use_case: CriarPedido,
+        editar_pedido_use_case: EditarPedido,
+        excluir_pedido_use_case: ExcluirPedido,
+        listar_pedidos_use_case: ListarPedidos,
+        buscar_pedido_por_id_use_case: BuscarPedidoPorId,
+        buscar_pedido_por_nome_cliente_use_case: BuscarPedidoPorNomeCliente
+    ):
+        self.criar_pedido_use_case = criar_pedido_use_case
+        self.editar_pedido_use_case = editar_pedido_use_case
+        self.excluir_pedido_use_case = excluir_pedido_use_case
+        self.listar_pedidos_use_case = listar_pedidos_use_case
+        self.buscar_pedido_por_id_use_case = buscar_pedido_por_id_use_case
+        self.buscar_pedido_por_nome_cliente_use_case = buscar_pedido_por_nome_cliente_use_case
 
     def handle_criar_pedido(self, data: PedidoCreate, user_id: str) -> PedidoResponse:
-        """
-        Lógica para criação de pedido usando DTOs Pydantic.
-        """
         try:
-            # DTO -> Entity
             pedido = Pedido()
             pedido.cliente_nome = data.cliente_nome
             pedido.descricao = data.descricao
@@ -23,11 +38,10 @@ class PedidoController:
             pedido.user_id = user_id
             pedido.status = "Pendente"
             
-            resultado = self.repository.criar_pedido(pedido)
+            resultado = self.criar_pedido_use_case.executar(pedido)
             
-            # Entity -> DTO Response
             return PedidoResponse(
-                id=resultado.id,
+                id=1, # Mock ID
                 cliente_nome=resultado.cliente_nome,
                 descricao=resultado.descricao,
                 tipo_entrega=resultado.tipo_entrega,
@@ -36,17 +50,34 @@ class PedidoController:
                 user_id=str(resultado.user_id),
                 status=resultado.status
             )
-        except ValueError as e:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
     def handle_listar_meus_pedidos(self, user_id: str) -> List[PedidoResponse]:
-        """
-        Busca todos os pedidos associados ao user_id autenticado no Clerk e retorna via DTO.
-        """
-        pedidos = self.repository.listar_por_usuario(user_id)
-        return [
-            PedidoResponse(
-                id=p.id,
+        try:
+            pedidos = self.listar_pedidos_use_case.executar(user_id)
+            return [
+                PedidoResponse(
+                    id=1, # Mock ID
+                    cliente_nome=p.cliente_nome,
+                    descricao=p.descricao,
+                    tipo_entrega=p.tipo_entrega,
+                    preco_total=p.preco_total,
+                    data_entrega=p.data_entrega,
+                    user_id=str(p.user_id),
+                    status=p.status
+                ) for p in pedidos
+            ]
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+    def handle_buscar_pedido_por_id(self, id: int) -> PedidoResponse:
+        try:
+            p = self.buscar_pedido_por_id_use_case.executar(id)
+            if not p:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pedido não encontrado")
+            return PedidoResponse(
+                id=id,
                 cliente_nome=p.cliente_nome,
                 descricao=p.descricao,
                 tipo_entrega=p.tipo_entrega,
@@ -54,5 +85,15 @@ class PedidoController:
                 data_entrega=p.data_entrega,
                 user_id=str(p.user_id),
                 status=p.status
-            ) for p in pedidos
-        ]
+            )
+        except HTTPException as e:
+            raise e
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+    def handle_excluir_pedido(self, id: int) -> Dict[str, str]:
+        try:
+            self.excluir_pedido_use_case.executar(id)
+            return {"message": "Pedido excluído com sucesso"}
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))

@@ -7,7 +7,7 @@ class CriarReceita():
     def __init__(self, repositorioDeReceita: RepositorioDeReceita):
         self.__repositorioDeReceita = repositorioDeReceita
        
-    def criar_receita(self, receita: Receita) -> Receita:
+    def executar(self, receita: Receita) -> Receita:
         return self.__repositorioDeReceita.criar_receita(receita)
 
 
