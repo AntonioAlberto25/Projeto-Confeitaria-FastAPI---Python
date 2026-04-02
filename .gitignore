@@ -7,8 +7,7 @@ __pycache__/
 *.pyc
 *.pyo
 .vscode/
-.agent/
-.agents/
+.vs/
 
 # Monorepo — Next.js
 apps/frontend/.next/
