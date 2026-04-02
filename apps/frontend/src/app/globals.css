@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 98%;
+    --foreground: 20 20% 10%;
+    
+    /* Design Tokens from Stitch */
+    --primary: 10 38% 38%;
+    --primary-container: 10 32% 48%;
+    --surface-container-low: 0 0% 95%;
+    --surface-container: 0 0% 93%;
+    --surface-container-high: 0 0% 91%;
+  }
+
+  body {
+    @apply bg-surface text-secondary antialiased;
+    font-feature-settings: "ss01", "ss02", "cv01", "cv02", "cv03";
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-manrope font-bold tracking-tight text-primary;
+  }
+}
+
+/* Glassmorphism utility */
+.glass {
+  @apply bg-surface/80 backdrop-blur-xl border-b border-surface-container-highest/20;
+}
+
+/* Tonal Layering */
+.layer-base { @apply bg-surface; }
+.layer-section { @apply bg-surface-container-low; }
+.layer-card { @apply bg-surface-container-lowest shadow-atmospheric rounded-lg; }
+
+/* Status Badges */
+.badge { @apply px-3 py-1 rounded-full text-xs font-semibold; }
+.badge-pendente { @apply bg-surface-container-high text-secondary; }
+.badge-producao { @apply bg-tertiary-fixed text-tertiary-container; }
+.badge-concluido { @apply bg-tertiary-fixed/40 text-tertiary; }
+.badge-cancelado { @apply bg-error-container text-error; }
+
+/* Artisanal Buttons */
+.btn-primary {
+  @apply h-10 px-6 rounded-md bg-gradient-to-br from-primary to-primary-container text-white font-semibold transition-all hover:opacity-90 active:scale-95 shadow-lg shadow-primary/20;
+}
+
+.btn-secondary {
+  @apply h-10 px-6 rounded-md border border-secondary/20 font-semibold transition-all hover:bg-secondary/5;
+}

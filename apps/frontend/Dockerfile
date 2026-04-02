@@ -2,7 +2,6 @@
 FROM node:lts-alpine AS deps
 WORKDIR /app
 COPY package*.json ./
-ENV NODE_ENV=production
 RUN npm install
 
 # Stage 2: build — gera bundle Next.js standalone

@@ -37,15 +37,35 @@ async def get_jwks():
 async def get_current_user_id(token: HTTPAuthorizationCredentials = Depends(security)) -> str:
     """
     FastAPI dependency to validate Clerk JWT and return user_id (sub).
+    Follows JWKS (Public Key Set) rotation and cryptographic signature verification.
     """
     try:
+        raw_token = token.credentials
         jwks = await get_jwks()
+        
+        # 1. Obter o Header do Token (não verificado) p/ achar o 'kid'
+        header = jwt.get_unverified_header(raw_token)
+        kid = header.get("kid")
+        if not kid:
+            raise HTTPException(status_code=401, detail="Token sem 'kid' no header")
+
+        # 2. Localizar a chave pública correspondente no JWKS
+        public_key = None
+        for key in jwks.get("keys", []):
+            if key["kid"] == kid:
+                public_key = key
+                break
+        
+        if not public_key:
+            raise HTTPException(status_code=401, detail="Chave pública correspondente não encontrada no JWKS (kid inválido)")
+
+        # 3. Decodificar e validar criptograficamente
         payload = jwt.decode(
-            token.credentials,
-            jwks,
+            raw_token,
+            public_key,
             algorithms=["RS256"],
             issuer=CLERK_ISSUER,
-            options={"verify_aud": False} # Usually aud is the frontend URL, can be checked if needed
+            options={"verify_aud": False} # Validar se o issuer bate c/ Clerk
         )
         
         user_id = payload.get("sub")

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
 from datetime import date
 from decimal import Decimal
@@ -18,5 +18,4 @@ class PedidoResponse(PedidoBase):
     user_id: str
     status: str = "Pendente"
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

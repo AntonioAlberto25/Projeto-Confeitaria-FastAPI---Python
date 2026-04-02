@@ -1,3 +1,4 @@
+from decimal import Decimal
 import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import Mock
@@ -70,3 +71,67 @@ def test_listar_pedidos_empty(client):
     response = client.get("/pedidos/")
     assert response.status_code == 200
     assert response.json() == []
+
+def test_buscar_receita_por_id(client):
+    mock_controller = Mock()
+    mock_response = ReceitaResponse(
+        id=1,
+        nome="Bolo",
+        preco=10.5,
+        id_usuario=MOCK_USER_ID,
+        rendimento=10,
+        descricao="Teste"
+    )
+    # The actual controller method is handle_buscar_por_id
+    mock_controller.handle_buscar_por_id.return_value = mock_response
+    app.dependency_overrides[get_receita_controller] = lambda: mock_controller
+    
+    response = client.get("/receitas/1")
+    assert response.status_code == 200
+    assert response.json()["nome"] == "Bolo"
+
+def test_criar_pedido(client):
+    mock_controller = Mock()
+    mock_response = PedidoResponse(
+        id=1,
+        cliente_nome="Maria",
+        descricao="Desc",
+        tipo_entrega="Entrega",
+        preco_total=Decimal("100.00"),
+        data_entrega="2023-12-31",
+        user_id=MOCK_USER_ID,
+        status="Pendente"
+    )
+    mock_controller.handle_criar_pedido.return_value = mock_response
+    app.dependency_overrides[get_pedido_controller] = lambda: mock_controller
+    
+    payload = {
+        "cliente_nome": "Maria",
+        "descricao": "Desc",
+        "preco_total": 100.00,
+        "tipo_entrega": "Entrega",
+        "data_entrega": "2023-12-31"
+    }
+    response = client.post("/pedidos/", json=payload)
+    assert response.status_code == 201
+    assert response.json()["cliente_nome"] == "Maria"
+
+def test_buscar_pedido_por_id(client):
+    mock_controller = Mock()
+    mock_response = PedidoResponse(
+        id=1,
+        cliente_nome="Maria",
+        descricao="Desc",
+        tipo_entrega="Entrega",
+        preco_total=Decimal("100.00"),
+        data_entrega="2023-12-31",
+        user_id=MOCK_USER_ID,
+        status="Pendente"
+    )
+    mock_controller.handle_buscar_pedido_por_id.return_value = mock_response
+    app.dependency_overrides[get_pedido_controller] = lambda: mock_controller
+    
+    response = client.get("/pedidos/1")
+    assert response.status_code == 200
+    assert response.json()["cliente_nome"] == "Maria"
+

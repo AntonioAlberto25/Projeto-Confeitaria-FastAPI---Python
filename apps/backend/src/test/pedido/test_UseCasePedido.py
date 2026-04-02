@@ -35,7 +35,7 @@ def test_criar_pedido_chama_repositorio():
     usecase = CriarPedido(repositorio_mock)
 
     # Act
-    resultado = usecase.criar_pedido(pedido_fake)
+    resultado = usecase.executar(pedido_fake)
 
     # Assert
     repositorio_mock.criar_pedido.assert_called_once_with(pedido_fake)
@@ -48,7 +48,7 @@ def test_criar_pedido_retorna_o_pedido_criado():
     repositorio_mock.criar_pedido.return_value = pedido_fake
 
     usecase = CriarPedido(repositorio_mock)
-    resultado = usecase.criar_pedido(pedido_fake)
+    resultado = usecase.executar(pedido_fake)
 
     assert resultado.cliente_nome == "Maria Silva"
     assert resultado.status == "Pendente"
@@ -61,7 +61,7 @@ def test_criar_pedido_nao_chama_repositorio_mais_de_uma_vez():
     repositorio_mock.criar_pedido.return_value = pedido_fake
 
     usecase = CriarPedido(repositorio_mock)
-    usecase.criar_pedido(pedido_fake)
+    usecase.executar(pedido_fake)
 
     assert repositorio_mock.criar_pedido.call_count == 1
 
