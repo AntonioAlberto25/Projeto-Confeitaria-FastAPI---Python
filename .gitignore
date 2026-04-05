@@ -18,3 +18,7 @@ apps/backend/__pycache__/
 apps/backend/.venv/
 apps/backend/*.egg-info/
 .pytest_cache/
+
+# Agents
+.agents/
+.agent/

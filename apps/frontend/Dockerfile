@@ -7,6 +7,10 @@ RUN npm install
 # Stage 2: build — gera bundle Next.js standalone
 FROM node:lts-alpine AS build
 WORKDIR /app
+ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+ARG CLERK_SECRET_KEY
+ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+ENV CLERK_SECRET_KEY=$CLERK_SECRET_KEY
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
