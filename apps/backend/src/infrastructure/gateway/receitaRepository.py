@@ -56,7 +56,7 @@ class ReceitaRepository(RepositorioDeReceita):
         return receitas
 
     def buscar_por_nome(self, user_id: str, nome: str) -> List[Receita]:
-        models = self.db.query(ReceitaModel).filter(
+        self.db.query(ReceitaModel).filter(
             ReceitaModel.id_usuario == user_id, 
             ReceitaModel.nome.ilike(f"%{nome}%")
         ).all()

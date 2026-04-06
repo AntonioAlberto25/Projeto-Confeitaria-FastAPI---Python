@@ -1,4 +1,3 @@
-import pytest
 from unittest.mock import Mock, MagicMock
 from src.infrastructure.gateway.receitaRepository import ReceitaRepository
 from src.infrastructure.gateway.pedidoRepository import PedidoRepository

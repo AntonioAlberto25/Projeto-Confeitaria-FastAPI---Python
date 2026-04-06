@@ -1,4 +1,3 @@
-import pytest
 from unittest.mock import Mock
 from src.application.usecases.receita.criarReceita import CriarReceita
 from src.application.usecases.receita.listarReceitas import ListarReceitas

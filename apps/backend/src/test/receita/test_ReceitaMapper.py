@@ -1,4 +1,3 @@
-import pytest
 from decimal import Decimal
 from src.domain.entity.receita.receita import Receita
 from src.infrastructure.persistencia.receitaModel import ReceitaModel

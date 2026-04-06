@@ -1,4 +1,3 @@
-import pytest
 from unittest.mock import Mock
 from src.application.usecases.user.registrarUsuario import RegistrarUsuario
 from src.application.usecases.user.buscarUsuarioPorId import BuscarUsuarioPorId

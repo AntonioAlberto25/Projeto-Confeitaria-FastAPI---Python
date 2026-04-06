@@ -1,4 +1,3 @@
-import pytest
 from datetime import datetime
 from src.domain.entity.user.user import User
 from src.infrastructure.persistencia.userModel import UserModel

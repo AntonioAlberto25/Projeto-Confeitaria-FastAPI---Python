@@ -1,5 +1,4 @@
 from datetime import datetime
-import re
 
 class Receita:
     def __init__(self):

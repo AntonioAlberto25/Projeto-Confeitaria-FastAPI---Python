@@ -1,5 +1,4 @@
 from sqlalchemy import Column, String, DateTime
-from sqlalchemy.orm import DeclarativeBase
 from datetime import datetime
 from src.infrastructure.persistencia.database import Base
 

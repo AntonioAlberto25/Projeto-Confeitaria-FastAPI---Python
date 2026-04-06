@@ -9,7 +9,7 @@ from src.application.usecases.receita.buscarReceitaPorNome import BuscarReceitaP
 
 from src.domain.entity.receita.receita import Receita
 from src.presentation.schemas.receita_schema import ReceitaCreate, ReceitaResponse
-from typing import Dict, Any, List
+from typing import Dict, List
 
 class ReceitaController:
     def __init__(
