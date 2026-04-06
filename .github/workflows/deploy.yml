@@ -52,7 +52,7 @@ jobs:
         run: ruff check apps/backend/src
 
       - name: Executar testes
-        working-directory: ./apps/backend
+        working-directory: apps/backend
         run: |
           export PYTHONPATH=src
           python -m pytest src/test --cov=src --cov-fail-under=80 --cov-report=html -v
