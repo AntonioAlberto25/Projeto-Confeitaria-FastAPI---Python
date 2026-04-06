@@ -79,6 +79,26 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
+      - name: Validate required backend deploy secrets
+        run: |
+          required_vars=(
+            "VERCEL_TOKEN"
+            "VERCEL_ORG_ID"
+            "VERCEL_PROJECT_ID"
+          )
+
+          for var in "${required_vars[@]}"; do
+            if [ -z "${!var}" ]; then
+              echo "::error::Missing required secret '$var' in GitHub Environment 'backend-production'."
+              exit 1
+            fi
+          done
+
+      - name: Link backend project in CI
+        run: |
+          mkdir -p apps/backend/.vercel
+          printf '{"orgId":"%s","projectId":"%s"}' "${VERCEL_ORG_ID}" "${VERCEL_PROJECT_ID}" > apps/backend/.vercel/project.json
+
       - name: Pull Vercel environment (backend)
         run: vercel pull --yes --environment=production --token=${{ env.VERCEL_TOKEN }} --cwd=apps/backend
 
@@ -115,11 +135,15 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
-      - name: Validate required frontend secrets
+      - name: Validate required frontend deploy secrets
         run: |
           required_vars=(
+            "VERCEL_TOKEN"
+            "VERCEL_ORG_ID"
+            "VERCEL_PROJECT_ID"
             "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY"
             "CLERK_SECRET_KEY"
+            "NEXT_PUBLIC_API_URL"
           )
 
           for var in "${required_vars[@]}"; do
@@ -128,6 +152,11 @@ jobs:
               exit 1
             fi
           done
+
+      - name: Link frontend project in CI
+        run: |
+          mkdir -p apps/frontend/.vercel
+          printf '{"orgId":"%s","projectId":"%s"}' "${VERCEL_ORG_ID}" "${VERCEL_PROJECT_ID}" > apps/frontend/.vercel/project.json
 
       - name: Pull Vercel environment (frontend)
         run: vercel pull --yes --environment=production --token=${{ env.VERCEL_TOKEN }} --cwd=apps/frontend
