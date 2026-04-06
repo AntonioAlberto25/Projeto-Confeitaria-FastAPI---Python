@@ -98,6 +98,9 @@ jobs:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+      CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+      NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
 
     steps:
       - name: Checkout code
@@ -111,6 +114,20 @@ jobs:
 
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
+
+      - name: Validate required frontend secrets
+        run: |
+          required_vars=(
+            "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY"
+            "CLERK_SECRET_KEY"
+          )
+
+          for var in "${required_vars[@]}"; do
+            if [ -z "${!var}" ]; then
+              echo "::error::Missing required secret '$var' in GitHub Environment 'frontend-production'."
+              exit 1
+            fi
+          done
 
       - name: Pull Vercel environment (frontend)
         run: vercel pull --yes --environment=production --token=${{ env.VERCEL_TOKEN }} --cwd=apps/frontend
