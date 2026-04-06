@@ -112,14 +112,28 @@ jobs:
           mkdir -p apps/backend/.vercel
           printf '{"orgId":"%s","projectId":"%s"}' "${VERCEL_ORG_ID}" "${VERCEL_PROJECT_ID}" > apps/backend/.vercel/project.json
 
+      - name: Validate backend project access via Vercel API
+        run: |
+          api_url="https://api.vercel.com/v9/projects/${VERCEL_PROJECT_ID}?teamId=${VERCEL_ORG_ID}"
+          status_code=$(curl -sS -o /tmp/vercel_project_backend.json -w "%{http_code}" \
+            -H "Authorization: Bearer ${VERCEL_TOKEN}" \
+            "$api_url")
+
+          if [ "$status_code" -ne 200 ]; then
+            echo "::error::Vercel API access check failed for backend project. HTTP ${status_code}."
+            echo "Response snippet:"
+            head -c 500 /tmp/vercel_project_backend.json || true
+            exit 1
+          fi
+
       - name: Pull Vercel environment (backend)
-        run: vercel pull --yes --environment=production --token=${{ env.VERCEL_TOKEN }} --scope=${{ env.VERCEL_ORG_ID }} --cwd=apps/backend --debug
+        run: vercel pull --yes --environment=production --token=${{ env.VERCEL_TOKEN }} --cwd=apps/backend --debug
 
       - name: Build backend artifacts
-        run: vercel build --prod --token=${{ env.VERCEL_TOKEN }} --scope=${{ env.VERCEL_ORG_ID }} --cwd=apps/backend
+        run: vercel build --prod --token=${{ env.VERCEL_TOKEN }} --cwd=apps/backend
 
       - name: Deploy backend artifacts
-        run: vercel deploy --prebuilt --prod --token=${{ env.VERCEL_TOKEN }} --scope=${{ env.VERCEL_ORG_ID }} --cwd=apps/backend
+        run: vercel deploy --prebuilt --prod --token=${{ env.VERCEL_TOKEN }} --cwd=apps/backend
 
   deploy-frontend:
     name: Deploy Frontend to Vercel (Production)
@@ -185,12 +199,12 @@ jobs:
           printf '{"orgId":"%s","projectId":"%s"}' "${VERCEL_ORG_ID}" "${VERCEL_PROJECT_ID}" > apps/frontend/.vercel/project.json
 
       - name: Pull Vercel environment (frontend)
-        run: vercel pull --yes --environment=production --token=${{ env.VERCEL_TOKEN }} --scope=${{ env.VERCEL_ORG_ID }} --cwd=apps/frontend --debug
+        run: vercel pull --yes --environment=production --token=${{ env.VERCEL_TOKEN }} --cwd=apps/frontend --debug
 
       - name: Build frontend artifacts
-        run: vercel build --prod --token=${{ env.VERCEL_TOKEN }} --scope=${{ env.VERCEL_ORG_ID }} --cwd=apps/frontend
+        run: vercel build --prod --token=${{ env.VERCEL_TOKEN }} --cwd=apps/frontend
 
       - name: Deploy frontend artifacts
-        run: vercel deploy --prebuilt --prod --token=${{ env.VERCEL_TOKEN }} --scope=${{ env.VERCEL_ORG_ID }} --cwd=apps/frontend
+        run: vercel deploy --prebuilt --prod --token=${{ env.VERCEL_TOKEN }} --cwd=apps/frontend
 
 
