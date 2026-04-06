@@ -107,6 +107,12 @@ jobs:
             exit 1
           fi
 
+      - name: Normalize backend Vercel secrets
+        run: |
+          echo "VERCEL_TOKEN=$(printf '%s' "${VERCEL_TOKEN}" | tr -d '\r\n')" >> "$GITHUB_ENV"
+          echo "VERCEL_ORG_ID=$(printf '%s' "${VERCEL_ORG_ID}" | tr -d '\r\n[:space:]')" >> "$GITHUB_ENV"
+          echo "VERCEL_PROJECT_ID=$(printf '%s' "${VERCEL_PROJECT_ID}" | tr -d '\r\n[:space:]')" >> "$GITHUB_ENV"
+
       - name: Link backend project in CI
         run: |
           mkdir -p apps/backend/.vercel
@@ -114,9 +120,11 @@ jobs:
 
       - name: Validate backend project access via Vercel API
         run: |
-          api_url="https://api.vercel.com/v9/projects/${VERCEL_PROJECT_ID}?teamId=${VERCEL_ORG_ID}"
+          api_url="https://api.vercel.com/v9/projects/${VERCEL_PROJECT_ID}"
           status_code=$(curl -sS -o /tmp/vercel_project_backend.json -w "%{http_code}" \
             -H "Authorization: Bearer ${VERCEL_TOKEN}" \
+            --get \
+            --data-urlencode "teamId=${VERCEL_ORG_ID}" \
             "$api_url")
 
           if [ "$status_code" -ne 200 ]; then
@@ -192,6 +200,12 @@ jobs:
             echo "::error::FRONTEND_VERCEL_PROJECT_ID must start with 'prj_'."
             exit 1
           fi
+
+      - name: Normalize frontend Vercel secrets
+        run: |
+          echo "VERCEL_TOKEN=$(printf '%s' "${VERCEL_TOKEN}" | tr -d '\r\n')" >> "$GITHUB_ENV"
+          echo "VERCEL_ORG_ID=$(printf '%s' "${VERCEL_ORG_ID}" | tr -d '\r\n[:space:]')" >> "$GITHUB_ENV"
+          echo "VERCEL_PROJECT_ID=$(printf '%s' "${VERCEL_PROJECT_ID}" | tr -d '\r\n[:space:]')" >> "$GITHUB_ENV"
 
       - name: Link frontend project in CI
         run: |
