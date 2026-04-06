@@ -1,15 +1,22 @@
 import { Sidebar } from "../../components/Sidebar"
+import { currentUser } from "@clerk/nextjs/server"
+import { redirect } from "next/navigation"
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  // Protege todas as rotas do dashboard
+  const user = await currentUser()
+  if (!user) redirect("/")
+
   return (
-    <div className="flex bg-surface min-h-screen">
+    <div className="flex min-h-screen" style={{ backgroundColor: 'var(--surface)' }}>
       <Sidebar />
-      <main className="ml-64 flex-1 p-8 overflow-y-auto">
-        <div className="max-w-6xl mx-auto">
+      <main className="ml-64 flex-1 min-h-screen" style={{ backgroundColor: 'var(--surface-container-low)' }}>
+        {/* Padding responsivo interno */}
+        <div className="max-w-[1320px] mx-auto px-8 py-10">
           {children}
         </div>
       </main>

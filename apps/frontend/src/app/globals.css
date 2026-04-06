@@ -2,51 +2,224 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   GLOBAL IMPORTS — Plus Jakarta Sans (display) + Inter (body)
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,opsz,wght@0,6..18,300..800;1,6..18,300..800&family=Inter:wght@300;400;500;600;700&display=swap');
+
 @layer base {
   :root {
-    --background: 0 0% 98%;
-    --foreground: 20 20% 10%;
-    
-    /* Design Tokens from Stitch */
-    --primary: 10 38% 38%;
-    --primary-container: 10 32% 48%;
-    --surface-container-low: 0 0% 95%;
-    --surface-container: 0 0% 93%;
-    --surface-container-high: 0 0% 91%;
+    /* Stitch Design System — "The Digital Pâtisserie" */
+    /* Primary: Rosa Seco */
+    --primary: #915160;
+    --primary-dim: #834554;
+    --primary-container: #fbabbc;
+    /* Secondary: Caramelo */
+    --secondary: #795f4a;
+    --secondary-container: #ffdcc2;
+    /* Tertiary: Baunilha/Dourado */
+    --tertiary: #6e6436;
+    --tertiary-container: #fceeb3;
+    /* Surfaces: Creme */
+    --surface: #fffbff;
+    --surface-container-lowest: #ffffff;
+    --surface-container-low: #fdf9f1;
+    --surface-container: #f7f3ea;
+    --surface-container-high: #f1eee2;
+    --surface-container-highest: #ece8db;
+    /* On-colors */
+    --on-surface: #39382f;
+    --on-surface-variant: #66655a;
+    --outline-variant: #bcb9ad;
+    /* Error */
+    --error: #b33938;
+    --error-container: #f56965;
+  }
+
+  * {
+    box-sizing: border-box;
   }
 
   body {
-    @apply bg-surface text-secondary antialiased;
+    background-color: var(--surface);
+    color: var(--on-surface);
+    font-family: 'Inter', sans-serif;
     font-feature-settings: "ss01", "ss02", "cv01", "cv02", "cv03";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
+  /* Display & Headlines: Plus Jakarta Sans — Stitch spec */
   h1, h2, h3, h4, h5, h6 {
-    @apply font-manrope font-bold tracking-tight text-primary;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--primary);
+  }
+
+  /* Label: Inter with positive tracking — Stitch spec */
+  label, .label {
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.03em;
   }
 }
 
-/* Glassmorphism utility */
+/* ============================================================
+   GLASSMORPHISM — 24px blur, surface warm a 80% (Stitch spec)
+   ============================================================ */
 .glass {
-  @apply bg-surface/80 backdrop-blur-xl border-b border-surface-container-highest/20;
+  background-color: rgba(255, 251, 255, 0.80);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(188, 185, 173, 0.15);
 }
 
-/* Tonal Layering */
-.layer-base { @apply bg-surface; }
-.layer-section { @apply bg-surface-container-low; }
-.layer-card { @apply bg-surface-container-lowest shadow-atmospheric rounded-lg; }
+/* ============================================================
+   TONAL LAYERING — hierarquia sem bordas 1px (Stitch "No-Line" Rule)
+   ============================================================ */
+.layer-base    { background-color: var(--surface); }
+.layer-section { background-color: var(--surface-container-low); }
+.layer-card {
+  background-color: var(--surface-container-lowest);
+  box-shadow: 0px 12px 48px -4px rgba(57, 56, 47, 0.05);
+  border-radius: 1rem;
+}
+.layer-card:hover {
+  box-shadow: 0px 8px 32px -4px rgba(57, 56, 47, 0.08);
+}
 
-/* Status Badges */
-.badge { @apply px-3 py-1 rounded-full text-xs font-semibold; }
-.badge-pendente { @apply bg-surface-container-high text-secondary; }
-.badge-producao { @apply bg-tertiary-fixed text-tertiary-container; }
-.badge-concluido { @apply bg-tertiary-fixed/40 text-tertiary; }
-.badge-cancelado { @apply bg-error-container text-error; }
+/* ============================================================
+   GHOST BORDER — "felt, not seen" (Stitch spec para inputs)
+   ============================================================ */
+.ghost-border {
+  outline: 2px solid rgba(145, 81, 96, 0.20);
+  outline-offset: -2px;
+}
 
-/* Artisanal Buttons */
+/* ============================================================
+   STATUS BADGES — Stitch Organic Color Mapping
+   ============================================================ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.875rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.01em;
+}
+
+/* Pendente: tonal neutro — "não tome ação ainda" */
+.badge-pendente {
+  background-color: var(--surface-container-highest);
+  color: var(--on-surface);
+}
+
+/* Em Produção: âmbar quente — tertiary-container */
+.badge-producao {
+  background-color: #fceeb3;
+  color: #62582b;
+}
+
+/* Concluído: sage-wash (desaturated tertiary) */
+.badge-concluido {
+  background-color: #e2ead1;
+  color: #3b4d36;
+}
+
+/* Cancelado: error_container warm */
+.badge-cancelado {
+  background-color: var(--error-container);
+  color: #65000b;
+}
+
+/* ============================================================
+   BUTTONS — CTA gradient 45° primary → primary-dim (Stitch spec)
+   ============================================================ */
 .btn-primary {
-  @apply h-10 px-6 rounded-md bg-gradient-to-br from-primary to-primary-container text-white font-semibold transition-all hover:opacity-90 active:scale-95 shadow-lg shadow-primary/20;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.75rem;
+  padding: 0 1.5rem;
+  border-radius: 1rem;
+  background-image: linear-gradient(45deg, #915160, #834554);
+  color: #ffffff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: -0.01em;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+  box-shadow: 0px 4px 16px -2px rgba(145, 81, 96, 0.25);
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
 }
+.btn-primary:hover  { opacity: 0.93; }
+.btn-primary:active { transform: scale(0.97); }
 
 .btn-secondary {
-  @apply h-10 px-6 rounded-md border border-secondary/20 font-semibold transition-all hover:bg-secondary/5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.75rem;
+  padding: 0 1.5rem;
+  border-radius: 1rem;
+  background-color: transparent;
+  border: 1.5px solid rgba(188, 185, 173, 0.50);
+  color: var(--secondary);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+  white-space: nowrap;
 }
+.btn-secondary:hover {
+  background-color: rgba(121, 95, 74, 0.06);
+  border-color: rgba(145, 81, 96, 0.25);
+}
+
+/* ============================================================
+   INPUTS — Estilo "recipe card" sem bordas duras (Stitch spec)
+   ============================================================ */
+.input-field {
+  width: 100%;
+  height: 3.25rem;
+  padding: 0 1rem;
+  background-color: var(--surface-container-high);
+  border-radius: 1rem;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  color: var(--on-surface);
+  outline: none;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+.input-field::placeholder { color: var(--on-surface-variant); opacity: 0.7; }
+.input-field:focus {
+  background-color: var(--surface-container-lowest);
+  box-shadow: 0 0 0 2px rgba(145, 81, 96, 0.20);
+}
+
+/* ============================================================
+   ANIMATIONS — Entrada de elements, purposeful e sparse
+   ============================================================ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.animate-fade-in  { animation: fadeIn  0.4s cubic-bezier(0.4, 0, 0.2, 1) both; }
+.animate-fade-up  { animation: fadeUp  0.5s cubic-bezier(0.4, 0, 0.2, 1) both; }
+
+/* Skeleton pulse */
+@keyframes skeleton {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 1; }
+}
+.animate-skeleton { animation: skeleton 1.5s ease-in-out infinite; }

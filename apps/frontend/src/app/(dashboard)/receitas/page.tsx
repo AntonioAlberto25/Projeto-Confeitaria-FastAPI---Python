@@ -1,157 +1,207 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Plus, Search, BookOpen, Clock, Users, ArrowRight, Share2, Heart } from 'lucide-react'
+import { Plus, Search, BookOpen, Clock, ChevronRight } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { getReceitas } from '../../../lib/api'
 import { useAuth } from '@clerk/nextjs'
+import Link from 'next/link'
 
 export default function ReceitasPage() {
   const { getToken } = useAuth()
   const [receitas, setReceitas] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading]   = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
-    const loadReceitas = async () => {
+    const load = async () => {
       try {
         const token = await getToken()
         if (token) {
           const data = await getReceitas(token)
           setReceitas(data)
         }
-      } catch (error) {
-        console.error('Erro ao carregar receitas:', error)
-        // Mock data
-        setReceitas([
-          { id: 1, nome: 'Pão de Ló Clássico', descricao: 'Receita base para bolos recheados, leve e aerada.', tempo_preparo: 45, rendimento: '1 bolo médio', dificuldade: 'Fácil' },
-          { id: 2, nome: 'Creme Patissière', descricao: 'Creme de confeiteiro tradicional com favas de baunilha.', tempo_preparo: 20, rendimento: '500g', dificuldade: 'Média' },
-          { id: 3, nome: 'Massa Folhada', descricao: 'Massa amanteigada feita à mão com dobras artesanais.', tempo_preparo: 180, rendimento: '1kg', dificuldade: 'Difícil' },
-          { id: 4, nome: 'Brigadeiro Belga', descricao: 'Ponto de bico para decoração premium.', tempo_preparo: 25, rendimento: '30 unidades', dificuldade: 'Fácil' },
-        ])
+      } catch (e) {
+        console.error('Erro ao carregar receitas:', e)
+        // Sem mock — empty state
       } finally {
         setLoading(false)
       }
     }
-    loadReceitas()
+    load()
   }, [getToken])
 
-  const filteredReceitas = receitas.filter(r => 
-    r.nome.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    r.descricao.toLowerCase().includes(searchTerm.toLowerCase())
+  const filtered = receitas.filter(r =>
+    !searchTerm ||
+    r.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    r.descricao?.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   return (
     <div className="space-y-10 animate-fade-in pb-20">
+
       {/* Header */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-manrope font-bold text-primary tracking-tight">Acervo de Receitas</h1>
-          <p className="text-secondary font-jakarta text-sm">Organize suas criações e segredos culinários</p>
+      <header className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-widest mb-2"
+            style={{ fontFamily: 'var(--font-inter)', color: 'var(--on-surface-variant)' }}>
+            Fichas Técnicas
+          </p>
+          <h1 className="text-3xl lg:text-4xl font-bold tracking-tight"
+            style={{ fontFamily: 'var(--font-jakarta)', color: 'var(--on-surface)' }}>
+            Acervo de Receitas
+          </h1>
         </div>
-        <button className="btn-primary flex items-center justify-center gap-2 p-3 w-full md:w-auto">
+        <Link href="/receitas/nova" className="btn-primary flex items-center gap-2">
           <Plus className="w-4 h-4" /> Nova Receita
-        </button>
+        </Link>
       </header>
 
-      {/* Filters & Search */}
-      <section className="flex flex-col md:flex-row gap-4">
-        <div className="relative flex-1 group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary/40 group-focus-within:text-primary transition-colors" />
-          <input 
-            type="text" 
-            placeholder="Buscar por nome ou categoria..." 
-            className="w-full h-12 pl-12 pr-4 bg-surface-container-highest/20 rounded-md border border-secondary/10 focus:outline-none focus:border-primary/30 focus:bg-white transition-all font-jakarta text-sm"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        <div className="flex gap-2">
-          {['Todos', 'Massas', 'Recheios', 'Coberturas'].map((cat) => (
-            <button key={cat} className={`h-12 px-4 rounded-md text-xs font-bold uppercase tracking-wider transition-all ${cat === 'Todos' ? 'bg-primary text-white shadow-sm' : 'bg-surface-container-low text-secondary/40 hover:text-secondary'}`}>
-              {cat}
-            </button>
+      {/* Search */}
+      <section className="relative group max-w-xl">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4"
+          style={{ color: 'var(--outline-variant)' }} />
+        <input
+          type="text"
+          placeholder="Buscar por nome ou descrição..."
+          className="input-field pl-12"
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+        />
+      </section>
+
+      {/* Grid */}
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="layer-card h-48 animate-skeleton" style={{ backgroundColor: 'var(--surface-container-low)' }} />
           ))}
         </div>
-      </section>
-
-      {/* Grid of Receitas */}
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-        <AnimatePresence>
-          {loading ? (
-            Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="layer-card h-80 p-6 animate-pulse bg-surface-container-low" />
-            ))
+      ) : filtered.length === 0 ? (
+        /* Empty state */
+        <div className="flex flex-col items-center justify-center py-24 text-center">
+          <div className="w-20 h-20 rounded-full flex items-center justify-center mb-5"
+            style={{ backgroundColor: 'var(--surface-container-low)' }}>
+            <BookOpen className="w-9 h-9" style={{ color: 'var(--outline-variant)' }} />
+          </div>
+          <h3 className="text-xl font-bold mb-2"
+            style={{ fontFamily: 'var(--font-jakarta)', color: 'var(--on-surface)' }}>
+            {searchTerm ? 'Nenhuma receita encontrada' : 'Nenhuma receita ainda'}
+          </h3>
+          <p className="text-sm max-w-xs"
+            style={{ fontFamily: 'var(--font-inter)', color: 'var(--on-surface-variant)' }}>
+            {searchTerm ? 'Tente outra busca.' : 'Crie sua primeira receita com ficha técnica completa.'}
+          </p>
+          {searchTerm ? (
+            <button onClick={() => setSearchTerm('')} className="btn-secondary mt-6">Limpar busca</button>
           ) : (
-            filteredReceitas.map((receita, i) => (
-              <motion.div
-                layout
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: i * 0.1 }}
-                key={receita.id}
-                className="layer-card group hover:scale-[1.02] transition-all duration-500 overflow-hidden cursor-pointer"
-              >
-                <div className="h-24 bg-gradient-to-br from-primary/20 to-surface-container-highest/50 relative overflow-hidden">
-                  <div className="absolute inset-0 opacity-10 blur-xl flex items-center justify-center">
-                    <BookOpen className="w-32 h-32 text-primary" />
-                  </div>
-                  <div className="absolute top-4 right-4 flex gap-2">
-                    <button className="p-2 bg-white/80 hover:bg-white rounded-full transition-colors text-secondary/40 hover:text-error active:scale-95">
-                      <Heart className="w-3.5 h-3.5" />
-                    </button>
-                    <button className="p-2 bg-white/80 hover:bg-white rounded-full transition-colors text-secondary/40 hover:text-primary active:scale-95">
-                      <Share2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="p-6 space-y-4">
-                  <div className="space-y-1">
-                    <h3 className="font-manrope font-bold text-xl text-secondary group-hover:text-primary transition-colors leading-tight">
-                      {receita.nome}
-                    </h3>
-                    <p className="text-sm font-jakarta text-secondary/50 line-clamp-2">{receita.descricao}</p>
-                  </div>
-
-                  <div className="flex items-center gap-6 py-2">
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-[10px] uppercase font-bold text-secondary/30 tracking-widest">Tempo</span>
-                      <div className="flex items-center gap-1.5 text-secondary font-medium">
-                        <Clock className="w-3.5 h-3.5 text-primary/60" />
-                        <span className="text-xs">{receita.tempo_preparo} min</span>
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-[10px] uppercase font-bold text-secondary/30 tracking-widest">Rendimento</span>
-                      <div className="flex items-center gap-1.5 text-secondary font-medium">
-                        <Users className="w-3.5 h-3.5 text-primary/60" />
-                        <span className="text-xs">{receita.rendimento}</span>
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-0.5 ml-auto text-right">
-                      <span className="text-[10px] uppercase font-bold text-secondary/30 tracking-widest">Dificuldade</span>
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full inline-block ${
-                        receita.dificuldade === 'Fácil' ? 'bg-concluido/10 text-concluido' : 
-                        receita.dificuldade === 'Média' ? 'bg-producao/10 text-producao' : 'bg-error/10 text-error'
-                      }`}>
-                        {receita.dificuldade}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="pt-4 border-t border-surface-container-highest/20 flex justify-between items-center group/btn">
-                    <span className="text-sm font-bold text-primary opacity-0 translate-x-[-10px] group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">Ver modo de preparo</span>
-                    <div className="w-8 h-8 rounded-full bg-primary/5 group-hover:bg-primary text-secondary/40 group-hover:text-white flex items-center justify-center transition-all duration-300">
-                      <ArrowRight className="w-4 h-4 translate-x-[-1px]" />
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))
+            <Link href="/receitas/nova" className="btn-primary mt-6">Criar Receita</Link>
           )}
+        </div>
+      ) : (
+        <AnimatePresence>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {filtered.map((receita, i) => (
+              <motion.div
+                key={receita.id}
+                layout
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3, delay: i * 0.06 }}
+              >
+                <Link
+                  href={`/receitas/${receita.id}`}
+                  className="block layer-card group hover:scale-[1.015] transition-all duration-300 overflow-hidden"
+                >
+                  {/* Header card — gradiente de primary-container */}
+                  <div
+                    className="h-20 relative flex items-end px-6 pb-4"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(251,171,188,0.25) 0%, rgba(255,220,194,0.15) 100%)',
+                    }}
+                  >
+                    <div
+                      className="absolute top-4 left-6 w-8 h-8 rounded-lg flex items-center justify-center"
+                      style={{ backgroundColor: 'rgba(251,171,188,0.4)' }}
+                    >
+                      <BookOpen className="w-4 h-4" style={{ color: 'var(--primary)' }} />
+                    </div>
+                  </div>
+
+                  <div className="p-6 space-y-4">
+                    <div>
+                      <h3 className="text-lg font-bold leading-tight mb-1 group-hover:text-primary transition-colors"
+                        style={{ fontFamily: 'var(--font-jakarta)', color: 'var(--on-surface)' }}>
+                        {receita.nome}
+                      </h3>
+                      {receita.descricao && (
+                        <p className="text-sm line-clamp-2"
+                          style={{ fontFamily: 'var(--font-inter)', color: 'var(--on-surface-variant)' }}>
+                          {receita.descricao}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Metadata row */}
+                    <div className="flex items-center gap-6">
+                      {receita.tempo_preparo && (
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-[10px] uppercase font-semibold tracking-widest"
+                            style={{ fontFamily: 'var(--font-inter)', color: 'var(--outline-variant)' }}>
+                            Tempo
+                          </span>
+                          <div className="flex items-center gap-1.5">
+                            <Clock className="w-3.5 h-3.5" style={{ color: 'var(--primary)', opacity: 0.7 }} />
+                            <span className="text-xs font-medium"
+                              style={{ fontFamily: 'var(--font-inter)', color: 'var(--on-surface)' }}>
+                              {receita.tempo_preparo} min
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                      {receita.rendimento && (
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-[10px] uppercase font-semibold tracking-widest"
+                            style={{ fontFamily: 'var(--font-inter)', color: 'var(--outline-variant)' }}>
+                            Rendimento
+                          </span>
+                          <span className="text-xs font-medium"
+                            style={{ fontFamily: 'var(--font-inter)', color: 'var(--on-surface)' }}>
+                            {receita.rendimento}
+                          </span>
+                        </div>
+                      )}
+                      {receita.preco_venda_sugerido != null && (
+                        <div className="flex flex-col gap-0.5 ml-auto text-right">
+                          <span className="text-[10px] uppercase font-semibold tracking-widest"
+                            style={{ fontFamily: 'var(--font-inter)', color: 'var(--outline-variant)' }}>
+                            Preço
+                          </span>
+                          <span className="text-sm font-bold"
+                            style={{ fontFamily: 'var(--font-jakarta)', color: 'var(--primary)' }}>
+                            R$ {Number(receita.preco_venda_sugerido).toFixed(2)}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* CTA subliminar */}
+                    <div className="flex items-center justify-end pt-1">
+                      <div
+                        className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300"
+                        style={{ backgroundColor: 'var(--surface-container-low)' }}
+                      >
+                        <ChevronRight className="w-4 h-4" style={{ color: 'var(--on-surface-variant)' }} />
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
         </AnimatePresence>
-      </section>
+      )}
     </div>
   )
 }
