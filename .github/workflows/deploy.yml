@@ -51,10 +51,17 @@ jobs:
       - name: Lint backend (ruff)
         run: ruff check apps/backend/src
 
-      - name: Run backend tests (pytest)
-        env:
-          PYTHONPATH: apps/backend
-        run: pytest apps/backend/src/test -v
+      - name: Executar testes
+        working-directory: ./apps/backend
+        run: |
+          export PYTHONPATH=src
+          python -m pytest src/test --cov=src --cov-fail-under=80 --cov-report=html -v
+      
+      - name: Upload relatório de cobertura
+        uses: actions/upload-artifact@v4
+        with:
+          name: cobertura-html
+          path: apps/backend/htmlcov
 
   deploy-backend:
     name: Deploy Backend to Vercel (Production)
