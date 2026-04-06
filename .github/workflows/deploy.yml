@@ -213,12 +213,12 @@ jobs:
           printf '{"orgId":"%s","projectId":"%s"}' "${VERCEL_ORG_ID}" "${VERCEL_PROJECT_ID}" > apps/frontend/.vercel/project.json
 
       - name: Pull Vercel environment (frontend)
-        run: vercel pull --yes --environment=production --token=${{ env.VERCEL_TOKEN }} --cwd=apps/frontend --debug
+        run: vercel pull --yes --environment=production --token=${{ env.VERCEL_TOKEN }} --debug
 
       - name: Build frontend artifacts
-        run: vercel build --prod --token=${{ env.VERCEL_TOKEN }} --cwd=apps/frontend
+        run: vercel build --prod --token=${{ env.VERCEL_TOKEN }}
 
       - name: Deploy frontend artifacts
-        run: vercel deploy --prebuilt --prod --token=${{ env.VERCEL_TOKEN }} --cwd=apps/frontend
+        run: vercel deploy --prebuilt --prod --token=${{ env.VERCEL_TOKEN }}
 
 
