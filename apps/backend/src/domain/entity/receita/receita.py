@@ -2,12 +2,22 @@ from datetime import datetime
 
 class Receita:
     def __init__(self):
+        self.__id = None
         self.__nome = None
-        self.__preco = None
+        self.__preco_venda_sugerido = None
         self.__descricao = None
-        self.__dataCriacao = None
         self.__rendimento = None
+        self.__tempo_preparo = None
+        self.__modo_preparo = None
         self.__idUsuario = None
+
+    @property
+    def id(self) -> str:
+        return self.__id
+
+    @id.setter
+    def id(self, valor: str) -> None:
+        self.__id = valor
 
     @property
     def nome(self) -> str:
@@ -15,19 +25,23 @@ class Receita:
 
     @nome.setter
     def nome(self, valor: str) -> None:
-        if(valor.strip()==""):
-            raise("Nome deve ter valor")
+        if valor and valor.strip() == "":
+            raise ValueError("Nome deve ter valor")
         self.__nome = valor
 
     @property
-    def preco(self) -> float:
-        return self.__preco
+    def preco_venda_sugerido(self) -> float:
+        return self.__preco_venda_sugerido
 
-    @preco.setter
-    def preco(self, valor: float) -> None:
+    @preco_venda_sugerido.setter
+    def preco_venda_sugerido(self, valor: float) -> None:
         if valor is not None and valor <= 0:
-            raise ValueError("O preço está invalido")
-        self.__preco = valor
+            raise ValueError("O preço está inválido")
+        self.__preco_venda_sugerido = valor
+
+    @property
+    def preco(self) -> float: # Alias for compatibility if needed
+        return self.__preco_venda_sugerido
 
     @property
     def descricao(self) -> str:
@@ -38,50 +52,36 @@ class Receita:
         self.__descricao = valor
 
     @property
-    def dataCriacao(self) -> datetime:
-        return self.__dataCriacao
-
-    @dataCriacao.setter
-    def dataCriacao(self, valor: datetime) -> None:
-        self.__dataCriacao = valor
-
-    @property
-    def rendimento(self) -> int:
+    def rendimento(self) -> str:
         return self.__rendimento
 
     @rendimento.setter
-    def rendimento(self, valor: int) -> None:
-        if valor is not None and valor <= 0:
-            raise ValueError("O rendimento deve ser maior que zero.")
+    def rendimento(self, valor: str) -> None:
         self.__rendimento = valor
 
-    def consumir(self, quantidade: int) -> None:
-        """Abate porções do rendimento disponível ao processar um pedido.
+    @property
+    def tempo_preparo(self) -> int:
+        return self.__tempo_preparo
 
-        Raises:
-            ValueError: se quantidade for inválida ou se o rendimento
-                        ficar negativo após o consumo.
-        """
-        if quantidade <= 0:
-            raise ValueError("A quantidade a consumir deve ser maior que zero.")
-        if self.__rendimento is None:
-            raise ValueError("Rendimento não definido para esta receita.")
-        if quantidade > self.__rendimento:
-            raise ValueError(
-                f"Rendimento insuficiente: disponível {self.__rendimento}, "
-                f"solicitado {quantidade}."
-            )
-        self.__rendimento -= quantidade
-
-
+    @tempo_preparo.setter
+    def tempo_preparo(self, valor: int) -> None:
+        self.__tempo_preparo = valor
 
     @property
-    def idUsuario(self) ->int:
+    def modo_preparo(self) -> str:
+        return self.__modo_preparo
+
+    @modo_preparo.setter
+    def modo_preparo(self, valor: str) -> None:
+        self.__modo_preparo = valor
+
+    @property
+    def idUsuario(self) -> str:
         return self.__idUsuario
     
     @idUsuario.setter
-    def idUsuario(self,idUsuario:int) -> None:
-        if(idUsuario is None or idUsuario==0):
-            raise("Receita tem que ser atrelada ao usuario")
+    def idUsuario(self, idUsuario: str) -> None:
+        if not idUsuario:
+            raise ValueError("Receita tem que ser atrelada ao usuario")
         self.__idUsuario = idUsuario
 

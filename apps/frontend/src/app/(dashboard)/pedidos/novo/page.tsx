@@ -3,8 +3,9 @@
 import React, { useState } from 'react'
 import { ArrowLeft, Plus, Trash2, Save, CheckCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { createPedido } from '../../../../lib/api'
+import { createPedido, getReceitas } from '../../../../lib/api'
 import { useAuth } from '@clerk/nextjs'
+import { useEffect } from 'react'
 import Link from 'next/link'
 
 const STEPS = ['Cliente', 'Resumo']
@@ -24,7 +25,43 @@ export default function NovoPedidoPage() {
     descricao:     '',
     observacoes:   '',
     preco_total:   '',
+    receita_id:    '',
   })
+
+  const [receitas, setReceitas] = useState<any[]>([])
+  const [loadingReceitas, setLoadingReceitas] = useState(false)
+
+  useEffect(() => {
+    const load = async () => {
+      setLoadingReceitas(true)
+      try {
+        const token = await getToken()
+        if (token) {
+          const data = await getReceitas(token)
+          setReceitas(data)
+        }
+      } catch (e) {
+        console.error('Erro ao carregar receitas:', e)
+      } finally {
+        setLoadingReceitas(false)
+      }
+    }
+    load()
+  }, [getToken])
+
+  const handleSelectReceita = (id: string) => {
+    const r = receitas.find(x => x.id === id)
+    if (r) {
+      setForm(f => ({
+        ...f,
+        receita_id: id,
+        descricao: f.descricao ? f.descricao : r.nome,
+        preco_total: f.preco_total ? f.preco_total : (r.preco_venda_sugerido?.toString() || '')
+      }))
+    } else {
+      update('receita_id', '')
+    }
+  }
 
   const update = (field: string, val: string) => setForm(f => ({ ...f, [field]: val }))
 
@@ -106,6 +143,26 @@ export default function NovoPedidoPage() {
             <h2 className="text-lg font-bold" style={{ fontFamily: 'var(--font-jakarta)', color: 'var(--on-surface)' }}>
               Informações do Cliente e Pedido
             </h2>
+
+            {/* Seletor de Receita */}
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-widest mb-2"
+                style={{ fontFamily: 'var(--font-inter)', color: 'var(--on-surface-variant)' }}>
+                Vincular a uma Receita (Opcional)
+              </label>
+              <select
+                className="input-field"
+                value={form.receita_id}
+                onChange={e => handleSelectReceita(e.target.value)}
+                disabled={loadingReceitas}
+              >
+                <option value="">Nenhuma receita selecionada</option>
+                {receitas.map(r => (
+                  <option key={r.id} value={r.id}>{r.nome}</option>
+                ))}
+              </select>
+              {loadingReceitas && <p className="text-[10px] mt-1 opacity-60">Carregando receitas...</p>}
+            </div>
 
             {[
               { label: 'Nome do Cliente *', field: 'cliente_nome', type: 'text', placeholder: 'Ex: Ana Silva' },

@@ -31,23 +31,62 @@ class PedidoController:
         try:
             pedido = Pedido()
             pedido.cliente_nome = data.cliente_nome
+            pedido.cliente_tel = data.cliente_tel
             pedido.descricao = data.descricao
             pedido.tipo_entrega = data.tipo_entrega
             pedido.data_entrega = data.data_entrega
             pedido.preco_total = data.preco_total
+            pedido.observacoes = data.observacoes
             pedido.user_id = user_id
-            pedido.status = "Pendente"
+            pedido.receita_id = data.receita_id
+            pedido.status = data.status or "pendente"
             
             resultado = self.criar_pedido_use_case.executar(pedido)
             
             return PedidoResponse(
-                id=1, # Mock ID
+                id=str(resultado.id),
                 cliente_nome=resultado.cliente_nome,
+                cliente_tel=resultado.cliente_tel,
                 descricao=resultado.descricao,
                 tipo_entrega=resultado.tipo_entrega,
                 preco_total=resultado.preco_total,
                 data_entrega=resultado.data_entrega,
+                observacoes=resultado.observacoes,
                 user_id=str(resultado.user_id),
+                receita_id=resultado.receita_id,
+                status=resultado.status
+            )
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+    def handle_editar_pedido(self, id: str, data: PedidoCreate, user_id: str) -> PedidoResponse:
+        try:
+            pedido = Pedido()
+            pedido.id = id
+            pedido.cliente_nome = data.cliente_nome
+            pedido.cliente_tel = data.cliente_tel
+            pedido.descricao = data.descricao
+            pedido.tipo_entrega = data.tipo_entrega
+            pedido.data_entrega = data.data_entrega
+            pedido.preco_total = data.preco_total
+            pedido.observacoes = data.observacoes
+            pedido.user_id = user_id
+            pedido.receita_id = data.receita_id
+            pedido.status = data.status or "pendente"
+            
+            resultado = self.editar_pedido_use_case.executar(pedido)
+            
+            return PedidoResponse(
+                id=str(resultado.id),
+                cliente_nome=resultado.cliente_nome,
+                cliente_tel=resultado.cliente_tel,
+                descricao=resultado.descricao,
+                tipo_entrega=resultado.tipo_entrega,
+                preco_total=resultado.preco_total,
+                data_entrega=resultado.data_entrega,
+                observacoes=resultado.observacoes,
+                user_id=str(resultado.user_id),
+                receita_id=resultado.receita_id,
                 status=resultado.status
             )
         except Exception as e:
@@ -58,32 +97,38 @@ class PedidoController:
             pedidos = self.listar_pedidos_use_case.executar(user_id)
             return [
                 PedidoResponse(
-                    id=1, # Mock ID
+                    id=str(p.id),
                     cliente_nome=p.cliente_nome,
+                    cliente_tel=p.cliente_tel,
                     descricao=p.descricao,
                     tipo_entrega=p.tipo_entrega,
                     preco_total=p.preco_total,
                     data_entrega=p.data_entrega,
+                    observacoes=p.observacoes,
                     user_id=str(p.user_id),
+                    receita_id=p.receita_id,
                     status=p.status
                 ) for p in pedidos
             ]
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
-    def handle_buscar_pedido_por_id(self, id: int) -> PedidoResponse:
+    def handle_buscar_pedido_por_id(self, id: str) -> PedidoResponse:
         try:
             p = self.buscar_pedido_por_id_use_case.executar(id)
             if not p:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pedido não encontrado")
             return PedidoResponse(
-                id=id,
+                id=str(p.id),
                 cliente_nome=p.cliente_nome,
+                cliente_tel=p.cliente_tel,
                 descricao=p.descricao,
                 tipo_entrega=p.tipo_entrega,
                 preco_total=p.preco_total,
                 data_entrega=p.data_entrega,
+                observacoes=p.observacoes,
                 user_id=str(p.user_id),
+                receita_id=p.receita_id,
                 status=p.status
             )
         except HTTPException as e:
@@ -91,7 +136,7 @@ class PedidoController:
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
-    def handle_excluir_pedido(self, id: int) -> Dict[str, str]:
+    def handle_excluir_pedido(self, id: str) -> Dict[str, str]:
         try:
             self.excluir_pedido_use_case.executar(id)
             return {"message": "Pedido excluído com sucesso"}

@@ -21,7 +21,7 @@ export default function DetalhesReceitaPage() {
       try {
         const token = await getToken()
         if (token && id) {
-          const data = await getReceita(token, Number(id))
+          const data = await getReceita(token, id as string)
           setReceita(data)
         }
       } catch (e) {
@@ -38,7 +38,7 @@ export default function DetalhesReceitaPage() {
     try {
       const token = await getToken()
       if (token) {
-        await deleteReceita(token, Number(id))
+        await deleteReceita(token, id as string)
         router.push('/receitas')
       }
     } catch (e) { console.error(e) }

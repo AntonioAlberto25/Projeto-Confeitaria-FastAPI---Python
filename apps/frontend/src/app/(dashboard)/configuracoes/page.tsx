@@ -56,7 +56,6 @@ export default function ConfiguracoesPage() {
                 <h3 className="text-lg font-bold text-secondary font-manrope">Preferências de Alerta</h3>
                 <div className="space-y-4">
                    {[
-                     'Notificar quando ingrediente atingir estoque crítico',
                      'Enviar resumo de pedidos do dia por e-mail',
                      'Habilitar som para novos pedidos pendentes',
                    ].map((pref, i) => (

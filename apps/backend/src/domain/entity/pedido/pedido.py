@@ -6,21 +6,24 @@ class Pedido:
     def __init__(self):
         self.__id = None
         self.__cliente_nome = None
+        self.__cliente_tel = None
         self.__descricao = None
+        self.__observacoes = None
         self.__tipo_entrega = None
         self.__preco_total = None
         self.__data_entrega = None
         self.__user_id = None
+        self.__receita_id = None
         self.__status = None
 
     # ── id ──────────────────────────────────────────────────────────────────
 
     @property
-    def id(self) -> int:
+    def id(self) -> str:
         return self.__id
 
     @id.setter
-    def id(self, valor: int) -> None:
+    def id(self, valor: str) -> None:
         self.__id = valor
 
     # ── cliente_nome ─────────────────────────────────────────────────────────
@@ -35,6 +38,16 @@ class Pedido:
             raise ValueError("O nome do cliente é obrigatório.")
         self.__cliente_nome = valor.strip()
 
+    # ── cliente_tel ──────────────────────────────────────────────────────────
+
+    @property
+    def cliente_tel(self) -> str:
+        return self.__cliente_tel
+
+    @cliente_tel.setter
+    def cliente_tel(self, valor: str) -> None:
+        self.__cliente_tel = valor
+
     # ── descricao ────────────────────────────────────────────────────────────
 
     @property
@@ -44,6 +57,16 @@ class Pedido:
     @descricao.setter
     def descricao(self, valor: str) -> None:
         self.__descricao = valor
+
+    # ── observacoes ──────────────────────────────────────────────────────────
+
+    @property
+    def observacoes(self) -> str:
+        return self.__observacoes
+
+    @observacoes.setter
+    def observacoes(self, valor: str) -> None:
+        self.__observacoes = valor
 
     # ── tipo_entrega ─────────────────────────────────────────────────────────
 
@@ -80,11 +103,11 @@ class Pedido:
     # ── user_id ──────────────────────────────────────────────────────────────
 
     @property
-    def user_id(self) -> int:
+    def user_id(self) -> str:
         return self.__user_id
 
     @user_id.setter
-    def user_id(self, valor: int) -> None:
+    def user_id(self, valor: str) -> None:
         self.__user_id = valor
 
     # ── status ───────────────────────────────────────────────────────────────
@@ -96,3 +119,13 @@ class Pedido:
     @status.setter
     def status(self, valor: str) -> None:
         self.__status = valor
+
+    # ── receita_id ───────────────────────────────────────────────────────────
+
+    @property
+    def receita_id(self) -> str:
+        return self.__receita_id
+
+    @receita_id.setter
+    def receita_id(self, valor: str) -> None:
+        self.__receita_id = valor

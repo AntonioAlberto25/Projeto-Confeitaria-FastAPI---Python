@@ -16,12 +16,12 @@ class RepositorioDePedido(ABC):
         pass
 
     @abstractmethod
-    def excluir_pedido(self, id: int) -> None:
+    def excluir_pedido(self, id: str) -> None:
         """Remove um pedido pelo ID."""
         pass
 
     @abstractmethod
-    def buscar_pedido_por_id(self, id: int) -> Optional[Pedido]:
+    def buscar_pedido_por_id(self, id: str) -> Optional[Pedido]:
         """Retorna um pedido pelo seu ID, ou None se não encontrado."""
         pass
 

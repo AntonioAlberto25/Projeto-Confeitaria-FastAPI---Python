@@ -26,15 +26,25 @@ async def listar_meus_pedidos(
 
 @router.get("/{id}", response_model=PedidoResponse)
 async def buscar_por_id(
-    id: int,
+    id: str,
     controller: PedidoController = Depends(get_pedido_controller)
 ):
     """Recupera os detalhes de um pedido específico por seu ID."""
     return controller.handle_buscar_pedido_por_id(id)
 
+@router.put("/{id}", response_model=PedidoResponse)
+async def editar_pedido(
+    id: str,
+    payload: PedidoCreate,
+    user_id: str = Depends(get_current_user_id),
+    controller: PedidoController = Depends(get_pedido_controller)
+):
+    """Edita um pedido existente."""
+    return controller.handle_editar_pedido(id, payload, user_id)
+
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def excluir_pedido(
-    id: int,
+    id: str,
     controller: PedidoController = Depends(get_pedido_controller)
 ):
     """Remove um pedido do sistema pelo identificador."""

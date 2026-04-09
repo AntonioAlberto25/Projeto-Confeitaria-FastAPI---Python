@@ -1,6 +1,7 @@
 from sqlalchemy import Column, String, DateTime
 from datetime import datetime
 from src.infrastructure.persistencia.database import Base
+import uuid
 
 class UserModel(Base):
     """
@@ -9,7 +10,7 @@ class UserModel(Base):
     """
     __tablename__ = "usuarios"
 
-    id = Column(String, primary_key=True)
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     email = Column(String, nullable=False, unique=True)
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=True)

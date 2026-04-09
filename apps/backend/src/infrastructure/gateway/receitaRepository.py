@@ -4,60 +4,105 @@ from src.infrastructure.persistencia.receitaModel import ReceitaModel
 from src.application.gateways.repositorioDeReceita import RepositorioDeReceita
 from typing import Optional, List
 
+import uuid
+
 class ReceitaRepository(RepositorioDeReceita):
     def __init__(self, db: Session):
         self.db = db
 
     def criar_receita(self, receita: Receita) -> Receita:
+        # Gera o ID manualmente
+        novo_id = str(uuid.uuid4())
         receita_model = ReceitaModel(
+            id=novo_id,
             nome=receita.nome,
-            preco=receita.preco,
+            preco_venda_sugerido=receita.preco_venda_sugerido,
             descricao=receita.descricao,
             rendimento=receita.rendimento,
-            id_usuario=str(receita.idUsuario)
+            tempo_preparo=receita.tempo_preparo,
+            modo_preparo=receita.modo_preparo,
+            ingredientes=receita.ingredientes,
+            usuario_id=receita.idUsuario
         )
         self.db.add(receita_model)
         self.db.commit()
         self.db.refresh(receita_model)
+        
+        # O ID é gerado pelo banco (UUID no Supabase)
+        receita.id = receita_model.id
         return receita
 
     def editar_receita(self, receita: Receita) -> Receita:
-        # In a real app we'd fetch first, but this is the implementation of the gateway method
-        # Mapping needs a way to find the record (normally by id)
-        # Assuming we update based on a hypothetical record ID that would be in domain/model
-        # For simplicity in this step, I'll focus on names matching the interface
+        receita_model = self.db.query(ReceitaModel).filter(
+            ReceitaModel.id == str(receita.id),
+            ReceitaModel.usuario_id == receita.idUsuario
+        ).first()
+        
+        if receita_model:
+            receita_model.nome = receita.nome
+            receita_model.preco_venda_sugerido = receita.preco_venda_sugerido
+            receita_model.descricao = receita.descricao
+            receita_model.rendimento = receita.rendimento
+            receita_model.tempo_preparo = receita.tempo_preparo
+            receita_model.modo_preparo = receita.modo_preparo
+            receita_model.ingredientes = receita.ingredientes
+            
+            self.db.commit()
+            self.db.refresh(receita_model)
+        
         return receita
 
     def excluir_receita(self, receita: Receita) -> None:
-        # Implementation of removing from DB
-        pass
+        receita_model = self.db.query(ReceitaModel).filter(
+            ReceitaModel.id == str(receita.id),
+            ReceitaModel.usuario_id == receita.idUsuario
+        ).first()
+        
+        if receita_model:
+            self.db.delete(receita_model)
+            self.db.commit()
 
-    def buscar_por_id(self, id: int) -> Optional[Receita]:
-        model = self.db.query(ReceitaModel).filter(ReceitaModel.id == id).first()
+    def buscar_por_id(self, id: str) -> Optional[Receita]:
+        model = self.db.query(ReceitaModel).filter(ReceitaModel.id == str(id)).first()
         if not model:
             return None
         
         receita = Receita()
         receita.nome = model.nome
-        receita.preco = float(model.preco) if model.preco else None
+        receita.preco_venda_sugerido = float(model.preco_venda_sugerido) if model.preco_venda_sugerido else None
         receita.descricao = model.descricao
         receita.rendimento = model.rendimento
-        receita.idUsuario = model.id_usuario
+        receita.tempo_preparo = model.tempo_preparo
+        receita.modo_preparo = model.modo_preparo
+        receita.ingredientes = model.ingredientes
+        receita.idUsuario = model.usuario_id
         return receita
 
     def listar_por_usuario(self, user_id: str) -> List[Receita]:
-        models = self.db.query(ReceitaModel).filter(ReceitaModel.id_usuario == user_id).all()
+        models = self.db.query(ReceitaModel).filter(ReceitaModel.usuario_id == user_id).all()
         receitas = []
         for model in models:
             receita = Receita()
+            receita.id = model.id
             receita.nome = model.nome
-            # map other fields...
+            receita.preco_venda_sugerido = float(model.preco_venda_sugerido) if model.preco_venda_sugerido else None
+            receita.descricao = model.descricao
+            receita.rendimento = model.rendimento
+            receita.tempo_preparo = model.tempo_preparo
+            receita.modo_preparo = model.modo_preparo
+            receita.ingredientes = model.ingredientes
+            receita.idUsuario = model.usuario_id
             receitas.append(receita)
         return receitas
 
     def buscar_por_nome(self, user_id: str, nome: str) -> List[Receita]:
-        self.db.query(ReceitaModel).filter(
-            ReceitaModel.id_usuario == user_id, 
+        models = self.db.query(ReceitaModel).filter(
+            ReceitaModel.usuario_id == user_id, 
             ReceitaModel.nome.ilike(f"%{nome}%")
         ).all()
-        return [] # logic to return domain objects
+        
+        receitas = []
+        for model in models:
+            r = self.buscar_por_id(model.id)
+            if r: receitas.append(r)
+        return receitas

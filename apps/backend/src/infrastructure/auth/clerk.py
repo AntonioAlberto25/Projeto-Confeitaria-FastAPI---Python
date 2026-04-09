@@ -5,10 +5,6 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
 
-# Constants
-CLERK_JWKS_URL = os.getenv("CLERK_JWKS_URL") # Example: https://clerk.your-domain.com/.well-known/jwks.json
-CLERK_ISSUER = os.getenv("CLERK_ISSUER")     # Example: https://clerk.your-domain.com
-
 # Simple cache for JWKS
 _jwks_cache = None
 _jwks_last_fetch = None
@@ -18,15 +14,16 @@ security = HTTPBearer()
 async def get_jwks():
     global _jwks_cache, _jwks_last_fetch
     
+    clerk_jwks_url = os.getenv("CLERK_JWKS_URL")
     # Cache for 1 hour
     if _jwks_cache and _jwks_last_fetch and datetime.now() < _jwks_last_fetch + timedelta(hours=1):
         return _jwks_cache
         
-    if not CLERK_JWKS_URL:
+    if not clerk_jwks_url:
         raise Exception("CLERK_JWKS_URL environment variable is not set")
         
     async with httpx.AsyncClient() as client:
-        response = await client.get(CLERK_JWKS_URL)
+        response = await client.get(clerk_jwks_url)
         if response.status_code != 200:
             raise Exception("Failed to fetch Clerk JWKS")
         _jwks_cache = response.json()
@@ -63,7 +60,7 @@ async def get_current_user_id(token: HTTPAuthorizationCredentials = Depends(secu
             raw_token,
             public_key,
             algorithms=["RS256"],
-            issuer=CLERK_ISSUER,
+            issuer=os.getenv("CLERK_ISSUER"),
             options={"verify_aud": False} # Validar se o issuer bate c/ Clerk
         )
         

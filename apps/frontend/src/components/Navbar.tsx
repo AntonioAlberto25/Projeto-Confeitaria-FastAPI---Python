@@ -11,7 +11,6 @@ const navItems = [
   { href: '/dashboard', label: 'Início', icon: LayoutDashboard },
   { href: '/pedidos', label: 'Pedidos', icon: ShoppingCart },
   { href: '/receitas', label: 'Receitas', icon: BookText },
-  { href: '/estoque', label: 'Estoque', icon: Package },
 ]
 
 export const Navbar = () => {

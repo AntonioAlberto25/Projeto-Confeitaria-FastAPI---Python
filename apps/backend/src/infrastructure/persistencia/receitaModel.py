@@ -1,16 +1,15 @@
 from sqlalchemy import Column, Integer, String, Text, Numeric
 from src.infrastructure.persistencia.database import Base
+import uuid
 
 class ReceitaModel(Base):
-    """
-    Modelo de persistência para a entidade Receita.
-    O campo id_usuario é o ID do Clerk (string).
-    """
     __tablename__ = "receitas"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4())) # UUID string
     nome = Column(String, nullable=False)
-    preco = Column(Numeric(10, 2), nullable=True)
+    preco_venda_sugerido = Column(Numeric(10, 2), nullable=True)
     descricao = Column(Text, nullable=True)
     rendimento = Column(Integer, nullable=True)
-    id_usuario = Column(String, nullable=False) # Clerk ID
+    tempo_preparo = Column(Integer, nullable=True)
+    modo_preparo = Column(Text, nullable=True)
+    usuario_id = Column(String, nullable=False) # Clerk ID

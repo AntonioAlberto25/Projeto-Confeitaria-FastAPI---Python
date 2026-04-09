@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { ArrowLeft, Edit3, CheckCircle2, Play, XCircle, Calendar, MapPin, ClipboardList } from 'lucide-react'
-import { getPedido, deletePedido } from '../../../../lib/api'
+import { getPedido, updatePedido, deletePedido } from '../../../../lib/api'
 import { useAuth } from '@clerk/nextjs'
 import { StatusBadge } from '../../../../components/ui/StatusBadge'
 import Link from 'next/link'
@@ -20,7 +20,7 @@ export default function DetalhesPedidoPage() {
       try {
         const token = await getToken()
         if (token && id) {
-          const data = await getPedido(token, Number(id))
+          const data = await getPedido(token, id as string)
           setPedido(data)
         }
       } catch (e) {
@@ -32,12 +32,24 @@ export default function DetalhesPedidoPage() {
     load()
   }, [getToken, id])
 
+  const handleStatusChange = async (newStatus: string) => {
+    try {
+      const token = await getToken()
+      if (token) {
+        await updatePedido(token, id as string, { ...pedido, status: newStatus })
+        setPedido({ ...pedido, status: newStatus })
+      }
+    } catch (e) {
+      console.error('Erro ao atualizar status:', e)
+    }
+  }
+
   const handleDelete = async () => {
     if (!confirm('Deseja realmente cancelar este pedido? Esta ação não pode ser desfeita.')) return
     try {
       const token = await getToken()
       if (token) {
-        await deletePedido(token, Number(id))
+        await deletePedido(token, id as string)
         router.push('/pedidos')
       }
     } catch (e) {
@@ -101,12 +113,18 @@ export default function DetalhesPedidoPage() {
           {/* Action buttons */}
           <div className="flex flex-wrap gap-3">
             {pedido.status === 'pendente' && (
-              <button className="btn-primary flex items-center gap-2">
+              <button 
+                onClick={() => handleStatusChange('em_producao')}
+                className="btn-primary flex items-center gap-2"
+              >
                 <Play className="w-4 h-4" /> Iniciar Produção
               </button>
             )}
             {(pedido.status === 'producao' || pedido.status === 'em_producao') && (
-              <button className="btn-primary flex items-center gap-2">
+              <button 
+                onClick={() => handleStatusChange('concluido')}
+                className="btn-primary flex items-center gap-2"
+              >
                 <CheckCircle2 className="w-4 h-4" /> Marcar Concluído
               </button>
             )}

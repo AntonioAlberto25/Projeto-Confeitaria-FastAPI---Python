@@ -103,7 +103,7 @@ export default function LandingPage() {
               }}
             >
               Onde a arte da confeitaria encontra a excelência da gestão profissional. 
-              Pedidos, receitas e estoque em um só lugar.
+              Pedidos e receitas em um só lugar.
             </p>
 
             <div className="flex gap-4 animate-fade-up" style={{ animationDelay: '240ms' }}>

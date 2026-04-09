@@ -26,7 +26,7 @@ async def listar_receitas(
 
 @router.get("/{id}", response_model=ReceitaResponse)
 async def buscar_por_id(
-    id: int,
+    id: str,
     controller: ReceitaController = Depends(get_receita_controller)
 ):
     """Busca os detalhes de uma receita por ID."""
@@ -34,7 +34,7 @@ async def buscar_por_id(
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def excluir_receita(
-    id: int,
+    id: str,
     controller: ReceitaController = Depends(get_receita_controller)
 ):
     """Exclui uma receita pelo seu identificador."""

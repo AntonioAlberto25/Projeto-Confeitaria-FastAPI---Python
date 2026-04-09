@@ -226,58 +226,59 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {/* Sidebar direita — Métricas de Estoque */}
+        {/* Sidebar direita — Receitas Recentes */}
         <section>
           <div className="flex items-center justify-between mb-5">
             <h2
               className="text-xl font-bold tracking-tight"
               style={{ fontFamily: 'var(--font-jakarta)', color: 'var(--on-surface)' }}
             >
-              Visão do Estoque
+              Receitas Recentes
             </h2>
             <Link
-              href="/estoque"
+              href="/receitas"
               className="text-sm font-medium"
               style={{ fontFamily: 'var(--font-jakarta)', color: 'var(--primary)' }}
             >
-              Gerenciar
+              Ver todas
             </Link>
           </div>
 
           <div className="layer-card p-6 flex flex-col gap-6">
-            {/* Doughnut Rings — Signature Component */}
-            <div className="grid grid-cols-3 gap-4">
-              <DonutProgress value={78} level="normal" label="Farinha" sublabel="7,8 kg" />
-              <DonutProgress value={32} level="low"    label="Manteiga" sublabel="3,2 kg" />
-              <DonutProgress value={12} level="critical" label="Açúcar" sublabel="1,2 kg" />
+            <div className="space-y-4">
+              {loading ? (
+                [...Array(3)].map((_, i) => (
+                  <div key={i} className="h-16 rounded-xl animate-skeleton" style={{ backgroundColor: 'var(--surface-container-low)' }} />
+                ))
+              ) : receitas.length === 0 ? (
+                <p className="text-sm text-center py-4" style={{ fontFamily: 'var(--font-inter)', color: 'var(--on-surface-variant)' }}>
+                  Nenhuma receita encontrada
+                </p>
+              ) : (
+                receitas.slice(0, 4).map((receita) => (
+                  <Link 
+                    key={receita.id} 
+                    href={`/receitas`}
+                    className="flex items-center gap-4 p-3 rounded-xl transition-colors hover:bg-[var(--surface-container-low)]"
+                  >
+                    <div className="w-12 h-12 rounded-lg flex items-center justify-center text-xl" style={{ backgroundColor: 'var(--surface-container-highest)' }}>
+                      🍰
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold" style={{ fontFamily: 'var(--font-jakarta)', color: 'var(--on-surface)' }}>
+                        {receita.nome}
+                      </p>
+                      <p className="text-xs" style={{ fontFamily: 'var(--font-inter)', color: 'var(--on-surface-variant)' }}>
+                        R$ {Number(receita.preco_base).toFixed(2)}
+                      </p>
+                    </div>
+                  </Link>
+                ))
+              )}
             </div>
 
-            <div
-              className="rounded-xl p-4"
-              style={{ backgroundColor: 'var(--surface-container-low)' }}
-            >
-              <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ fontFamily: 'var(--font-inter)', color: 'var(--on-surface-variant)' }}>
-                Alertas
-              </p>
-              <div className="space-y-3">
-                {[
-                  { label: 'Açúcar refinado', level: 'Crítico', color: 'var(--error)' },
-                  { label: 'Manteiga extra', level: 'Baixo',   color: 'var(--secondary)' },
-                ].map((alert) => (
-                  <div key={alert.label} className="flex items-center justify-between">
-                    <span className="text-sm" style={{ fontFamily: 'var(--font-inter)', color: 'var(--on-surface)' }}>
-                      {alert.label}
-                    </span>
-                    <span className="text-xs font-semibold" style={{ color: alert.color }}>
-                      {alert.level}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <Link href="/estoque" className="btn-secondary w-full text-center text-sm h-10">
-              Ver estoque completo
+            <Link href="/pedidos/novo" className="btn-primary w-full text-center text-sm h-10 flex items-center justify-center gap-2">
+              <Plus className="w-4 h-4" /> Novo Pedido
             </Link>
           </div>
         </section>

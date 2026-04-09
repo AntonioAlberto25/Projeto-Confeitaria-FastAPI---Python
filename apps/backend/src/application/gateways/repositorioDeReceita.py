@@ -18,7 +18,7 @@ class RepositorioDeReceita(ABC):
         pass
 
     @abstractmethod
-    def buscar_por_id(self, id: int) -> Optional[Receita]:
+    def buscar_por_id(self, id: str) -> Optional[Receita]:
         pass
 
     @abstractmethod

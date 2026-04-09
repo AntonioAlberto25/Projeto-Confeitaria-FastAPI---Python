@@ -11,7 +11,6 @@ const navItems = [
   { href: '/dashboard', label: 'Dashboard',     icon: LayoutDashboard },
   { href: '/pedidos',   label: 'Pedidos',        icon: ShoppingCart },
   { href: '/receitas',  label: 'Receitas',       icon: BookText },
-  { href: '/estoque',   label: 'Estoque',        icon: Package },
   { href: '/perfil',    label: 'Perfil',         icon: User },
   { href: '/configuracoes', label: 'Configurações', icon: Settings },
 ]

@@ -22,8 +22,8 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: 'Gestão Confeitaria | O Ateliê Digital',
-  description: 'Sistema artesanal de gestão para confeitarias premium. Pedidos, receitas e estoque em um só lugar.',
-  keywords: ['confeitaria', 'gestão', 'pedidos', 'receitas', 'estoque'],
+  description: 'Sistema artesanal de gestão para confeitarias premium. Pedidos e receitas em um só lugar.',
+  keywords: ['confeitaria', 'gestão', 'pedidos', 'receitas'],
 }
 
 export const viewport: Viewport = {

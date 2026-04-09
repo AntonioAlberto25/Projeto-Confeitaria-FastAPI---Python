@@ -33,20 +33,22 @@ export default function PedidosPage() {
     load()
   }, [getToken])
 
-  const statusOptions = ['todos', 'pendente', 'producao', 'concluido', 'cancelado']
+  const statusOptions = ['todos', 'pendente', 'em_producao', 'concluido', 'cancelado']
   const statusLabel: Record<string, string> = {
-    todos: 'Todos', pendente: 'Pendente', producao: 'Em Produção',
-    concluido: 'Concluído', cancelado: 'Cancelado',
+    todos: 'Ativos', pendente: 'Pendentes', em_producao: 'Em Produção',
+    concluido: 'Concluídos', cancelado: 'Cancelados',
   }
 
   const filtered = pedidos.filter(p => {
     const matchSearch = !searchTerm ||
       p.cliente_nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.descricao?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      String(p.id).includes(searchTerm)
-    const matchStatus = statusFilter === 'todos' ||
-      p.status === statusFilter ||
-      (statusFilter === 'producao' && p.status === 'em_producao')
+      String(p.id || '').includes(searchTerm)
+
+    const matchStatus = statusFilter === 'todos' 
+      ? p.status !== 'cancelado' 
+      : p.status === statusFilter
+    
     return matchSearch && matchStatus
   })
 
