@@ -1,8 +1,10 @@
-from dotenv import load_dotenv, find_dotenv
-load_dotenv(find_dotenv())
+import src.infrastructure.persistencia.pedidoModel # noqa: F401
+import src.infrastructure.persistencia.receitaModel # noqa: F401
+import src.infrastructure.persistencia.userModel # noqa: F401
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 from src.presentation.routes.health import router as health_router
 from src.presentation.routes.receitas import router as receitas_router
 from src.presentation.routes.pedidos import router as pedidos_router
@@ -10,11 +12,9 @@ from src.presentation.routes.perfil import router as perfil_router
 from src.presentation.routes.webhooks import router as webhooks_router
 
 from src.infrastructure.persistencia.database import engine, Base
-from src.infrastructure.persistencia.pedidoModel import PedidoModel
-from src.infrastructure.persistencia.receitaModel import ReceitaModel
-from src.infrastructure.persistencia.userModel import UserModel
+from dotenv import load_dotenv, find_dotenv
 
-from contextlib import asynccontextmanager
+load_dotenv(find_dotenv())
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

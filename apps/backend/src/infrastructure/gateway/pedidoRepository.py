@@ -110,5 +110,6 @@ class PedidoRepository(RepositorioDePedido):
         pedidos = []
         for model in models:
             p = self.buscar_pedido_por_id(model.id)
-            if p: pedidos.append(p)
+            if p:
+                pedidos.append(p)
         return pedidos

@@ -100,5 +100,6 @@ class ReceitaRepository(RepositorioDeReceita):
         receitas = []
         for model in models:
             r = self.buscar_por_id(model.id)
-            if r: receitas.append(r)
+            if r:
+                receitas.append(r)
         return receitas
