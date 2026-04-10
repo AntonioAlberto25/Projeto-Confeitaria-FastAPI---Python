@@ -34,7 +34,7 @@ def test_pedido_repository_criar():
     pedido.preco_total = Decimal("100.00")
     pedido.user_id = "user_1"
     
-    resultado = repo.save(pedido)
+    resultado = repo.criar_pedido(pedido)
     
     assert db_mock.add.called
     assert db_mock.commit.called
@@ -66,12 +66,20 @@ def test_pedido_repository_buscar_por_id():
     model_mock = Mock()
     model_mock.cliente_nome = "Maria"
     model_mock.preco_total = Decimal("100.00")
-    model_mock.user_id = "user_1"
+    model_mock.usuario_id = "user_1" # Updated field name to match model
+    model_mock.id = "1"
+    model_mock.cliente_telefone = "123"
+    model_mock.descricao = "Desc"
+    model_mock.tipo_entrega = "Entrega"
+    model_mock.data_entrega = "2023-12-31"
+    model_mock.observacoes = "Obs"
+    model_mock.receita_id = "rec1"
+    model_mock.status = "Pendente"
     
     db_mock.query().filter().first.return_value = model_mock
     
     repo = PedidoRepository(db_mock)
-    resultado = repo.find_by_id(1)
+    resultado = repo.buscar_pedido_por_id("1")
     
     assert resultado.cliente_nome == "Maria"
     assert resultado.user_id == "user_1"
