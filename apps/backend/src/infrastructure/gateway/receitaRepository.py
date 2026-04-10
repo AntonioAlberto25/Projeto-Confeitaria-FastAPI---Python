@@ -21,7 +21,6 @@ class ReceitaRepository(RepositorioDeReceita):
             rendimento=receita.rendimento,
             tempo_preparo=receita.tempo_preparo,
             modo_preparo=receita.modo_preparo,
-            ingredientes=receita.ingredientes,
             usuario_id=receita.idUsuario
         )
         self.db.add(receita_model)
@@ -45,7 +44,6 @@ class ReceitaRepository(RepositorioDeReceita):
             receita_model.rendimento = receita.rendimento
             receita_model.tempo_preparo = receita.tempo_preparo
             receita_model.modo_preparo = receita.modo_preparo
-            receita_model.ingredientes = receita.ingredientes
             
             self.db.commit()
             self.db.refresh(receita_model)
@@ -74,7 +72,6 @@ class ReceitaRepository(RepositorioDeReceita):
         receita.rendimento = model.rendimento
         receita.tempo_preparo = model.tempo_preparo
         receita.modo_preparo = model.modo_preparo
-        receita.ingredientes = model.ingredientes
         receita.idUsuario = model.usuario_id
         return receita
 
@@ -90,7 +87,6 @@ class ReceitaRepository(RepositorioDeReceita):
             receita.rendimento = model.rendimento
             receita.tempo_preparo = model.tempo_preparo
             receita.modo_preparo = model.modo_preparo
-            receita.ingredientes = model.ingredientes
             receita.idUsuario = model.usuario_id
             receitas.append(receita)
         return receitas

@@ -3,8 +3,8 @@
 ## 1. Visão Geral do Projeto
 
 **Nome do Projeto:** Sistema de Gestão para Confeitaria  
-**Descrição:** Plataforma para gestão de receitas, pedidos e estoque básico de ingredientes para confeitarias artesanais, com autenticação integrada.  
-**Objetivo Principal:** Fornecer uma API robusta e escalável para suportar o fluxo ponta a ponta: cadastro de insumo -> ficha técnica de receita -> pedido -> baixa de estoque.
+**Descrição:** Plataforma para gestão de receitas e pedidos para confeitarias artesanais, com autenticação integrada.  
+**Objetivo Principal:** Fornecer uma API robusta e escalável para suportar o fluxo ponta a ponta: ficha técnica de receita -> pedido -> painel de produção.
 
 ---
 
@@ -26,43 +26,44 @@ Infrastructure Layer (Repositories/Gateways)
 
 ### 2.2 Estrutura de Diretórios (estado atual)
 
-```
+```text
 Projeto-Confeitaria-Python/
-
- main.py
- readme.md
- docs/
-    prd.md
-    spech_tech.md
-    spech_ui.md
-
- src/
-     application/
-        gateways/
-           repositorioDeReceita.py
-        usecases/
-            receita/
-                criarReceita.py
-     domain/
-        entity/
-            receita/
-                receita.py
-     test/
-         receita/
-             test_Receita.py
-             test_UseCaseReceita.py
+├── .env
+├── docker-compose.yml
+├── docs/
+│   ├── prd.md
+│   ├── spec_tech.md
+│   └── spec_ui.md
+├── apps/
+│   ├── backend/
+│   │   ├── Dockerfile
+│   │   ├── pyproject.toml
+│   │   └── src/
+│   │       ├── application/   (Casos de uso e Interfaces/Gateways)
+│   │       ├── domain/        (Entidades e Regras de negócio Core)
+│   │       ├── infrastructure/(Repositórios Supabase, Webhooks, etc.)
+│   │       ├── presentation/  (Rotas FastAPI e Controllers)
+│   │       ├── test/          (Testes Unitários e Integração)
+│   │       └── main.py
+│   └── frontend/
+│       ├── Dockerfile
+│       ├── package.json
+│       ├── tailwind.config.ts
+│       └── src/
+│           ├── app/           (Next.js App Router - Páginas)
+│           ├── components/    (Componentes reutilizáveis UI da confeitaria)
+│           ├── lib/           (Utilitários e chamadas à API)
+│           └── middleware.ts  (Middleware de Autenticação Clerk)
+└── package.json
 ```
 
 ### 2.3 Estrutura-alvo (incremental)
 
 Adicionar módulos para cobrir o PRD:
 - `domain/entity/pedido/`
-- `domain/entity/ingrediente/`
 - `application/usecases/pedido/`
-- `application/usecases/ingrediente/`
-- `application/usecases/estoque/` (baixa automática/sugerida)
-- `application/gateways/` para pedidos, ingredientes e movimentos de estoque
-- `presentation/routes/` para receitas, pedidos, ingredientes e produção
+- `application/gateways/` para pedidos
+- `presentation/routes/` para receitas, pedidos e produção
 
 ---
 
@@ -78,13 +79,11 @@ Campos mínimos:
 - tempo_preparo
 - rendimento (porções)
 - preco_venda_sugerido
-- ingredientes da receita (ingrediente, unidade, quantidade)
 - usuario_id
 
 Regras:
 - `rendimento` deve ser maior que 0.
 - Leitura de `rendimento` **não pode** alterar estado da entidade.
-- Receita não deve ser salva sem ao menos um ingrediente vinculado.
 
 ### 3.2 Pedido
 
@@ -100,19 +99,6 @@ Regras:
 - Todo pedido nasce com status `Pendente`.
 - Transições permitidas: `Pendente -> Em Producao -> Concluido`.
 - `Cancelado` permitido apenas para pedidos não concluídos.
-
-### 3.3 Ingrediente e Estoque
-
-Campos mínimos:
-- nome
-- unidade_medida (`kg`, `g`, `l`, `ml`, `un`)
-- quantidade_estoque
-- estoque_minimo
-
-Regras:
-- Quantidade em estoque não pode ser negativa.
-- Ao alterar pedido para `Em Producao` ou `Concluido`, calcular consumo com base na ficha técnica e aplicar baixa automática ou sugerida.
-- Registrar movimentação de estoque para auditoria (entrada, saída, ajuste).
 
 ---
 
@@ -133,15 +119,7 @@ Regras:
 - alterar_status_pedido
 - cancelar_pedido
 
-### 4.3 Estoque e Ingredientes
-- criar_ingrediente
-- editar_ingrediente
-- listar_ingredientes
-- ajustar_estoque
-- calcular_consumo_por_pedido
-- aplicar_baixa_estoque_por_status
-
-### 4.4 Produção
+### 4.3 Produção
 - listar_painel_producao_dia
 - listar_painel_producao_semana
 
@@ -152,8 +130,6 @@ Regras:
 Interfaces abstratas recomendadas:
 - `RepositorioDeReceita`
 - `RepositorioDePedido`
-- `RepositorioDeIngrediente`
-- `RepositorioDeMovimentoEstoque`
 
 Responsabilidades:
 - Persistência e consulta de dados.
@@ -184,15 +160,11 @@ POST /pedidos
   -> retornar 201
 ```
 
-### 6.3 Alteração de Status com Baixa de Estoque
+### 6.3 Alteração de Status
 
 ```
 PATCH /pedidos/{id}/status
   -> validar transição de status
-  -> se novo status em (Em Producao, Concluido):
-       calcular consumo por receita x quantidade
-       aplicar baixa automática ou gerar sugestão de baixa
-       registrar movimentos de estoque
   -> persistir novo status
   -> retornar 200
 ```
@@ -256,17 +228,15 @@ A comunicação entre a interface (Next.js) e a API (FastAPI) seguirá os seguin
 
 ### 9.3 Integração
 - Integração FastAPI + repositórios.
-- Fluxo ponta a ponta: ingrediente -> receita -> pedido -> baixa.
+- Fluxo ponta a ponta: receita -> pedido.
 
 ---
 
 ## 10. Roadmap Técnico
 
 ### 10.1 Entregas de Curto Prazo
-- [ ] CRUD de receitas completo.
-- [ ] CRUD de ingredientes e listagem de estoque.
+- [x] CRUD de receitas completo.
 - [ ] CRUD de pedidos com transição de status válida.
-- [ ] Baixa automática/sugerida de estoque por status de pedido.
 
 ### 10.2 Entregas de Médio Prazo
 - [ ] Painel de produção (dia/semana).
@@ -282,6 +252,6 @@ A comunicação entre a interface (Next.js) e a API (FastAPI) seguirá os seguin
 
 ## 11. Versão do Documento
 
-**Versão:** 1.1  
-**Última Atualização:** 2026-03-25  
+**Versão:** 1.2  
+**Última Atualização:** 2026-04-09  
 **Autor:** Equipe de Desenvolvimento

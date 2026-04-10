@@ -52,7 +52,7 @@ class RepositorioDePedidoSQLAlchemy(RepositorioDePedido):
         return PedidoMapper.to_domain(pedido_model)
 
     def listar_por_usuario(self, user_id: int) -> List[Pedido]:
-        pedidos_model = self._session.query(PedidoModel).filter(PedidoModel.user_id == user_id).all()
+        pedidos_model = self._session.query(PedidoModel).filter(PedidoModel.usuario_id == user_id).all()
         return [PedidoMapper.to_domain(pm) for pm in pedidos_model]
 
     def buscar_por_nome_cliente(self, user_id: int, nome_cliente: str) -> List[Pedido]:

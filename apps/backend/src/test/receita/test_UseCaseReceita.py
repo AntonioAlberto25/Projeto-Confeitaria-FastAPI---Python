@@ -11,7 +11,7 @@ def test_criar_receita_chama_repositorio():
     repositorio_mock = Mock()
     receita_fake = Receita()
     receita_fake.nome="Bolo de Chocolate"
-    receita_fake.preco=20.0
+    receita_fake.preco_venda_sugerido=20.0
     receita_fake.rendimento=8
 
     repositorio_mock.criar_receita.return_value = receita_fake

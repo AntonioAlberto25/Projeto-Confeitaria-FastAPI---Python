@@ -16,7 +16,7 @@ class PedidoMapper:
         pedido.tipo_entrega = model.tipo_entrega
         pedido.preco_total = model.preco_total
         pedido.data_entrega = model.data_entrega
-        pedido.user_id = model.user_id
+        pedido.user_id = model.usuario_id
         pedido.status = model.status
         return pedido
 
@@ -32,6 +32,6 @@ class PedidoMapper:
             tipo_entrega=entity.tipo_entrega,
             preco_total=entity.preco_total,
             data_entrega=entity.data_entrega,
-            user_id=entity.user_id,
+            usuario_id=entity.user_id,
             status=entity.status
         )

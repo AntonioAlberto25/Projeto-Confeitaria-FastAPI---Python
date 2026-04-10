@@ -4,7 +4,7 @@ from src.domain.entity.receita.receita import Receita
 def test_preco_invalido():
     receitaNova = Receita()
     with pytest.raises(ValueError):
-        receitaNova.preco=0
+        receitaNova.preco_venda_sugerido=0
 
 def test_rendimento_valido():
     receita = Receita()
@@ -15,8 +15,8 @@ def test_rendimento_valido():
 
 def test_cpf_usuario():
     receitaNova = Receita()
-    receitaNova.idUsuario=2
-    assert receitaNova.idUsuario==2
+    receitaNova.idUsuario="user_2"
+    assert receitaNova.idUsuario=="user_2"
 
 
 # --- consumir() ---

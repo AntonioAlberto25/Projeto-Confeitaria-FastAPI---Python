@@ -37,11 +37,15 @@ class Receita:
     def preco_venda_sugerido(self, valor: float) -> None:
         if valor is not None and valor <= 0:
             raise ValueError("O preço está inválido")
-        self.__preco_venda_sugerido = valor
+        self.__preco_venda_sugerido = float(valor) if valor is not None else None
 
     @property
-    def preco(self) -> float: # Alias for compatibility if needed
+    def preco(self) -> float: # Alias for compatibility
         return self.__preco_venda_sugerido
+
+    @preco.setter
+    def preco(self, valor: float) -> None:
+        self.preco_venda_sugerido = valor
 
     @property
     def descricao(self) -> str:
@@ -52,7 +56,7 @@ class Receita:
         self.__descricao = valor
 
     @property
-    def rendimento(self) -> str:
+    def rendimento(self) -> int:
         return self.__rendimento
 
     @rendimento.setter
@@ -83,5 +87,14 @@ class Receita:
     def idUsuario(self, idUsuario: str) -> None:
         if not idUsuario:
             raise ValueError("Receita tem que ser atrelada ao usuario")
-        self.__idUsuario = idUsuario
+        self.__idUsuario = str(idUsuario)
+
+    def consumir(self, quantidade: int) -> None:
+        if self.rendimento is None:
+            raise ValueError("Rendimento não definido")
+        if quantidade <= 0:
+            raise ValueError("Quantidade deve ser positiva")
+        if quantidade > self.rendimento:
+            raise ValueError("Rendimento insuficiente")
+        self.rendimento -= quantidade
 

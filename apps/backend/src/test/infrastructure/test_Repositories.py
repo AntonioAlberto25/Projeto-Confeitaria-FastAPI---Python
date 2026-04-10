@@ -15,7 +15,7 @@ def test_receita_repository_criar():
     
     receita = Receita()
     receita.nome = "Bolo"
-    receita.preco = 10.0
+    receita.preco_venda_sugerido = 10.0
     receita.idUsuario = "user_1"
     
     resultado = repo.criar_receita(receita)
@@ -45,18 +45,21 @@ def test_receita_repository_buscar_por_id():
     db_mock = MagicMock()
     model_mock = Mock()
     model_mock.nome = "Bolo"
-    model_mock.preco = 10.0
-    model_mock.id_usuario = "user_1"
+    model_mock.preco_venda_sugerido = 10.0
+    model_mock.usuario_id = "user_1"
     model_mock.descricao = "Teste"
     model_mock.rendimento = 10
+    model_mock.tempo_preparo = "1h"
+    model_mock.modo_preparo = "Assar"
     
     db_mock.query().filter().first.return_value = model_mock
     
     repo = ReceitaRepository(db_mock)
-    resultado = repo.buscar_por_id(1)
+    resultado = repo.buscar_por_id("1")
     
     assert resultado.nome == "Bolo"
     assert resultado.idUsuario == "user_1"
+    assert resultado.preco_venda_sugerido == 10.0
 
 def test_pedido_repository_buscar_por_id():
     db_mock = MagicMock()
@@ -81,7 +84,7 @@ def test_receita_sqlalchemy_repository_criar():
     
     receita = Receita()
     receita.nome = "Bolo"
-    receita.preco = 10.0
+    receita.preco_venda_sugerido = 10.0
     receita.idUsuario = "user_1"
     
     repo.criar_receita(receita)
@@ -123,11 +126,14 @@ def test_receita_sqlalchemy_repository_listar():
     repo = RepositorioDeReceitaSQLAlchemy(db_mock)
     
     model_mock = Mock()
+    model_mock.id = "1"
     model_mock.nome = "Bolo"
-    model_mock.preco = 10.0
-    model_mock.id_usuario = "user_1"
+    model_mock.preco_venda_sugerido = 10.5
+    model_mock.usuario_id = "user_1"
     model_mock.descricao = "Teste"
     model_mock.rendimento = 10
+    model_mock.tempo_preparo = "1h"
+    model_mock.modo_preparo = "Assar"
     
     db_mock.query().filter().all.return_value = [model_mock]
     
@@ -135,6 +141,7 @@ def test_receita_sqlalchemy_repository_listar():
     
     assert len(resultado) == 1
     assert resultado[0].nome == "Bolo"
+    assert resultado[0].preco_venda_sugerido == 10.5
 
 def test_pedido_sqlalchemy_repository_listar():
     db_mock = MagicMock()

@@ -70,15 +70,7 @@ export default function DetalhesReceitaPage() {
 
   const toggle = (key: string) => setExpanded(e => ({ ...e, [key]: !e[key] }))
 
-  // Detecta se ingredientes é string JSON
-  let ingredientesList: any[] = []
-  if (receita.ingredientes) {
-    if (Array.isArray(receita.ingredientes)) {
-      ingredientesList = receita.ingredientes
-    } else if (typeof receita.ingredientes === 'string') {
-      try { ingredientesList = JSON.parse(receita.ingredientes) } catch { ingredientesList = [] }
-    }
-  }
+
 
   return (
     <div className="space-y-8 animate-fade-in pb-20 max-w-3xl">
@@ -151,39 +143,7 @@ export default function DetalhesReceitaPage() {
         </div>
       </div>
 
-      {/* Ingredientes — colapsável */}
-      {ingredientesList.length > 0 && (
-        <div className="layer-card overflow-hidden">
-          <button
-            onClick={() => toggle('ing')}
-            className="w-full flex items-center justify-between px-6 py-5"
-          >
-            <h2 className="text-lg font-bold" style={{ fontFamily: 'var(--font-jakarta)', color: 'var(--on-surface)' }}>
-              Ingredientes
-            </h2>
-            {expanded['ing'] ? (
-              <ChevronUp className="w-4 h-4" style={{ color: 'var(--on-surface-variant)' }} />
-            ) : (
-              <ChevronDown className="w-4 h-4" style={{ color: 'var(--on-surface-variant)' }} />
-            )}
-          </button>
-          {expanded['ing'] && (
-            <div className="px-6 pb-6 space-y-2">
-              {ingredientesList.map((ing: any, i: number) => (
-                <div key={i} className="flex justify-between items-center py-3"
-                  style={{ borderTop: i > 0 ? '1px solid rgba(188,185,173,0.12)' : 'none' }}>
-                  <span className="text-sm" style={{ fontFamily: 'var(--font-inter)', color: 'var(--on-surface)' }}>
-                    {ing.nome ?? ing.name ?? `Ingrediente ${i + 1}`}
-                  </span>
-                  <span className="text-sm font-medium" style={{ fontFamily: 'var(--font-inter)', color: 'var(--on-surface-variant)' }}>
-                    {ing.quantidade ?? ing.qty ?? ''} {ing.unidade ?? ing.unit ?? ''}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+
 
       {/* Modo de Preparo */}
       {receita.modo_preparo && (

@@ -14,12 +14,18 @@ from src.infrastructure.persistencia.pedidoModel import PedidoModel
 from src.infrastructure.persistencia.receitaModel import ReceitaModel
 from src.infrastructure.persistencia.userModel import UserModel
 
-# Cria as tabelas no banco de dados se elas não existirem
-Base.metadata.create_all(bind=engine)
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Cria as tabelas no banco de dados se elas não existirem
+    Base.metadata.create_all(bind=engine)
+    yield
 
 app = FastAPI(
     title="Confeitaria API",
     version="0.1.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(

@@ -42,11 +42,11 @@ def test_criar_receita(client):
     # Mock controller response
     mock_controller = Mock()
     mock_response = ReceitaResponse(
-        id=1,
+        id="1",
         nome="Bolo",
-        preco=10.5,
+        preco_venda_sugerido=10.5,
         id_usuario=MOCK_USER_ID,
-        rendimento=10,
+        rendimento="10",
         descricao="Teste"
     )
     mock_controller.handle_criar_receita.return_value = mock_response
@@ -54,8 +54,8 @@ def test_criar_receita(client):
     
     payload = {
         "nome": "Bolo",
-        "preco": 10.5,
-        "rendimento": 10,
+        "preco_venda_sugerido": 10.5,
+        "rendimento": "10",
         "descricao": "Teste"
     }
     response = client.post("/receitas/", json=payload)
@@ -75,11 +75,11 @@ def test_listar_pedidos_empty(client):
 def test_buscar_receita_por_id(client):
     mock_controller = Mock()
     mock_response = ReceitaResponse(
-        id=1,
+        id="1",
         nome="Bolo",
-        preco=10.5,
+        preco_venda_sugerido=10.5,
         id_usuario=MOCK_USER_ID,
-        rendimento=10,
+        rendimento="10",
         descricao="Teste"
     )
     # The actual controller method is handle_buscar_por_id
@@ -93,7 +93,7 @@ def test_buscar_receita_por_id(client):
 def test_criar_pedido(client):
     mock_controller = Mock()
     mock_response = PedidoResponse(
-        id=1,
+        id="1",
         cliente_nome="Maria",
         descricao="Desc",
         tipo_entrega="Entrega",
@@ -119,7 +119,7 @@ def test_criar_pedido(client):
 def test_buscar_pedido_por_id(client):
     mock_controller = Mock()
     mock_response = PedidoResponse(
-        id=1,
+        id="1",
         cliente_nome="Maria",
         descricao="Desc",
         tipo_entrega="Entrega",

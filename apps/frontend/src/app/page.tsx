@@ -158,7 +158,7 @@ export default function LandingPage() {
                 {
                   icon: BookOpen,
                   title: 'Fichas Técnicas',
-                  desc: 'Organize receitas com ingredientes, rendimento e custo estimado. Precisão em cada fornada.',
+                  desc: 'Organize receitas com rendimento e custo estimado. Precisão em cada fornada.',
                   accent: '#ffdcc2',
                   iconColor: '#795f4a',
                 },

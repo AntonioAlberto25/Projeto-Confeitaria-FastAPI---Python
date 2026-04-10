@@ -37,7 +37,6 @@ class ReceitaController:
             receita.rendimento = data.rendimento
             receita.tempo_preparo = data.tempo_preparo
             receita.modo_preparo = data.modo_preparo
-            receita.ingredientes = data.ingredientes
             receita.idUsuario = user_id
             
             resultado = self.criar_receita_use_case.executar(receita)
@@ -50,7 +49,6 @@ class ReceitaController:
                 rendimento=resultado.rendimento,
                 tempo_preparo=resultado.tempo_preparo,
                 modo_preparo=resultado.modo_preparo,
-                ingredientes=resultado.ingredientes,
                 id_usuario=str(resultado.idUsuario)
             )
         except ValueError as e:
@@ -70,7 +68,6 @@ class ReceitaController:
                     rendimento=r.rendimento,
                     tempo_preparo=r.tempo_preparo,
                     modo_preparo=r.modo_preparo,
-                    ingredientes=r.ingredientes,
                     id_usuario=str(r.idUsuario)
                 ) for r in resultado
             ]
@@ -90,7 +87,6 @@ class ReceitaController:
                 rendimento=resultado.rendimento,
                 tempo_preparo=resultado.tempo_preparo,
                 modo_preparo=resultado.modo_preparo,
-                ingredientes=resultado.ingredientes,
                 id_usuario=str(resultado.idUsuario)
             )
         except HTTPException as e:

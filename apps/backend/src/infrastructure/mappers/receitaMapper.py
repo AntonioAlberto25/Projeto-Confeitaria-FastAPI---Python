@@ -12,10 +12,10 @@ class ReceitaMapper:
         receita = Receita()
         # Nota: a entidade de negócio não tem id publico ou mapeado na v1, mas o model tem.
         receita.nome = model.nome
-        receita.preco = model.preco
+        receita.preco_venda_sugerido = model.preco_venda_sugerido
         receita.descricao = model.descricao
         receita.rendimento = model.rendimento
-        receita.idUsuario = model.id_usuario
+        receita.idUsuario = model.usuario_id
         return receita
 
     @staticmethod
@@ -25,8 +25,8 @@ class ReceitaMapper:
         """
         return ReceitaModel(
             nome=entity.nome,
-            preco=entity.preco,
+            preco_venda_sugerido=entity.preco_venda_sugerido,
             descricao=entity.descricao,
             rendimento=entity.rendimento,
-            id_usuario=entity.idUsuario
+            usuario_id=entity.idUsuario
         )

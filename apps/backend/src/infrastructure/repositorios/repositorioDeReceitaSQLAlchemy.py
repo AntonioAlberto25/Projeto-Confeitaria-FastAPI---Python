@@ -66,7 +66,7 @@ class RepositorioDeReceitaSQLAlchemy(RepositorioDeReceita):
         return domain
 
     def listar_por_usuario(self, user_id: int) -> List[Receita]:
-        receitas_model = self._session.query(ReceitaModel).filter(ReceitaModel.id_usuario == user_id).all()
+        receitas_model = self._session.query(ReceitaModel).filter(ReceitaModel.usuario_id == user_id).all()
         result = []
         for rm in receitas_model:
             domain = ReceitaMapper.to_domain(rm)
