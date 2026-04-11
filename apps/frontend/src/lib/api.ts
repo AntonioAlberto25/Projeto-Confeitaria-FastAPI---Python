@@ -13,7 +13,7 @@ const authHeaders = (token: string) => ({
 
 // ─── Health ──────────────────────────────────────────────────────────────────
 export const fetchHealth = async () => {
-  const { data } = await api.get('/health/')
+  const { data } = await api.get('/health')
   return data
 }
 
@@ -42,37 +42,37 @@ export const updateReceita = async (token: string, id: string, receita: any) => 
 }
 // ─── Pedidos ──────────────────────────────────────────────────────────────────
 export const getPedidos = async (token: string) => {
-  const { data } = await api.get('/pedidos/', authHeaders(token))
+  const { data } = await api.get('/pedidos', authHeaders(token))
   return data
 }
 
 export const getPedido = async (token: string, id: string) => {
-  const { data } = await api.get(`/pedidos/${id}/`, authHeaders(token))
+  const { data } = await api.get(`/pedidos/${id}`, authHeaders(token))
   return data
 }
 
 export const createPedido = async (token: string, pedido: any) => {
-  const { data } = await api.post('/pedidos/', pedido, authHeaders(token))
+  const { data } = await api.post('/pedidos', pedido, authHeaders(token))
   return data
 }
 
 export const updatePedido = async (token: string, id: string, pedido: any) => {
-  const { data } = await api.put(`/pedidos/${id}/`, pedido, authHeaders(token))
+  const { data } = await api.put(`/pedidos/${id}`, pedido, authHeaders(token))
   return data
 }
 
 export const deletePedido = async (token: string, id: string) => {
-  await api.delete(`/pedidos/${id}/`, authHeaders(token))
+  await api.delete(`/pedidos/${id}`, authHeaders(token))
 }
 
 // ─── Perfil ───────────────────────────────────────────────────────────────────
 export const getMeuPerfil = async (token: string) => {
-  const { data } = await api.get('/perfil/me/', authHeaders(token))
+  const { data } = await api.get('/perfil/me', authHeaders(token))
   return data
 }
 
 export const sincronizarPerfil = async (token: string, payload: any) => {
-  const { data } = await api.post('/perfil/sincronizar/', payload, authHeaders(token))
+  const { data } = await api.post('/perfil/sincronizar', payload, authHeaders(token))
   return data
 }
 
