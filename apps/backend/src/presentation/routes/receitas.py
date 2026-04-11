@@ -7,7 +7,7 @@ from typing import List
 
 router = APIRouter(prefix="/receitas", tags=["receitas"])
 
-@router.post("/", response_model=ReceitaResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=ReceitaResponse, status_code=status.HTTP_201_CREATED)
 async def criar_receita(
     payload: ReceitaCreate, 
     user_id: str = Depends(get_current_user_id),
@@ -16,7 +16,7 @@ async def criar_receita(
     """Cria uma nova receita para o usuário autenticado via Clerk."""
     return controller.handle_criar_receita(payload, user_id)
 
-@router.get("/", response_model=List[ReceitaResponse])
+@router.get("", response_model=List[ReceitaResponse])
 async def listar_receitas(
     user_id: str = Depends(get_current_user_id),
     controller: ReceitaController = Depends(get_receita_controller)

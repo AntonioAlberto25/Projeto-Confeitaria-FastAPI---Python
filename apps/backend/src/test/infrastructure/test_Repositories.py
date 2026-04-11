@@ -49,7 +49,7 @@ def test_receita_repository_buscar_por_id():
     model_mock.usuario_id = "user_1"
     model_mock.descricao = "Teste"
     model_mock.rendimento = 10
-    model_mock.tempo_preparo = "1h"
+    model_mock.tempo_preparo = 60
     model_mock.modo_preparo = "Assar"
     
     db_mock.query().filter().first.return_value = model_mock

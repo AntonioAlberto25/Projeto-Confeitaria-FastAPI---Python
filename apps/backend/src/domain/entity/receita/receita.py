@@ -59,7 +59,7 @@ class Receita:
         return self.__rendimento
 
     @rendimento.setter
-    def rendimento(self, valor: str) -> None:
+    def rendimento(self, valor: int) -> None:
         self.__rendimento = valor
 
     @property

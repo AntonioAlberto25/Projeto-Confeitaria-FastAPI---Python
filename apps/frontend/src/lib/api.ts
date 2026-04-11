@@ -19,22 +19,22 @@ export const fetchHealth = async () => {
 
 // ─── Receitas ─────────────────────────────────────────────────────────────────
 export const getReceitas = async (token: string) => {
-  const { data } = await api.get('/receitas/', authHeaders(token))
+  const { data } = await api.get('/receitas', authHeaders(token))
   return data
 }
 
 export const getReceita = async (token: string, id: string) => {
-  const { data } = await api.get(`/receitas/${id}/`, authHeaders(token))
+  const { data } = await api.get(`/receitas/${id}`, authHeaders(token))
   return data
 }
 
 export const createReceita = async (token: string, receita: any) => {
-  const { data } = await api.post('/receitas/', receita, authHeaders(token))
+  const { data } = await api.post('/receitas', receita, authHeaders(token))
   return data
 }
 
 export const deleteReceita = async (token: string, id: string) => {
-  await api.delete(`/receitas/${id}/`, authHeaders(token))
+  await api.delete(`/receitas/${id}`, authHeaders(token))
 }
 
 // ─── Pedidos ──────────────────────────────────────────────────────────────────

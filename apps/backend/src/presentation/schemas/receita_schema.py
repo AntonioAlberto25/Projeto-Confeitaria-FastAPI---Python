@@ -5,7 +5,7 @@ class ReceitaBase(BaseModel):
     nome: str = Field(..., min_length=1)
     preco_venda_sugerido: Optional[float] = Field(None, gt=0)
     descricao: Optional[str] = None
-    rendimento: Optional[str] = None
+    rendimento: Optional[int] = None
     tempo_preparo: Optional[int] = None
     modo_preparo: Optional[str] = None
 

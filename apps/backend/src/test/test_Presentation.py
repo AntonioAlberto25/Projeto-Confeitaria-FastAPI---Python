@@ -34,7 +34,7 @@ def test_listar_receitas_empty(client):
     mock_controller.handle_listar_receitas.return_value = []
     app.dependency_overrides[get_receita_controller] = lambda: mock_controller
     
-    response = client.get("/receitas/")
+    response = client.get("/receitas")
     assert response.status_code == 200
     assert response.json() == []
 
@@ -58,7 +58,7 @@ def test_criar_receita(client):
         "rendimento": "10",
         "descricao": "Teste"
     }
-    response = client.post("/receitas/", json=payload)
+    response = client.post("/receitas", json=payload)
     assert response.status_code == 201
     assert response.json()["nome"] == "Bolo"
 

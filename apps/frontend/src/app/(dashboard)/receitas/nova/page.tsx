@@ -37,8 +37,8 @@ export default function NovaReceitaPage() {
         tempo_preparo: form.tempo_preparo ? parseInt(form.tempo_preparo) : undefined,
         preco_venda_sugerido: form.preco_venda_sugerido ? parseFloat(form.preco_venda_sugerido) : undefined,
       }
-      const created = await createReceita(token, payload)
-      router.push(`/receitas/${created.id}`)
+      await createReceita(token, payload)
+      router.push('/receitas')
     } catch (e: any) {
       setError(e?.response?.data?.detail ?? 'Erro ao criar receita. Tente novamente.')
       setSaving(false)
