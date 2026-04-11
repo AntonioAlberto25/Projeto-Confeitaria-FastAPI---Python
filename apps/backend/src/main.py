@@ -2,6 +2,7 @@ import src.infrastructure.persistencia.pedidoModel # noqa: F401
 import src.infrastructure.persistencia.receitaModel # noqa: F401
 import src.infrastructure.persistencia.userModel # noqa: F401
 
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
@@ -28,15 +29,23 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Configuração de CORS para permitir comunicações entre subdomínios da Vercel
+allowed_origins = [
+    "https://projetoconfeitaria-frontend.vercel.app",
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:3001",
+]
+
+# Permite adicionar origens via variável de ambiente (separadas por vírgula)
+env_origins = os.getenv("ALLOWED_ORIGINS")
+if env_origins:
+    allowed_origins.extend([o.strip() for o in env_origins.split(",")])
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://projetoconfeitaria-frontend.vercel.app",
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:3001",
-    ],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
