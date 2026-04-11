@@ -32,6 +32,16 @@ async def buscar_por_id(
     """Busca os detalhes de uma receita por ID."""
     return controller.handle_buscar_por_id(id)
 
+@router.put("/{id}", response_model=ReceitaResponse)
+async def editar_receita(
+    id: str,
+    payload: ReceitaCreate,
+    user_id: str = Depends(get_current_user_id),
+    controller: ReceitaController = Depends(get_receita_controller)
+):
+    """Edita uma receita existente do usuário autenticado."""
+    return controller.handle_editar_receita(id, payload, user_id)
+
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def excluir_receita(
     id: str,

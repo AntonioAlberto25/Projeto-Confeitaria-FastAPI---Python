@@ -222,7 +222,7 @@ export default function DetalhesPedidoPage() {
               </p>
               <p className="text-4xl font-bold tracking-tight"
                 style={{ fontFamily: 'var(--font-jakarta)', color: 'var(--primary)' }}>
-                R$ {Number(pedido.preco_total).toFixed(2)}
+                R$ {pedido.preco_total ? Number(pedido.preco_total).toFixed(2) : '0.00'}
               </p>
             </div>
           )}

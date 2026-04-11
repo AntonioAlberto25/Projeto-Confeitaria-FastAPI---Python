@@ -36,7 +36,10 @@ export const createReceita = async (token: string, receita: any) => {
 export const deleteReceita = async (token: string, id: string) => {
   await api.delete(`/receitas/${id}`, authHeaders(token))
 }
-
+export const updateReceita = async (token: string, id: string, receita: any) => {
+  const { data } = await api.put(`/receitas/${id}`, receita, authHeaders(token))
+  return data
+}
 // ─── Pedidos ──────────────────────────────────────────────────────────────────
 export const getPedidos = async (token: string) => {
   const { data } = await api.get('/pedidos/', authHeaders(token))

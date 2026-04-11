@@ -46,7 +46,7 @@ def test_criar_receita(client):
         nome="Bolo",
         preco_venda_sugerido=10.5,
         id_usuario=MOCK_USER_ID,
-        rendimento="10",
+        rendimento=10,
         descricao="Teste"
     )
     mock_controller.handle_criar_receita.return_value = mock_response
@@ -55,7 +55,7 @@ def test_criar_receita(client):
     payload = {
         "nome": "Bolo",
         "preco_venda_sugerido": 10.5,
-        "rendimento": "10",
+        "rendimento": 10,
         "descricao": "Teste"
     }
     response = client.post("/receitas", json=payload)
@@ -79,7 +79,7 @@ def test_buscar_receita_por_id(client):
         nome="Bolo",
         preco_venda_sugerido=10.5,
         id_usuario=MOCK_USER_ID,
-        rendimento="10",
+        rendimento=10,
         descricao="Teste"
     )
     # The actual controller method is handle_buscar_por_id
@@ -134,4 +134,28 @@ def test_buscar_pedido_por_id(client):
     response = client.get("/pedidos/1")
     assert response.status_code == 200
     assert response.json()["cliente_nome"] == "Maria"
+
+def test_editar_receita(client):
+    mock_controller = Mock()
+    mock_response = ReceitaResponse(
+        id="1",
+        nome="Bolo editado",
+        preco_venda_sugerido=15.0,
+        id_usuario=MOCK_USER_ID,
+        rendimento=12,
+        descricao="Teste editado"
+    )
+    mock_controller.handle_editar_receita.return_value = mock_response
+    app.dependency_overrides[get_receita_controller] = lambda: mock_controller
+    
+    payload = {
+        "nome": "Bolo editado",
+        "preco_venda_sugerido": 15.0,
+        "rendimento": 12,
+        "descricao": "Teste editado"
+    }
+    response = client.put("/receitas/1", json=payload)
+    assert response.status_code == 200
+    assert response.json()["nome"] == "Bolo editado"
+    assert response.json()["preco_venda_sugerido"] == 15.0
 

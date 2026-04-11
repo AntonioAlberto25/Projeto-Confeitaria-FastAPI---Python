@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
-import { ArrowLeft, Clock, Users, BookOpen, ChevronDown, ChevronUp, Trash2 } from 'lucide-react'
+import { ArrowLeft, Clock, Users, BookOpen, ChevronDown, ChevronUp, Trash2, Edit3 } from 'lucide-react'
 import { getReceita, deleteReceita } from '../../../../lib/api'
 import { useAuth } from '@clerk/nextjs'
 import Link from 'next/link'
@@ -15,6 +15,17 @@ export default function DetalhesReceitaPage() {
   const [receita, setReceita] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [expanded, setExpanded] = useState<Record<string, boolean>>({})
+
+  const formatPrice = (value: any) => {
+    if (value == null || value === '') return null
+    const normalized = String(value)
+      .trim()
+      .replace(/[^0-9,.-]/g, '')
+      .replace(',', '.')
+
+    const numberValue = parseFloat(normalized)
+    return Number.isFinite(numberValue) ? `R$ ${numberValue.toFixed(2)}` : null
+  }
 
   useEffect(() => {
     const load = async () => {
@@ -75,18 +86,26 @@ export default function DetalhesReceitaPage() {
   return (
     <div className="space-y-8 animate-fade-in pb-20 max-w-3xl">
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <Link href="/receitas" className="inline-flex items-center gap-2 text-sm"
           style={{ fontFamily: 'var(--font-jakarta)', color: 'var(--on-surface-variant)' }}>
-          <ArrowLeft className="w-4 h-4" /> Acervo de Receitas
+          <ArrowLeft className="w-4 h-4" /> Receitas Disponiveis
         </Link>
-        <button
-          onClick={handleDelete}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all"
-          style={{ color: 'var(--error)', border: '1.5px solid rgba(179,57,56,0.20)', fontFamily: 'var(--font-jakarta)' }}
-        >
-          <Trash2 className="w-3.5 h-3.5" /> Excluir
-        </button>
+        <div className="flex items-center gap-3">
+          <Link
+            href={`/receitas/${id}/editar`}
+            className="btn-secondary flex items-center gap-2"
+          >
+            <Edit3 className="w-3.5 h-3.5" /> Editar
+          </Link>
+          <button
+            onClick={handleDelete}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all"
+            style={{ color: 'var(--error)', border: '1.5px solid rgba(179,57,56,0.20)', fontFamily: 'var(--font-jakarta)' }}
+          >
+            <Trash2 className="w-3.5 h-3.5" /> Excluir
+          </button>
+        </div>
       </div>
 
       {/* Header card — receita "card" estilo editorial */}
@@ -131,11 +150,11 @@ export default function DetalhesReceitaPage() {
                 </span>
               </div>
             )}
-            {receita.preco_venda_sugerido != null && (
+            {formatPrice(receita.preco_venda_sugerido) && (
               <div className="flex items-center gap-2 px-4 py-2 rounded-full"
                 style={{ backgroundColor: 'rgba(252,238,179,0.40)' }}>
                 <span className="text-xs font-semibold" style={{ fontFamily: 'var(--font-jakarta)', color: 'var(--tertiary)' }}>
-                  R$ {Number(receita.preco_venda_sugerido).toFixed(2)}
+                  {formatPrice(receita.preco_venda_sugerido)}
                 </span>
               </div>
             )}

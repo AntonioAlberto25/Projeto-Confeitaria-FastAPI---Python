@@ -1,11 +1,12 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Plus, Search, BookOpen, Clock, ChevronRight } from 'lucide-react'
+import { Plus, Search, BookOpen, Clock, ChevronRight, Edit3 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { getReceitas } from '../../../lib/api'
 import { useAuth } from '@clerk/nextjs'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 export default function ReceitasPage() {
   const { getToken } = useAuth()
@@ -37,6 +38,19 @@ export default function ReceitasPage() {
     r.descricao?.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
+  const router = useRouter()
+
+  const formatPrice = (value: any) => {
+    if (value == null || value === '') return null
+    const normalized = String(value)
+      .trim()
+      .replace(/[^0-9,.-]/g, '')
+      .replace(',', '.')
+
+    const numberValue = parseFloat(normalized)
+    return Number.isFinite(numberValue) ? `R$ ${numberValue.toFixed(2)}` : null
+  }
+
   return (
     <div className="space-y-10 animate-fade-in pb-20">
 
@@ -49,7 +63,7 @@ export default function ReceitasPage() {
           </p>
           <h1 className="text-3xl lg:text-4xl font-bold tracking-tight"
             style={{ fontFamily: 'var(--font-jakarta)', color: 'var(--on-surface)' }}>
-            Acervo de Receitas
+            Receitas Disponiveis
           </h1>
         </div>
         <Link href="/receitas/nova" className="btn-primary flex items-center gap-2">
@@ -110,26 +124,27 @@ export default function ReceitasPage() {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3, delay: i * 0.06 }}
               >
-                <Link
-                  href={`/receitas/${receita.id}`}
-                  className="block layer-card group hover:scale-[1.015] transition-all duration-300 overflow-hidden"
-                >
-                  {/* Header card — gradiente de primary-container */}
-                  <div
-                    className="h-20 relative flex items-end px-6 pb-4"
-                    style={{
-                      background: 'linear-gradient(135deg, rgba(251,171,188,0.25) 0%, rgba(255,220,194,0.15) 100%)',
-                    }}
+                <div className="relative">
+                  <Link
+                    href={`/receitas/${receita.id}`}
+                    className="block layer-card group hover:scale-[1.015] transition-all duration-300 overflow-hidden"
                   >
+                    {/* Header card — gradiente de primary-container */}
                     <div
-                      className="absolute top-4 left-6 w-8 h-8 rounded-lg flex items-center justify-center"
-                      style={{ backgroundColor: 'rgba(251,171,188,0.4)' }}
+                      className="h-20 relative flex items-end px-6 pb-4"
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(251,171,188,0.25) 0%, rgba(255,220,194,0.15) 100%)',
+                      }}
                     >
-                      <BookOpen className="w-4 h-4" style={{ color: 'var(--primary)' }} />
+                      <div
+                        className="absolute top-4 left-6 w-8 h-8 rounded-lg flex items-center justify-center"
+                        style={{ backgroundColor: 'rgba(251,171,188,0.4)' }}
+                      >
+                        <BookOpen className="w-4 h-4" style={{ color: 'var(--primary)' }} />
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="p-6 space-y-4">
+                    <div className="p-6 space-y-4">
                     <div>
                       <h3 className="text-lg font-bold leading-tight mb-1 group-hover:text-primary transition-colors"
                         style={{ fontFamily: 'var(--font-jakarta)', color: 'var(--on-surface)' }}>
@@ -172,7 +187,7 @@ export default function ReceitasPage() {
                           </span>
                         </div>
                       )}
-                      {receita.preco_venda_sugerido != null && (
+                      {formatPrice(receita.preco_venda_sugerido) && (
                         <div className="flex flex-col gap-0.5 ml-auto text-right">
                           <span className="text-[10px] uppercase font-semibold tracking-widest"
                             style={{ fontFamily: 'var(--font-inter)', color: 'var(--outline-variant)' }}>
@@ -180,7 +195,7 @@ export default function ReceitasPage() {
                           </span>
                           <span className="text-sm font-bold"
                             style={{ fontFamily: 'var(--font-jakarta)', color: 'var(--primary)' }}>
-                            R$ {Number(receita.preco_venda_sugerido).toFixed(2)}
+                            {formatPrice(receita.preco_venda_sugerido)}
                           </span>
                         </div>
                       )}
@@ -197,7 +212,20 @@ export default function ReceitasPage() {
                     </div>
                   </div>
                 </Link>
-              </motion.div>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    router.push(`/receitas/${receita.id}/editar`)
+                  }}
+                  className="absolute top-4 right-4 z-10 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/90 px-3 py-2 text-xs font-semibold text-slate-900 shadow-sm transition hover:bg-white"
+                >
+                  <Edit3 className="w-3.5 h-3.5" />
+                  Editar
+                </button>
+              </div>
+            </motion.div>
             ))}
           </div>
         </AnimatePresence>

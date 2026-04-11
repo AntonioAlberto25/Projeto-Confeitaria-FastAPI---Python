@@ -269,7 +269,7 @@ export default function DashboardPage() {
                         {receita.nome}
                       </p>
                       <p className="text-xs" style={{ fontFamily: 'var(--font-inter)', color: 'var(--on-surface-variant)' }}>
-                        R$ {Number(receita.preco_base).toFixed(2)}
+                        {receita.preco_venda_sugerido ? `R$ ${Number(receita.preco_venda_sugerido).toFixed(2)}` : 'Preço não definido'}
                       </p>
                     </div>
                   </Link>

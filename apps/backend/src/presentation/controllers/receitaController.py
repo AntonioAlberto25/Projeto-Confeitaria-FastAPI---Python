@@ -1,4 +1,8 @@
 from fastapi import HTTPException, status
+import logging
+
+logger = logging.getLogger(__name__)
+
 from src.application.usecases.receita.criarReceita import CriarReceita
 # Import other use cases
 from src.application.usecases.receita.editarReceita import EditarReceita
@@ -54,6 +58,7 @@ class ReceitaController:
         except ValueError as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
         except Exception as e:
+            logger.exception(f"Erro ao criar receita: {e}")
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Erro ao criar receita: {str(e)}")
 
     def handle_listar_receitas(self, user_id: str) -> List[ReceitaResponse]:
@@ -92,6 +97,36 @@ class ReceitaController:
         except HTTPException as e:
             raise e
         except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+    def handle_editar_receita(self, id: str, data: ReceitaCreate, user_id: str) -> ReceitaResponse:
+        try:
+            receita = Receita()
+            receita.id = id
+            receita.nome = data.nome
+            receita.preco_venda_sugerido = data.preco_venda_sugerido
+            receita.descricao = data.descricao
+            receita.rendimento = data.rendimento
+            receita.tempo_preparo = data.tempo_preparo
+            receita.modo_preparo = data.modo_preparo
+            receita.idUsuario = user_id
+
+            resultado = self.editar_receita_use_case.executar(receita)
+
+            return ReceitaResponse(
+                id=str(resultado.id),
+                nome=resultado.nome,
+                preco_venda_sugerido=resultado.preco_venda_sugerido,
+                descricao=resultado.descricao,
+                rendimento=resultado.rendimento,
+                tempo_preparo=resultado.tempo_preparo,
+                modo_preparo=resultado.modo_preparo,
+                id_usuario=str(resultado.idUsuario)
+            )
+        except ValueError as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        except Exception as e:
+            logger.exception(f"Erro ao editar receita: {e}")
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
     def handle_excluir_receita(self, id: str) -> Dict[str, str]:
