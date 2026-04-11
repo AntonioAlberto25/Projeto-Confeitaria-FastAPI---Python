@@ -12,7 +12,7 @@ where = ["src"]
 name = "confeitaria-backend"
 version = "0.1.0"
 description = "Backend API for Confeitaria"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
     "fastapi==0.115.0",
     "uvicorn[standard]==0.30.6",
