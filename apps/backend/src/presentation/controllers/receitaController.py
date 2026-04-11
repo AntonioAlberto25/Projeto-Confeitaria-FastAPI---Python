@@ -1,7 +1,6 @@
-from fastapi import HTTPException, status
 import logging
-
-logger = logging.getLogger(__name__)
+from fastapi import HTTPException, status
+from typing import Dict, List
 
 from src.application.usecases.receita.criarReceita import CriarReceita
 # Import other use cases
@@ -13,7 +12,8 @@ from src.application.usecases.receita.buscarReceitaPorNome import BuscarReceitaP
 
 from src.domain.entity.receita.receita import Receita
 from src.presentation.schemas.receita_schema import ReceitaCreate, ReceitaResponse
-from typing import Dict, List
+
+logger = logging.getLogger(__name__)
 
 class ReceitaController:
     def __init__(
