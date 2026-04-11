@@ -1,19 +1,18 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "src/main.py",
-      "use": "@vercel/python",
-      "config": {
-        "pythonVersion": "3.11",
-        "includeFiles": ["src/**", "pyproject.toml"]
-      }
+  "functions": {
+    "src/main.py": {
+      "runtime": "@vercel/python",
+      "maxDuration": 10
     }
-  ],
+  },
   "routes": [
     {
       "src": "/(.*)",
       "dest": "src/main.py"
     }
-  ]
+  ],
+  "env": {
+    "VERCEL_PYTHON_PACKAGE_MANAGER": "pip"
+  }
 }
