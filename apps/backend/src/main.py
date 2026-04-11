@@ -2,6 +2,7 @@ import src.infrastructure.persistencia.pedidoModel # noqa: F401
 import src.infrastructure.persistencia.receitaModel # noqa: F401
 import src.infrastructure.persistencia.userModel # noqa: F401
 
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
@@ -28,10 +29,22 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# TODO: Em produção, substitua "*" pelos domínios específicos para maior segurança
+# Configuração de CORS: Autoriza o frontend oficial e variações comuns
+allowed_origins = [
+    "https://projetoconfeitaria-frontend.vercel.app",
+    "https://projetoconfetaria-frontend.vercel.app", # Variação sem 'i' flagrada nos logs
+    "http://localhost:3000",
+    "http://localhost:3001",
+]
+
+# Permite adicionar origens via variável de ambiente no painel da Vercel
+env_origins = os.getenv("ALLOWED_ORIGINS")
+if env_origins:
+    allowed_origins.extend([o.strip() for o in env_origins.split(",")])
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
