@@ -1,15 +1,16 @@
 import logging
-from fastapi import HTTPException, status
 from typing import Dict, List
+from fastapi import HTTPException, status
 
+# Use cases
 from src.application.usecases.receita.criarReceita import CriarReceita
-# Import other use cases
 from src.application.usecases.receita.editarReceita import EditarReceita
 from src.application.usecases.receita.excluirReceita import ExcluirReceita
 from src.application.usecases.receita.listarReceitas import ListarReceitas
 from src.application.usecases.receita.buscarReceitaPorId import BuscarReceitaPorId
 from src.application.usecases.receita.buscarReceitaPorNome import BuscarReceitaPorNome
 
+# Domain and schemas
 from src.domain.entity.receita.receita import Receita
 from src.presentation.schemas.receita_schema import ReceitaCreate, ReceitaResponse
 
