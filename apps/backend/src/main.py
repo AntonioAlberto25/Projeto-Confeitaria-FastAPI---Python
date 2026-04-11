@@ -2,7 +2,6 @@ import src.infrastructure.persistencia.pedidoModel # noqa: F401
 import src.infrastructure.persistencia.receitaModel # noqa: F401
 import src.infrastructure.persistencia.userModel # noqa: F401
 
-import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
