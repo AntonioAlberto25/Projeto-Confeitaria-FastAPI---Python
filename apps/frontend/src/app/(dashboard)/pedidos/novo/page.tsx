@@ -65,6 +65,16 @@ export default function NovoPedidoPage() {
 
   const update = (field: string, val: string) => setForm(f => ({ ...f, [field]: val }))
 
+  // Máscara para telefone brasileiro: (XX) XXXXX-XXXX
+  const applyPhoneMask = (value: string): string => {
+    // Remove tudo que não é dígito
+    const digits = value.replace(/\D/g, '').slice(0, 11)
+    if (digits.length === 0) return ''
+    if (digits.length <= 2) return `(${digits}`
+    if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`
+  }
+
   const canNext = step === 0 ? form.cliente_nome.trim() !== '' : true
 
   const handleSubmit = async () => {
@@ -180,7 +190,14 @@ export default function NovoPedidoPage() {
                   placeholder={f.placeholder}
                   className="input-field"
                   value={(form as any)[f.field]}
-                  onChange={e => update(f.field, e.target.value)}
+                  onChange={e => {
+                    if (f.field === 'cliente_tel') {
+                      update(f.field, applyPhoneMask(e.target.value))
+                    } else {
+                      update(f.field, e.target.value)
+                    }
+                  }}
+                  maxLength={f.field === 'cliente_tel' ? 15 : undefined}
                 />
               </div>
             ))}
