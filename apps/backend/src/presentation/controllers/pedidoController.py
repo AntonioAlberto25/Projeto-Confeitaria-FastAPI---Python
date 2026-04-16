@@ -34,12 +34,15 @@ class PedidoController:
             pedido.cliente_tel = data.cliente_tel
             pedido.descricao = data.descricao
             pedido.tipo_entrega = data.tipo_entrega
+            pedido.endereco_entrega = data.endereco_entrega
             pedido.data_entrega = data.data_entrega
             pedido.preco_total = data.preco_total
             pedido.observacoes = data.observacoes
             pedido.user_id = user_id
             pedido.receita_id = data.receita_id
             pedido.status = data.status or "pendente"
+            pedido.data_inicio_producao = data.data_inicio_producao
+            pedido.data_conclusao = data.data_conclusao
             
             resultado = self.criar_pedido_use_case.executar(pedido)
             
@@ -49,12 +52,16 @@ class PedidoController:
                 cliente_tel=resultado.cliente_tel,
                 descricao=resultado.descricao,
                 tipo_entrega=resultado.tipo_entrega,
+                endereco_entrega=resultado.endereco_entrega,
                 preco_total=resultado.preco_total,
                 data_entrega=resultado.data_entrega,
                 observacoes=resultado.observacoes,
                 user_id=str(resultado.user_id),
                 receita_id=resultado.receita_id,
-                status=resultado.status
+                status=resultado.status,
+                data_criacao=resultado.data_criacao,
+                data_inicio_producao=resultado.data_inicio_producao,
+                data_conclusao=resultado.data_conclusao
             )
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
@@ -67,12 +74,15 @@ class PedidoController:
             pedido.cliente_tel = data.cliente_tel
             pedido.descricao = data.descricao
             pedido.tipo_entrega = data.tipo_entrega
+            pedido.endereco_entrega = data.endereco_entrega
             pedido.data_entrega = data.data_entrega
             pedido.preco_total = data.preco_total
             pedido.observacoes = data.observacoes
             pedido.user_id = user_id
             pedido.receita_id = data.receita_id
             pedido.status = data.status or "pendente"
+            pedido.data_inicio_producao = data.data_inicio_producao
+            pedido.data_conclusao = data.data_conclusao
             
             resultado = self.editar_pedido_use_case.executar(pedido)
             
@@ -82,12 +92,16 @@ class PedidoController:
                 cliente_tel=resultado.cliente_tel,
                 descricao=resultado.descricao,
                 tipo_entrega=resultado.tipo_entrega,
+                endereco_entrega=resultado.endereco_entrega,
                 preco_total=resultado.preco_total,
                 data_entrega=resultado.data_entrega,
                 observacoes=resultado.observacoes,
                 user_id=str(resultado.user_id),
                 receita_id=resultado.receita_id,
-                status=resultado.status
+                status=resultado.status,
+                data_criacao=resultado.data_criacao,
+                data_inicio_producao=resultado.data_inicio_producao,
+                data_conclusao=resultado.data_conclusao
             )
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
@@ -102,12 +116,16 @@ class PedidoController:
                     cliente_tel=p.cliente_tel,
                     descricao=p.descricao,
                     tipo_entrega=p.tipo_entrega,
+                    endereco_entrega=p.endereco_entrega,
                     preco_total=p.preco_total,
                     data_entrega=p.data_entrega,
                     observacoes=p.observacoes,
                     user_id=str(p.user_id),
                     receita_id=p.receita_id,
-                    status=p.status
+                    status=p.status,
+                    data_criacao=p.data_criacao,
+                    data_inicio_producao=p.data_inicio_producao,
+                    data_conclusao=p.data_conclusao
                 ) for p in pedidos
             ]
         except Exception as e:
@@ -124,12 +142,16 @@ class PedidoController:
                 cliente_tel=p.cliente_tel,
                 descricao=p.descricao,
                 tipo_entrega=p.tipo_entrega,
+                endereco_entrega=p.endereco_entrega,
                 preco_total=p.preco_total,
                 data_entrega=p.data_entrega,
                 observacoes=p.observacoes,
                 user_id=str(p.user_id),
                 receita_id=p.receita_id,
-                status=p.status
+                status=p.status,
+                data_criacao=p.data_criacao,
+                data_inicio_producao=p.data_inicio_producao,
+                data_conclusao=p.data_conclusao
             )
         except HTTPException as e:
             raise e

@@ -79,8 +79,10 @@ async def get_current_user_id(token: HTTPAuthorizationCredentials = Depends(secu
             detail=f"Invalid token: {str(e)}",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    except Exception:
+    except Exception as e:
+        import logging
+        logging.error(f"Authentication error: {type(e).__name__}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Authentication service unavailable",
+            detail=f"Authentication service unavailable: {type(e).__name__}",
         )

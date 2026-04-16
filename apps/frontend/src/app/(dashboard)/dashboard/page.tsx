@@ -35,7 +35,7 @@ export default function DashboardPage() {
 
   const pendentes   = pedidos.filter(p => p.status === 'pendente').length
   const emProducao  = pedidos.filter(p => p.status === 'producao' || p.status === 'em_producao').length
-  const totalHoje   = pedidos.length
+  const totalHoje   = pedidos.filter(p => p.status !== 'cancelado' && p.status !== 'concluido').length
 
   const kpis = [
     {
@@ -44,7 +44,7 @@ export default function DashboardPage() {
       icon: ClipboardList,
       accent: '#fbabbc',
       iconColor: '#915160',
-      link: '/pedidos',
+      link: '/pedidos?status=todos',
     },
     {
       label: 'Em Produção',
@@ -52,7 +52,7 @@ export default function DashboardPage() {
       icon: ShoppingBasket,
       accent: '#fceeb3',
       iconColor: '#6e6436',
-      link: '/pedidos',
+      link: '/pedidos?status=em_producao',
     },
     {
       label: 'Pendentes',
@@ -60,7 +60,7 @@ export default function DashboardPage() {
       icon: AlertCircle,
       accent: '#ffdcc2',
       iconColor: '#795f4a',
-      link: '/pedidos',
+      link: '/pedidos?status=pendente',
     },
     {
       label: 'Receitas',
@@ -72,8 +72,10 @@ export default function DashboardPage() {
     },
   ]
 
-  // Últimos 5 pedidos para o painel de produção
-  const recentes = pedidos.slice(0, 5)
+  // Últimos 10 pedidos ativos para o painel de produção
+  const recentes = pedidos
+    .filter(p => p.status !== 'cancelado' && p.status !== 'concluido')
+    .slice(0, 10)
 
   return (
     <div className="space-y-10 animate-fade-in">
@@ -191,8 +193,8 @@ export default function DashboardPage() {
               /* Tabela — sem divisors ("No-Line" Stitch rule) */
               <div>
                 <div
-                  className="grid grid-cols-4 px-6 py-3"
-                  style={{ backgroundColor: 'var(--surface-container-low)' }}
+                  className="grid px-6 py-3"
+                  style={{ gridTemplateColumns: '0.8fr 1.2fr 1fr 0.8fr', backgroundColor: 'var(--surface-container-low)' }}
                 >
                   {['Pedido', 'Cliente', 'Status', 'Entrega'].map(h => (
                     <span key={h} className="text-xs font-semibold uppercase tracking-widest" style={{ fontFamily: 'var(--font-inter)', color: 'var(--on-surface-variant)' }}>
@@ -204,15 +206,15 @@ export default function DashboardPage() {
                   <Link
                     key={pedido.id}
                     href={`/pedidos/${pedido.id}`}
-                    className="grid grid-cols-4 px-6 py-4 transition-colors"
-                    style={{ borderTop: '1px solid transparent' }}
+                    className="grid items-center px-6 py-4 transition-colors"
+                    style={{ gridTemplateColumns: '0.8fr 1.2fr 1fr 0.8fr', borderTop: '1px solid transparent' }}
                     onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--surface-container-low)')}
                     onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
                   >
-                    <span className="text-sm font-semibold" style={{ fontFamily: 'var(--font-jakarta)', color: 'var(--on-surface)' }}>
-                      #{pedido.id}
+                    <span className="text-sm font-semibold truncate" style={{ fontFamily: 'var(--font-jakarta)', color: 'var(--on-surface)' }}>
+                      #{String(pedido.id).slice(0, 8)}
                     </span>
-                    <span className="text-sm" style={{ fontFamily: 'var(--font-inter)', color: 'var(--on-surface-variant)' }}>
+                    <span className="text-sm truncate pr-2" style={{ fontFamily: 'var(--font-inter)', color: 'var(--on-surface-variant)' }}>
                       {pedido.cliente_nome}
                     </span>
                     <StatusBadge status={pedido.status} />

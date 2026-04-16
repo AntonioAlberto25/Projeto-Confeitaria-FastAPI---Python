@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from src.domain.entity.pedido.pedido import Pedido
 from src.infrastructure.persistencia.pedidoModel import PedidoModel
 from src.application.gateways.repositorioDePedido import RepositorioDePedido
+from sqlalchemy import desc
 from typing import Optional, List
 from decimal import Decimal
 
@@ -33,6 +34,9 @@ class PedidoRepository(RepositorioDePedido):
         self.db.refresh(pedido_model)
         
         pedido.id = pedido_model.id
+        pedido.data_criacao = pedido_model.data_criacao.isoformat() if pedido_model.data_criacao else None
+        pedido.data_inicio_producao = pedido_model.data_inicio_producao.isoformat() if pedido_model.data_inicio_producao else None
+        pedido.data_conclusao = pedido_model.data_conclusao.isoformat() if pedido_model.data_conclusao else None
         return pedido
 
     def editar_pedido(self, pedido: Pedido) -> Pedido:
@@ -51,16 +55,24 @@ class PedidoRepository(RepositorioDePedido):
             pedido_model.observacoes = pedido.observacoes
             pedido_model.receita_id = pedido.receita_id
             pedido_model.status = pedido.status
+            if pedido.data_inicio_producao:
+                pedido_model.data_inicio_producao = pedido.data_inicio_producao
+            if pedido.data_conclusao:
+                pedido_model.data_conclusao = pedido.data_conclusao
             
             self.db.commit()
             self.db.refresh(pedido_model)
+            
+            pedido.data_criacao = pedido_model.data_criacao.isoformat() if pedido_model.data_criacao else None
+            pedido.data_inicio_producao = pedido_model.data_inicio_producao.isoformat() if pedido_model.data_inicio_producao else None
+            pedido.data_conclusao = pedido_model.data_conclusao.isoformat() if pedido_model.data_conclusao else None
             
         return pedido
 
     def excluir_pedido(self, id: str) -> None:
         pedido_model = self.db.query(PedidoModel).filter(PedidoModel.id == str(id)).first()
         if pedido_model:
-            pedido_model.status = "cancelado"
+            self.db.delete(pedido_model)
             self.db.commit()
 
     def buscar_pedido_por_id(self, id: str) -> Optional[Pedido]:
@@ -80,10 +92,16 @@ class PedidoRepository(RepositorioDePedido):
         pedido.user_id = model.usuario_id
         pedido.receita_id = model.receita_id
         pedido.status = model.status
+        pedido.data_criacao = model.data_criacao.isoformat() if model.data_criacao else None
+        pedido.data_inicio_producao = model.data_inicio_producao.isoformat() if model.data_inicio_producao else None
+        pedido.data_conclusao = model.data_conclusao.isoformat() if model.data_conclusao else None
         return pedido
 
     def listar_por_usuario(self, user_id: str) -> List[Pedido]:
-        models = self.db.query(PedidoModel).filter(PedidoModel.usuario_id == user_id).all()
+        models = self.db.query(PedidoModel)\
+            .filter(PedidoModel.usuario_id == user_id)\
+            .order_by(desc(PedidoModel.data_criacao))\
+            .all()
         pedidos = []
         for model in models:
             pedido = Pedido()
@@ -98,6 +116,9 @@ class PedidoRepository(RepositorioDePedido):
             pedido.user_id = model.usuario_id
             pedido.receita_id = model.receita_id
             pedido.status = model.status
+            pedido.data_criacao = model.data_criacao.isoformat() if model.data_criacao else None
+            pedido.data_inicio_producao = model.data_inicio_producao.isoformat() if model.data_inicio_producao else None
+            pedido.data_conclusao = model.data_conclusao.isoformat() if model.data_conclusao else None
             pedidos.append(pedido)
         return pedidos
 
@@ -105,7 +126,7 @@ class PedidoRepository(RepositorioDePedido):
         models = self.db.query(PedidoModel).filter(
             PedidoModel.usuario_id == user_id,
             PedidoModel.cliente_nome.ilike(f"%{nome_cliente}%")
-        ).all()
+        ).order_by(desc(PedidoModel.data_criacao)).all()
         
         pedidos = []
         for model in models:

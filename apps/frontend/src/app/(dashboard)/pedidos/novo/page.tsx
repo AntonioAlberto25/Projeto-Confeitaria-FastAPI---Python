@@ -26,6 +26,7 @@ export default function NovoPedidoPage() {
     observacoes:   '',
     preco_total:   '',
     receita_id:    '',
+    endereco_entrega: '',
   })
 
   const [receitas, setReceitas] = useState<any[]>([])
@@ -231,6 +232,22 @@ export default function NovoPedidoPage() {
               </div>
             </div>
 
+            {/* Endereço de Entrega */}
+            {form.tipo_entrega === 'Entrega' && (
+              <div className="animate-fade-in">
+                <label className="block text-xs font-semibold uppercase tracking-widest mb-2"
+                  style={{ fontFamily: 'var(--font-inter)', color: 'var(--on-surface-variant)' }}>
+                  Endereço de Entrega
+                </label>
+                <textarea
+                  placeholder="Rua, Número, Bairro, Ponto de Referência..."
+                  className="input-field resize-y min-h-[80px]"
+                  value={form.endereco_entrega}
+                  onChange={e => update('endereco_entrega', e.target.value)}
+                />
+              </div>
+            )}
+
             {/* Descrição e Observações */}
             <div>
               <label className="block text-xs font-semibold uppercase tracking-widest mb-2"
@@ -240,7 +257,7 @@ export default function NovoPedidoPage() {
               <textarea
                 rows={3}
                 placeholder="Descreva o pedido brevemente..."
-                className="input-field h-auto py-3 resize-none"
+                className="input-field h-auto py-3 resize-y min-h-[80px]"
                 value={form.descricao}
                 onChange={e => update('descricao', e.target.value)}
               />
@@ -254,7 +271,7 @@ export default function NovoPedidoPage() {
               <textarea
                 rows={2}
                 placeholder="Alergias, preferências especiais, etc..."
-                className="input-field h-auto py-3 resize-none"
+                className="input-field h-auto py-3 resize-y min-h-[80px]"
                 value={form.observacoes}
                 onChange={e => update('observacoes', e.target.value)}
               />
@@ -272,8 +289,9 @@ export default function NovoPedidoPage() {
               {[
                 { label: 'Cliente', value: form.cliente_nome },
                 { label: 'Telefone', value: form.cliente_tel || '—' },
-                { label: 'Entrega', value: form.data_entrega ? new Date(form.data_entrega).toLocaleDateString('pt-BR') : '—' },
+                { label: 'Data de Entrega', value: form.data_entrega ? new Date(form.data_entrega).toLocaleDateString('pt-BR') : '—' },
                 { label: 'Tipo', value: form.tipo_entrega },
+                ...(form.tipo_entrega === 'Entrega' ? [{ label: 'Endereço', value: form.endereco_entrega || '—' }] : []),
                 { label: 'Descrição', value: form.descricao || '—' },
                 { label: 'Observações', value: form.observacoes || '—' },
               ].map(r => (

@@ -138,13 +138,23 @@ export default function EditarReceitaPage() {
               style={{ fontFamily: 'var(--font-inter)', color: 'var(--on-surface-variant)' }}>
               {f.label}
             </label>
-            <input
-              type={f.type}
-              placeholder={f.placeholder}
-              className="input-field"
-              value={(form as any)[f.field]}
-              onChange={e => updateField(f.field, e.target.value)}
-            />
+            {f.field === 'descricao' ? (
+              <textarea
+                placeholder={f.placeholder}
+                className="input-field h-auto py-3 resize-y min-h-[80px]"
+                rows={3}
+                value={(form as any)[f.field]}
+                onChange={e => updateField(f.field, e.target.value)}
+              />
+            ) : (
+              <input
+                type={f.type}
+                placeholder={f.placeholder}
+                className="input-field"
+                value={(form as any)[f.field]}
+                onChange={e => updateField(f.field, e.target.value)}
+              />
+            )}
           </div>
         ))}
       </div>
@@ -156,7 +166,7 @@ export default function EditarReceitaPage() {
         <textarea
           rows={8}
           placeholder="Descreva o passo a passo da receita..."
-          className="input-field h-auto py-4 resize-none"
+          className="input-field h-auto py-4 resize-y min-h-[150px]"
           value={form.modo_preparo}
           onChange={e => updateField('modo_preparo', e.target.value)}
         />

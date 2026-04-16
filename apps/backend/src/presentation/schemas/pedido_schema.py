@@ -9,6 +9,7 @@ class PedidoBase(BaseModel):
     descricao: Optional[str] = None
     observacoes: Optional[str] = None
     tipo_entrega: Optional[str] = "Entrega"
+    endereco_entrega: Optional[str] = None
     preco_total: Optional[Decimal] = Field(None, ge=0)
     data_entrega: Optional[date] = None
     receita_id: Optional[str] = None
@@ -29,10 +30,15 @@ class PedidoBase(BaseModel):
 
 class PedidoCreate(PedidoBase):
     status: Optional[str] = "pendente"
+    data_inicio_producao: Optional[str] = None
+    data_conclusao: Optional[str] = None
 
 class PedidoResponse(PedidoBase):
     id: str
     user_id: str
     status: str = "pendente"
+    data_criacao: Optional[str] = None
+    data_inicio_producao: Optional[str] = None
+    data_conclusao: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)

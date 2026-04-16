@@ -10,11 +10,16 @@ class Pedido:
         self.__descricao = None
         self.__observacoes = None
         self.__tipo_entrega = None
+        self.__endereco_entrega = None
         self.__preco_total = None
         self.__data_entrega = None
         self.__user_id = None
         self.__receita_id = None
         self.__status = None
+        self.__data_criacao = None
+        self.__data_inicio_producao = None
+        self.__data_conclusao = None
+        self.__motivo_cancelamento = None
 
     # ── id ──────────────────────────────────────────────────────────────────
 
@@ -129,3 +134,53 @@ class Pedido:
     @receita_id.setter
     def receita_id(self, valor: str) -> None:
         self.__receita_id = valor
+
+    # ── endereco_entrega ─────────────────────────────────────────────────────────
+
+    @property
+    def endereco_entrega(self) -> str:
+        return self.__endereco_entrega
+
+    @endereco_entrega.setter
+    def endereco_entrega(self, valor: str) -> None:
+        self.__endereco_entrega = valor
+
+    # ── data_criacao ─────────────────────────────────────────────────────────
+
+    @property
+    def data_criacao(self) -> str:
+        return self.__data_criacao
+
+    @data_criacao.setter
+    def data_criacao(self, valor: str) -> None:
+        self.__data_criacao = valor
+
+    # ── data_inicio_producao ─────────────────────────────────────────────────────────
+
+    @property
+    def data_inicio_producao(self) -> str:
+        return self.__data_inicio_producao
+
+    @data_inicio_producao.setter
+    def data_inicio_producao(self, valor: str) -> None:
+        self.__data_inicio_producao = valor
+
+    # ── data_conclusao ─────────────────────────────────────────────────────────
+
+    @property
+    def data_conclusao(self) -> str:
+        return self.__data_conclusao
+
+    @data_conclusao.setter
+    def data_conclusao(self, valor: str) -> None:
+        self.__data_conclusao = valor
+
+    # ── motivo_cancelamento ─────────────────────────────────────────────────────────
+
+    @property
+    def motivo_cancelamento(self) -> str:
+        return self.__motivo_cancelamento
+
+    @motivo_cancelamento.setter
+    def motivo_cancelamento(self, valor: str) -> None:
+        self.__motivo_cancelamento = valor

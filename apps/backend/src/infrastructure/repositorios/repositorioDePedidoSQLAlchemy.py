@@ -1,4 +1,5 @@
 from typing import List, Optional
+from sqlalchemy import desc
 from sqlalchemy.orm import Session
 from src.application.gateways.repositorioDePedido import RepositorioDePedido
 from src.domain.entity.pedido.pedido import Pedido
@@ -51,13 +52,16 @@ class RepositorioDePedidoSQLAlchemy(RepositorioDePedido):
             return None
         return PedidoMapper.to_domain(pedido_model)
 
-    def listar_por_usuario(self, user_id: int) -> List[Pedido]:
-        pedidos_model = self._session.query(PedidoModel).filter(PedidoModel.usuario_id == user_id).all()
+    def listar_por_usuario(self, user_id: str) -> List[Pedido]:
+        pedidos_model = self._session.query(PedidoModel)\
+            .filter(PedidoModel.usuario_id == user_id)\
+            .order_by(desc(PedidoModel.data_criacao))\
+            .all()
         return [PedidoMapper.to_domain(pm) for pm in pedidos_model]
 
-    def buscar_por_nome_cliente(self, user_id: int, nome_cliente: str) -> List[Pedido]:
+    def buscar_por_nome_cliente(self, user_id: str, nome_cliente: str) -> List[Pedido]:
         pedidos_model = self._session.query(PedidoModel).filter(
-            PedidoModel.user_id == user_id,
+            PedidoModel.usuario_id == user_id,
             PedidoModel.cliente_nome.ilike(f"%{nome_cliente}%")
-        ).all()
+        ).order_by(desc(PedidoModel.data_criacao)).all()
         return [PedidoMapper.to_domain(pm) for pm in pedidos_model]

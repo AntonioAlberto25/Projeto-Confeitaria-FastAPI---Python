@@ -1,19 +1,23 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Plus, Search, ShoppingBasket, Calendar, MapPin, ArrowRight } from 'lucide-react'
+import { Plus, Search, ShoppingBasket, Calendar, MapPin, ArrowRight, Trash2, AlertTriangle } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { getPedidos } from '../../../lib/api'
+import { getPedidos, deletePedido } from '../../../lib/api'
 import { useAuth } from '@clerk/nextjs'
 import { StatusBadge } from '../../../components/ui/StatusBadge'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 
 export default function PedidosPage() {
   const { getToken } = useAuth()
+  const searchParams = useSearchParams()
   const [pedidos, setPedidos]       = useState<any[]>([])
   const [loading, setLoading]       = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-  const [statusFilter, setStatusFilter] = useState<string>('todos')
+  const [statusFilter, setStatusFilter] = useState<string>(searchParams.get('status') || 'todos')
+  const [pedidoToDelete, setPedidoToDelete] = useState<any>(null)
+  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
     const load = async () => {
@@ -33,10 +37,27 @@ export default function PedidosPage() {
     load()
   }, [getToken])
 
-  const statusOptions = ['todos', 'pendente', 'em_producao', 'concluido', 'cancelado']
+  const handleDelete = async () => {
+    if (!pedidoToDelete) return
+    setDeleting(true)
+    try {
+      const token = await getToken()
+      if (token) {
+        await deletePedido(token, pedidoToDelete.id)
+        setPedidos(prev => prev.filter(p => p.id !== pedidoToDelete.id))
+        setPedidoToDelete(null)
+      }
+    } catch (e) {
+      console.error('Erro ao excluir pedido:', e)
+    } finally {
+      setDeleting(false)
+    }
+  }
+
+  const statusOptions = ['todos', 'pendente', 'em_producao', 'concluido']
   const statusLabel: Record<string, string> = {
     todos: 'Ativos', pendente: 'Pendentes', em_producao: 'Em Produção',
-    concluido: 'Concluídos', cancelado: 'Cancelados',
+    concluido: 'Concluídos'
   }
 
   const filtered = pedidos.filter(p => {
@@ -46,7 +67,7 @@ export default function PedidosPage() {
       String(p.id || '').includes(searchTerm)
 
     const matchStatus = statusFilter === 'todos' 
-      ? p.status !== 'cancelado' 
+      ? p.status !== 'cancelado' && p.status !== 'concluido'
       : p.status === statusFilter
     
     return matchSearch && matchStatus
@@ -88,24 +109,43 @@ export default function PedidosPage() {
 
         {/* Status pills */}
         <div className="flex gap-2 flex-wrap">
-          {statusOptions.map(s => (
-            <button
-              key={s}
-              onClick={() => setStatusFilter(s)}
-              className="px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200"
-              style={statusFilter === s ? {
-                background: 'linear-gradient(45deg, #915160, #834554)',
-                color: '#fff',
-                fontFamily: 'var(--font-jakarta)',
-              } : {
-                backgroundColor: 'var(--surface-container-high)',
-                color: 'var(--on-surface-variant)',
-                fontFamily: 'var(--font-jakarta)',
-              }}
-            >
-              {statusLabel[s]}
-            </button>
-          ))}
+          {statusOptions.map(s => {
+            const count = s === 'todos'
+              ? pedidos.filter(p => p.status !== 'cancelado' && p.status !== 'concluido').length
+              : pedidos.filter(p => p.status === s).length
+            const isActive = statusFilter === s
+
+            return (
+              <button
+                key={s}
+                onClick={() => setStatusFilter(s)}
+                className="px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 flex items-center gap-2"
+                style={isActive ? {
+                  background: 'linear-gradient(45deg, #915160, #834554)',
+                  color: '#fff',
+                  fontFamily: 'var(--font-jakarta)',
+                } : {
+                  backgroundColor: 'var(--surface-container-high)',
+                  color: 'var(--on-surface-variant)',
+                  fontFamily: 'var(--font-jakarta)',
+                }}
+              >
+                {statusLabel[s]}
+                <span
+                  className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold"
+                  style={isActive ? {
+                    backgroundColor: 'rgba(255,255,255,0.25)',
+                    color: '#fff',
+                  } : {
+                    backgroundColor: 'var(--surface-container-highest)',
+                    color: 'var(--on-surface-variant)',
+                  }}
+                >
+                  {count}
+                </span>
+              </button>
+            )
+          })}
         </div>
       </section>
 
@@ -167,14 +207,29 @@ export default function PedidosPage() {
                         <div>
                           <p className="text-xs font-semibold uppercase tracking-widest mb-1"
                             style={{ fontFamily: 'var(--font-inter)', color: 'var(--outline-variant)' }}>
-                            Pedido #{pedido.id}
+                            Pedido #{String(pedido.id).slice(0, 8)}
                           </p>
                           <h3 className="text-lg font-bold leading-tight group-hover:text-primary transition-colors"
                             style={{ fontFamily: 'var(--font-jakarta)', color: 'var(--on-surface)' }}>
                             {pedido.cliente_nome}
                           </h3>
                         </div>
-                        <StatusBadge status={pedido.status} />
+                        <div className="flex items-center gap-3">
+                          <StatusBadge status={pedido.status} />
+                          {pedido.status === 'concluido' && (
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault()
+                                e.stopPropagation()
+                                setPedidoToDelete(pedido)
+                              }}
+                              className="w-8 h-8 rounded-full flex items-center justify-center transition-all hover:bg-red-50 text-red-400 hover:text-red-600"
+                              title="Excluir pedido encerrado"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
                       </div>
 
                       {pedido.descricao && (
@@ -217,6 +272,61 @@ export default function PedidosPage() {
           </AnimatePresence>
         )}
       </section>
+
+      {/* Delete Confirmation Modal */}
+      {pedidoToDelete && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center animate-fade-in px-4"
+          style={{ backgroundColor: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)' }}>
+          <div className="layer-card p-8 max-w-md w-full space-y-6"
+            style={{ boxShadow: '0 25px 60px rgba(0,0,0,0.3)' }}>
+            
+            <div className="flex justify-center">
+              <div className="w-16 h-16 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: 'rgba(179,57,56,0.10)' }}>
+                <AlertTriangle className="w-8 h-8" style={{ color: 'var(--error)' }} />
+              </div>
+            </div>
+
+            <div className="text-center space-y-2">
+              <h3 className="text-xl font-bold"
+                style={{ fontFamily: 'var(--font-jakarta)', color: 'var(--on-surface)' }}>
+                Excluir Pedido
+              </h3>
+              <p className="text-sm leading-relaxed"
+                style={{ fontFamily: 'var(--font-inter)', color: 'var(--on-surface-variant)' }}>
+                Deseja excluir permanentemente o pedido de <strong>{pedidoToDelete.cliente_nome}</strong>? Esta ação não pode ser desfeita.
+              </p>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setPedidoToDelete(null)}
+                disabled={deleting}
+                className="flex-1 py-3 rounded-xl text-sm font-semibold transition-all"
+                style={{
+                  fontFamily: 'var(--font-jakarta)',
+                  backgroundColor: 'var(--surface-container-high)',
+                  color: 'var(--on-surface-variant)',
+                }}
+              >
+                Voltar
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                className="flex-1 py-3 rounded-xl text-sm font-semibold transition-all flex items-center justify-center"
+                style={{
+                  fontFamily: 'var(--font-jakarta)',
+                  background: 'linear-gradient(45deg, #b33938, #a03030)',
+                  color: '#fff',
+                }}
+              >
+                {deleting ? 'Excluindo...' : 'Sim, Excluir'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

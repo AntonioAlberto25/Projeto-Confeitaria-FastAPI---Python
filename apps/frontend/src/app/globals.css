@@ -102,12 +102,14 @@
 .badge {
   display: inline-flex;
   align-items: center;
+  width: fit-content;
   padding: 0.25rem 0.875rem;
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 600;
   font-family: 'Inter', sans-serif;
   letter-spacing: 0.01em;
+  white-space: nowrap;
 }
 
 /* Pendente: tonal neutro — "não tome ação ainda" */
