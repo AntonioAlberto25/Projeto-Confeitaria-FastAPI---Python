@@ -158,14 +158,21 @@ def test_pedido_sqlalchemy_repository_listar():
     model_mock = Mock()
     model_mock.id = 1
     model_mock.cliente_nome = "Maria"
-    model_mock.user_id = "user_1"
+    model_mock.usuario_id = "user_1"
+    model_mock.cliente_telefone = "123"
     model_mock.descricao = "Teste"
+    model_mock.observacoes = None
     model_mock.tipo_entrega = "Teste"
+    model_mock.endereco_entrega = None
     model_mock.preco_total = Decimal("100.00")
     model_mock.data_entrega = None
+    model_mock.receita_id = None
     model_mock.status = "Pendente"
+    model_mock.data_criacao = None
+    model_mock.data_inicio_producao = None
+    model_mock.data_conclusao = None
     
-    db_mock.query().filter().all.return_value = [model_mock]
+    db_mock.query().filter().order_by().all.return_value = [model_mock]
     
     resultado = repo.listar_por_usuario("user_1")
     
