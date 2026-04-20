@@ -12,7 +12,12 @@ RUN addgroup --system appgroup \
 WORKDIR /app
 COPY --from=deps /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
 COPY --from=deps /usr/local/bin /usr/local/bin
+
+# Copia o código e a estrutura do Alembic
 COPY --chown=appuser:appgroup src/ ./src/
+COPY --chown=appuser:appgroup migrations/ ./migrations/
+COPY --chown=appuser:appgroup alembic.ini .
+
 USER appuser
 EXPOSE ${PORT:-8000}
 CMD ["sh", "-c", "uvicorn src.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
