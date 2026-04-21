@@ -1,62 +1,213 @@
-# Product Requirements Document (PRD) - Sistema de Gestão para Confeitaria
+# Product Requirements Document (PRD) — Sistema de Gestão para Confeitaria
+
+**Versão:** 2.0
+**Data:** 2026-04-20
+**Status:** Aprovado
+**Autor:** Equipe de Desenvolvimento
+
+---
 
 ## 1. Visão Geral do Produto
-O Sistema de Gestão para Confeitaria é uma aplicação web centralizada criada para ajudar confeitarias artesanais de pequeno porte a organizarem seus fluxos operacionais de forma eficiente. A ferramenta eliminará a necessidade de controles manuais (cadernos e planilhas simples), fornecendo uma plataforma única para gerenciamento de pedidos, controle de receitas e gestão de estoque básico de ingredientes.
+
+O **Sistema de Gestão para Confeitaria** é uma aplicação web mobile-first criada para confeitarias artesanais de pequeno porte. A ferramenta centraliza o gerenciamento de pedidos, receitas (fichas técnicas) e estoque de ingredientes, eliminando controles manuais (cadernos, planilhas e mensagens) e reduzindo erros operacionais.
+
+**Proposta de valor central:** Da receita ao pedido entregue — tudo em um só lugar, acessível do celular, em tempo real.
+
+---
 
 ## 2. Público-Alvo e Persona
-**A Usuária Principal: A Confeiteira Administradora**
-* **Perfil:** Profissional que gerencia sozinha (ou com equipe muito reduzida) todo o ciclo de vida do negócio.
-* **Dores:** Perda de tempo procurando informações descentralizadas, dificuldades para rastrear o andamento de pedidos, falta de ingredientes no meio de uma receita por falha no controle de estoque, e dificuldade em precificar ou padronizar receitas.
-* **Necessidades:** Um sistema intuitivo, rápido e fácil de usar (com baixo atrito), focado na praticidade do dia a dia, acessível de qualquer dispositivo.
+
+**Persona Principal: Ana Paula — Confeiteira Autônoma**
+
+| Atributo | Detalhe |
+|---------|---------|
+| Perfil | Confeiteira artesanal autônoma, gerencia sozinha ou com 1-2 colaboradores |
+| Dispositivo principal | Smartphone Android (uso durante a produção na cozinha) |
+| Dores críticas | Pedidos esquecidos, falta de ingrediente durante a produção, dificuldade de precificar |
+| Necessidades | Sistema intuitivo, rápido, mobile-first, com baixo atrito e sem necessidade de treinamento |
+| Meta de sucesso | Registrar um pedido em < 2 minutos usando apenas o celular |
+
+> Documento completo: [persona.md](persona.md)
+
+---
 
 ## 3. Objetivos do Produto
-1. **Centralização:** Consolidar informações de clientes, pedidos, receitas e estoque num único local.
-2. **Organização:** Melhorar o fluxo de planejamento e produção diária da confeitaria.
-3. **Rastreabilidade:** Evitar esquecimentos de pedidos e garantir a disponibilidade de insumos.
-4. **Produtividade:** Reduzir o tempo gasto em gestão administrativa, liberando a confeiteira para focar na produção artesanal.
 
-## 4. Requisitos Funcionais (Core Features)
+| # | Objetivo | Métrica de Sucesso |
+|---|----------|-------------------|
+| O1 | **Centralização** — consolidar pedidos, receitas e estoque em um único sistema | 100% dos pedidos registrados no sistema (zero cadernos paralelos) |
+| O2 | **Rastreabilidade** — eliminar pedidos esquecidos e ingredientes em falta | Zero pedidos sem status atualizado; alertas de estoque ativos |
+| O3 | **Eficiência operacional** — reduzir tempo de gestão administrativa | Redução de 50% no tempo gasto em controles manuais ao 30º dia |
+| O4 | **Precificação assertiva** — custo real calculado automaticamente | 100% das receitas com ficha técnica e custo calculado |
+| O5 | **Escalabilidade pessoal** — permitir delegar tarefas com sistema estruturado | Pelo menos 1 colaborador adicional consegue operar o sistema sem treinamento |
 
-### 4.1. Autenticação e Gestão de Usuários (Integração Clerk)
-* O sistema deve permitir o cadastro e login de usuários (Confeiteiros/Administradores) de forma segura utilizando o provedor Clerk.
-* Recuperação de senha e gestão de perfil de usuário.
-* O cadastro de usuário faz parte do escopo da v1 (via auto-cadastro habilitado no Clerk ou convite administrativo, conforme configuração do tenant).
+---
+
+## 4. Requisitos Funcionais
+
+### 4.1. Autenticação e Gestão de Usuários
+
+**RF-01** — O sistema deve permitir cadastro e login de usuários via provedor Clerk (e-mail/senha e OAuth).
+**RF-02** — O sistema deve suportar recuperação de senha via Clerk.
+**RF-03** — O perfil do usuário deve ser sincronizado automaticamente via webhook do Clerk.
+**RF-04** — O sistema deve implementar controle de acesso por perfil (RBAC): Administrador e Colaborador.
+**RF-05** — Toda requisição autenticada deve validar o JWT emitido pelo Clerk via JWKS.
 
 ### 4.2. Gestão de Receitas e Fichas Técnicas
-* **Criar Receita:** Nome, descrição, tempo de preparo, rendimento (em porções) e preço de venda sugerido.
-* **Ingredientes da Receita:** Vincular ingredientes necessários e suas respectivas quantidades exatas para o rendimento informado.
-* **Visualizar, Editar e Excluir** receitas cadastradas.
+
+**RF-06** — O sistema deve permitir criar uma receita com: nome, descrição, tempo de preparo, rendimento (porções) e preço de venda sugerido.
+**RF-07** — Uma receita deve suportar vincular ingredientes com nome, unidade de medida e quantidade exata.
+**RF-08** — O sistema deve calcular o custo estimado da receita com base nos ingredientes e quantidades cadastradas.
+**RF-09** — O sistema deve permitir visualizar, editar e excluir receitas cadastradas.
+**RF-10** — A listagem de receitas deve suportar busca por nome e filtros por rendimento e faixa de preço.
+
+**Regras de domínio:**
+- `rendimento` deve ser maior que 0.
+- A leitura de `rendimento` não pode alterar o estado da entidade.
 
 ### 4.3. Gestão de Pedidos
-* **Registro de Pedido:** Cadastrar novo pedido informando cliente, data de entrega, status (Pendente, Em Produção, Concluído, Cancelado), e as receitas solicitadas.
-* **Painel de Produção:** Visão resumida dos pedidos do dia/semana para facilitar a organização da produção.
-* **Regra de Status:** Todo pedido deve ser criado com status inicial **Pendente**. Transições permitidas: Pendente -> Em Produção -> Concluído, com opção de Cancelado a partir de estados não concluídos.
 
-### 4.4. Gestão de Estoque Básico (Integração Supabase)
-* **Cadastro de Ingredientes:** Cadastrar insumos básicos com nome, unidade de medida (kg, g, l, ml, unidades) e quantidade em estoque.
-* **Baixa Automática/Sugerida:** Ao marcar um pedido como "Em Produção" ou "Concluído", o sistema deve abater (ou sugerir o abatimento) dos ingredientes utilizados no estoque, com base na ficha técnica da receita.
+**RF-11** — O sistema deve permitir registrar um pedido com: cliente (nome, telefone), data de entrega, receitas selecionadas (com quantidade) e observações.
+**RF-12** — Todo pedido deve ser criado com status inicial **Pendente**.
+**RF-13** — O sistema deve permitir transições de status: `Pendente → Em Produção → Concluído`. O status `Cancelado` é permitido em qualquer estado exceto `Concluído`.
+**RF-14** — O sistema deve impedir transições de status inválidas (ex: `Pendente → Concluído` sem passar por `Em Produção`).
+**RF-15** — O sistema deve exibir um painel de produção com pedidos do dia e da semana, filtrável por status.
+**RF-16** — A listagem de pedidos deve suportar busca por nome do cliente e filtros por status e data de entrega.
+
+### 4.4. Gestão de Estoque
+
+**RF-17** — O sistema deve permitir cadastrar ingredientes com: nome, unidade de medida (kg, g, l, ml, un) e quantidade em estoque.
+**RF-18** — O sistema deve definir um estoque mínimo por ingrediente e emitir alerta visual quando atingido.
+**RF-19** — Ao alterar o status de um pedido para `Em Produção` ou `Concluído`, o sistema deve realizar (ou sugerir) a baixa automática de estoque com base na ficha técnica da receita.
+**RF-20** — O sistema deve impedir quantidade de estoque negativa.
+
+### 4.5. Perfil do Usuário
+
+**RF-21** — O usuário deve poder visualizar e editar seu perfil (nome, e-mail, telefone).
+**RF-22** — O sistema deve oferecer opção de logout em qualquer tela.
+
+---
 
 ## 5. Requisitos Não Funcionais
 
-### 5.1. Arquitetura e Tecnologias Aplicadas
-* **Backend:** API desenvolvida em Python utilizando o framework **FastAPI**.
-* **Frontend:** Framework web moderno flexível e responsivo (a definir, suportando hospedagem estática ou serverless).
-* **Banco de Dados:** **Supabase** (PostgreSQL na nuvem) para persistência e gestão dos dados estruturados.
-* **Autenticação:** **Clerk** (Autenticação como serviço - Auth as a Service).
+### 5.1. Acessibilidade e Portabilidade (RNF-01)
+- Acessível exclusivamente via navegadores web modernos (Chrome 90+, Safari 14+, Firefox 88+).
+- Compatível com HTML5, CSS3 e ECMAScript 2020+.
+- Layout responsivo: mobile-first, suporte a telas de 320px a 1920px.
+- Conformidade com WCAG 2.1 nível AA (contraste mínimo 4.5:1).
 
-### 5.2. Deploy, Integração e Entrega Contínua (CI/CD)
-* **Hospedagem Frontend/Backend:** Deploy automatizado na plataforma **Vercel**.
-* **Pipeline de CI/CD:** GitHub Actions (ou integração nativa da Vercel) responsável por rodar testes (pytest) e validar builds antes de aplicar mudanças em produção.
+### 5.2. Segurança (RNF-02)
+- Autenticação e autorização via Clerk (OAuth 2.0 / OIDC).
+- Controle de acesso por perfis (RBAC).
+- Validação criptográfica de JWTs via JWKS público do Clerk.
+- Dados em trânsito protegidos por TLS 1.2+ (HTTPS obrigatório).
+- Senhas nunca armazenadas no sistema (gerenciadas pelo Clerk).
+- Proteção contra CSRF, XSS e SQL Injection (via ORM parametrizado).
 
-### 5.3. Usabilidade
-* **Acessibilidade Móvel:** Sendo a confeiteira uma profissional que passa grande parte do tempo na cozinha (longe de um desktop), o sistema (especialmente o frontend) deve ser totalmente responsivo, funcionando perfeitamente em telas de smartphones (Mobile-First approach).
+### 5.3. Interoperabilidade (RNF-03)
+- Funcionalidades expostas exclusivamente via API RESTful (HTTP/HTTPS).
+- Contratos documentados via OpenAPI 3.0 (Swagger UI em `/docs`).
+- Respostas no formato JSON com Content-Type `application/json`.
+- CORS configurado para origens autorizadas.
 
-## 6. Métricas de Sucesso
-* Criação bem-sucedida do fluxo ponta a ponta (cadastro de insumo -> montagem de receita -> pedido do cliente -> baixa de estoque correspondente).
-* Cobertura de testes unitários no backend (mínimo de 80%).
-* Tempo de resposta da API (FastAPI) inferior a 200ms para a maioria das requisições.
+### 5.4. Observabilidade e Rastreabilidade (RNF-04)
+- Logs estruturados em formato JSON com campos: `timestamp`, `level`, `request_id`, `method`, `path`, `status_code`, `duration_ms`.
+- Cada requisição recebe um `request_id` único (UUID) para correlação.
+- Registro de todos os eventos críticos: criação/alteração de pedidos, baixa de estoque, erros de autenticação.
+- Endpoint `/health` para verificação de disponibilidade do serviço.
 
-## 7. Fora de Escopo (Fase Inicial)
-* Sistema financeiro completo (emissão de NF, fluxo de caixa avançado).
-* Loja virtual (E-commerce) B2C permitindo que o cliente final faça compras diretamente pelo sistema sem interação com a confeitaria.
-* Gestão complexa de rotas de entrega.
+### 5.5. Manutenibilidade e Testabilidade (RNF-05)
+- Testes automatizados de unidade cobrindo entidades de domínio e use cases.
+- Testes de integração cobrindo endpoints REST ponta a ponta.
+- Testes de aceite validando os fluxos de negócio completos.
+- Cobertura mínima: 70% do código backend.
+- Framework de testes: pytest com pytest-cov.
+
+### 5.6. Portabilidade e Implantação (RNF-06)
+- Empacotamento em contêineres padrão OCI (Docker).
+- Orquestração local via Docker Compose.
+- Infraestrutura descrita como código (IaC) na pasta `infra/`.
+- Deploy automatizado via CI/CD (GitHub Actions → Vercel).
+- Variáveis de ambiente externalizadas (nunca hardcoded).
+
+### 5.7. Persistência (RNF-07)
+- Banco de dados relacional PostgreSQL (Supabase) para dados estruturados.
+- Schema versionado via migrações Alembic.
+- Dados sensíveis nunca armazenados em texto plano.
+
+### 5.8. Governança de Código e Configuração (RNF-08)
+- Versionamento via Git (GitHub), com branch principal protegida.
+- Dependências isoladas (venv Python / node_modules).
+- Configurações externalizadas via variáveis de ambiente (`.env`).
+- Template de configuração disponível em `.env.example`.
+- Linting automatizado: Ruff (Python) e ESLint (TypeScript).
+
+---
+
+## 6. Fluxos de Negócio Críticos
+
+### Fluxo Primário — Gestão de Pedido (RF-11 a RF-16, RF-19)
+
+```
+1. Confeiteira cadastra receita com ficha técnica de ingredientes (RF-06 a RF-08)
+2. Confeiteira cria novo pedido vinculando receitas e definindo data de entrega (RF-11, RF-12)
+3. Sistema gera pedido com status "Pendente" automaticamente (RF-12)
+4. Confeiteira atualiza status para "Em Produção" (RF-13)
+5. Sistema executa (ou sugere) baixa automática de estoque (RF-19)
+6. Confeiteira marca pedido como "Concluído" após entrega (RF-13)
+7. Histórico do pedido fica acessível para consulta
+```
+
+### Fluxo Secundário — Controle de Estoque (RF-17 a RF-20)
+
+```
+1. Confeiteira cadastra ingrediente com quantidade inicial (RF-17)
+2. Sistema monitora nível de estoque em relação ao mínimo configurado (RF-18)
+3. Dashboard exibe alerta visual para ingredientes críticos (RF-18)
+4. Ao produzir um pedido, sistema abate automaticamente os ingredientes usados (RF-19)
+5. Confeiteira pode ajustar estoque manualmente após compras (RF-17)
+```
+
+---
+
+## 7. Métricas de Sucesso do Produto
+
+| Métrica | Meta | Como Medir |
+|---------|------|-----------|
+| Tempo para criar primeiro pedido | < 2 minutos | Teste de usabilidade |
+| Cobertura de testes backend | ≥ 70% | pytest-cov |
+| Tempo de resposta da API | < 200ms (P95) | Logs de performance |
+| Taxa de conclusão do fluxo ponta a ponta | > 70% na 1ª semana | Analytics de uso |
+| Uptime do sistema | > 99% | Health check monitoring |
+
+---
+
+## 8. Fora de Escopo (v1.0)
+
+- Sistema financeiro completo (emissão de NF, fluxo de caixa avançado).
+- E-commerce B2C (loja virtual para cliente final).
+- Gestão de rotas de entrega.
+- App nativo (iOS/Android) — apenas web responsivo.
+- Múltiplos tenants / gestão de várias confeitarias em uma conta.
+
+---
+
+## 9. Dependências e Riscos
+
+| Dependência | Risco | Mitigação |
+|-------------|-------|-----------|
+| Clerk (Auth) | Instabilidade do serviço externo | Fallback de autenticação; monitoramento ativo |
+| Supabase (DB) | Limite do plano gratuito | Monitoramento de uso; plano de upgrade definido |
+| Vercel (Deploy) | Cold starts em serverless | Health check; timeout configurado |
+
+---
+
+## 10. Referências
+
+- [Lean Canvas](lean_canvas.md)
+- [Persona](persona.md)
+- [Jornada do Usuário](jornada_usuario.md)
+- [Especificação Técnica](spec_tech.md)
+- [Especificação de UI](spec_ui.md)
+- [Design System](design_system.md)
+- [Modelos C4](modelos_c4.md)

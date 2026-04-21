@@ -1,10 +1,16 @@
-# Especificação Técnica - Sistema de Gestão para Confeitaria
+# Especificação Técnica — Sistema de Gestão para Confeitaria
+
+**Versão:** 2.0
+**Data:** 2026-04-20
+**Status:** Aprovado
+
+---
 
 ## 1. Visão Geral do Projeto
 
-**Nome do Projeto:** Sistema de Gestão para Confeitaria  
-**Descrição:** Plataforma para gestão de receitas e pedidos para confeitarias artesanais, com autenticação integrada.  
-**Objetivo Principal:** Fornecer uma API robusta e escalável para suportar o fluxo ponta a ponta: ficha técnica de receita -> pedido -> painel de produção.
+**Nome do Projeto:** Sistema de Gestão para Confeitaria
+**Descrição:** Plataforma web mobile-first para gestão de receitas, pedidos e estoque de confeitarias artesanais, com autenticação integrada via Clerk e persistência em PostgreSQL (Supabase).
+**Objetivo Principal:** API robusta e escalável suportando o fluxo ponta a ponta: ficha técnica de receita → pedido → baixa de estoque → painel de produção.
 
 ---
 
@@ -12,246 +18,405 @@
 
 ### 2.1 Padrão Arquitetural
 
-O projeto segue **Clean Architecture**, com separação por camadas:
+O backend segue **Clean Architecture** com separação estrita por camadas:
 
 ```
-Presentation Layer (FastAPI Routers/Controllers)
-        
-Application Layer (Use Cases)
-        
-Domain Layer (Entities e Regras de Negócio)
-        
-Infrastructure Layer (Repositories/Gateways)
+┌─────────────────────────────────────────────────────┐
+│  Presentation Layer (FastAPI Routers / Controllers)  │
+│  Schemas Pydantic — validação e serialização HTTP    │
+├─────────────────────────────────────────────────────┤
+│  Application Layer (Use Cases)                       │
+│  Interfaces de Gateway (contratos abstratos)         │
+├─────────────────────────────────────────────────────┤
+│  Domain Layer (Entidades e Regras de Negócio Core)   │
+│  Sem dependências externas — python puro             │
+├─────────────────────────────────────────────────────┤
+│  Infrastructure Layer                                │
+│  Repositórios SQLAlchemy, Mappers, Auth (Clerk)      │
+│  Logging Middleware, Dependency Injection            │
+└─────────────────────────────────────────────────────┘
 ```
 
-### 2.2 Estrutura de Diretórios (estado atual)
+**Princípio de Dependência:** camadas internas não dependem de camadas externas. Use cases dependem de interfaces (gateways), não de implementações concretas.
+
+### 2.2 Estrutura de Diretórios
 
 ```text
-Projeto-Confeitaria-Python/
-├── .env
-├── docker-compose.yml
-├── docs/
-│   ├── prd.md
-│   ├── spec_tech.md
-│   └── spec_ui.md
+Projeto-Confeitaria-FastAPI---Python/
+├── .env                          # Variáveis de ambiente (nunca commitado)
+├── .env.example                  # Template de variáveis de ambiente
+├── docker-compose.yml            # Orquestração local (PostgreSQL + Backend + Frontend)
+├── docs/                         # Documentação do projeto
+│   ├── prd.md                    # Product Requirements Document
+│   ├── spec_tech.md              # Especificação Técnica (este arquivo)
+│   ├── spec_ui.md                # Especificação de Interface
+│   ├── design_system.md          # Design System (tokens, componentes, diretrizes)
+│   ├── problem_statement.md      # Declaração de Problema
+│   ├── lean_canvas.md            # Lean Canvas
+│   ├── persona.md                # Persona da usuária principal
+│   ├── jornada_usuario.md        # Jornada do Usuário
+│   └── modelos_c4.md             # Modelos de Arquitetura C4 (Mermaid)
+├── infra/                        # Infraestrutura como Código (IaC)
+│   ├── terraform/                # Configurações Terraform
+│   └── docker/                   # Dockerfiles e configurações de container
 ├── apps/
 │   ├── backend/
-│   │   ├── Dockerfile
-│   │   ├── pyproject.toml
+│   │   ├── Dockerfile            # Multi-stage build (Python 3.12 slim)
+│   │   ├── requirements.txt      # Dependências Python
+│   │   ├── alembic.ini           # Configuração de migrações
+│   │   ├── migrations/           # Scripts de migração Alembic
+│   │   ├── vercel.json           # Configuração de deploy serverless
 │   │   └── src/
-│   │       ├── application/   (Casos de uso e Interfaces/Gateways)
-│   │       ├── domain/        (Entidades e Regras de negócio Core)
-│   │       ├── infrastructure/(Repositórios Supabase, Webhooks, etc.)
-│   │       ├── presentation/  (Rotas FastAPI e Controllers)
-│   │       ├── test/          (Testes Unitários e Integração)
-│   │       └── main.py
+│   │       ├── main.py           # Entrypoint FastAPI + middlewares
+│   │       ├── domain/entity/    # Entidades de domínio (Pedido, Receita, User)
+│   │       ├── application/
+│   │       │   ├── gateways/     # Interfaces abstratas de repositório
+│   │       │   └── usecases/     # Casos de uso (pedido, receita, user)
+│   │       ├── infrastructure/
+│   │       │   ├── auth/         # Validação JWT Clerk
+│   │       │   ├── gateway/      # Implementações concretas dos repositórios
+│   │       │   ├── mappers/      # Conversores entidade <-> ORM model
+│   │       │   ├── persistencia/ # Modelos SQLAlchemy + conexão ao banco
+│   │       │   └── repositorios/ # Repositórios SQLAlchemy
+│   │       ├── presentation/
+│   │       │   ├── controllers/  # Orquestradores de casos de uso
+│   │       │   ├── routes/       # FastAPI routers (pedidos, receitas, perfil, health)
+│   │       │   └── schemas/      # Pydantic request/response schemas
+│   │       └── test/             # Testes unitários, integração e aceite
 │   └── frontend/
-│       ├── Dockerfile
-│       ├── package.json
-│       ├── tailwind.config.ts
+│       ├── Dockerfile            # Multi-stage build (Node.js LTS)
+│       ├── package.json          # Dependências Node.js
 │       └── src/
-│           ├── app/           (Next.js App Router - Páginas)
-│           ├── components/    (Componentes reutilizáveis UI da confeitaria)
-│           ├── lib/           (Utilitários e chamadas à API)
-│           └── middleware.ts  (Middleware de Autenticação Clerk)
-└── package.json
+│           ├── app/              # Next.js App Router (páginas e layouts)
+│           ├── components/       # Componentes reutilizáveis
+│           ├── lib/              # Utilitários e cliente HTTP
+│           └── middleware.ts     # Middleware de autenticação Clerk
+└── .github/
+    └── workflows/
+        ├── deploy.yml            # Pipeline CI/CD principal
+        └── build_manual.yaml     # Trigger manual de testes
 ```
-
-### 2.3 Estrutura-alvo (incremental)
-
-Adicionar módulos para cobrir o PRD:
-- `domain/entity/pedido/`
-- `application/usecases/pedido/`
-- `application/gateways/` para pedidos
-- `presentation/routes/` para receitas, pedidos e produção
 
 ---
 
-## 3. Componentes de Domínio e Regras de Negócio
+## 3. Stack Tecnológico
 
-### 3.1 Receita
+### 3.1 Backend
 
-A entidade `Receita` representa a ficha técnica de produção.
+| Tecnologia | Versão | Finalidade |
+|-----------|--------|-----------|
+| Python | 3.12 | Linguagem principal |
+| FastAPI | 0.115+ | Framework web assíncrono |
+| SQLAlchemy | 2.0+ | ORM para PostgreSQL |
+| Alembic | 1.13+ | Migrações de banco de dados |
+| Pydantic | 2.x | Validação de dados e schemas |
+| python-jose | 3.3+ | Validação de JWTs (Clerk) |
+| httpx | 0.27+ | Cliente HTTP assíncrono |
+| svix | 1.34+ | Processamento de webhooks Clerk |
+| uvicorn | 0.30+ | Servidor ASGI |
+| pytest | 8.x | Framework de testes |
+| pytest-cov | 5.x | Cobertura de testes |
+| ruff | 0.x | Linting e formatação Python |
 
-Campos mínimos:
-- nome
-- descricao
-- tempo_preparo
-- rendimento (porções)
-- preco_venda_sugerido
-- usuario_id
+### 3.2 Frontend
 
-Regras:
+| Tecnologia | Versão | Finalidade |
+|-----------|--------|-----------|
+| Next.js | 14.x | Framework React com SSR/SSG |
+| TypeScript | 5.x | Tipagem estática |
+| Tailwind CSS | 3.x | Utility-first CSS framework |
+| Clerk Next.js SDK | 6.x | Autenticação no frontend |
+| Axios | 1.x | Cliente HTTP |
+| Framer Motion | 12.x | Animações de UI |
+| Lucide React | 0.x | Biblioteca de ícones |
+
+### 3.3 Infraestrutura
+
+| Componente | Tecnologia | Ambiente |
+|-----------|-----------|---------|
+| Banco de dados | PostgreSQL 15 (Supabase) | Produção |
+| Banco de dados (local) | PostgreSQL 15 Alpine (Docker) | Desenvolvimento |
+| Deploy backend | Vercel (serverless) | Produção |
+| Deploy frontend | Vercel | Produção |
+| CI/CD | GitHub Actions | Automação |
+| Containers | Docker + Docker Compose | Desenvolvimento local |
+| IaC | Terraform | Provisionamento de infra |
+
+---
+
+## 4. Componentes de Domínio e Regras de Negócio
+
+### 4.1 Entidade: Receita
+
+**Campos:**
+- `id` (UUID)
+- `nome` (string, obrigatório, único por usuário)
+- `descricao` (string, opcional)
+- `tempo_preparo` (inteiro, em minutos)
+- `rendimento` (inteiro, > 0, em porções)
+- `preco_venda_sugerido` (Decimal, > 0)
+- `usuario_id` (string — Clerk user_id)
+
+**Regras de domínio:**
 - `rendimento` deve ser maior que 0.
-- Leitura de `rendimento` **não pode** alterar estado da entidade.
+- A leitura de `rendimento` não pode alterar o estado da entidade (imutabilidade).
 
-### 3.2 Pedido
+### 4.2 Entidade: Pedido
 
-Campos mínimos:
-- cliente_nome
-- cliente_telefone
-- data_entrega
-- status (`Pendente`, `Em Producao`, `Concluido`, `Cancelado`)
-- itens (receita_id, quantidade)
-- observacoes
+**Campos:**
+- `id` (UUID)
+- `cliente_nome` (string, obrigatório)
+- `cliente_telefone` (string, opcional)
+- `data_entrega` (date)
+- `status` (`Pendente` | `Em Producao` | `Concluido` | `Cancelado`)
+- `descricao` (string, opcional)
+- `tipo_entrega` (string)
+- `preco_total` (Decimal)
+- `user_id` (string — Clerk user_id)
+- `endereco_entrega` (string, opcional)
 
-Regras:
-- Todo pedido nasce com status `Pendente`.
-- Transições permitidas: `Pendente -> Em Producao -> Concluido`.
-- `Cancelado` permitido apenas para pedidos não concluídos.
+**Regras de domínio:**
+- Pedido nasce com status `Pendente`.
+- Transições permitidas: `Pendente → Em Producao → Concluido`.
+- `Cancelado` permitido apenas para pedidos em estado não `Concluido`.
+- Transições inválidas lançam exceção de domínio.
 
----
+### 4.3 Entidade: User
 
-## 4. Casos de Uso (Application Layer)
-
-### 4.1 Receitas
-- criar_receita
-- editar_receita
-- excluir_receita
-- listar_receitas
-- detalhar_receita
-
-### 4.2 Pedidos
-- criar_pedido
-- editar_pedido
-- listar_pedidos
-- detalhar_pedido
-- alterar_status_pedido
-- cancelar_pedido
-
-### 4.3 Produção
-- listar_painel_producao_dia
-- listar_painel_producao_semana
+**Campos:**
+- `id` (UUID interno)
+- `clerk_id` (string — identificador externo Clerk)
+- `email` (string)
+- `nome` (string)
 
 ---
 
-## 5. Contratos de Gateway (Interfaces)
+## 5. Casos de Uso (Application Layer)
 
-Interfaces abstratas recomendadas:
-- `RepositorioDeReceita`
-- `RepositorioDePedido`
+### 5.1 Receitas
+- `CriarReceita` — persiste nova receita vinculada ao usuário autenticado
+- `EditarReceita` — atualiza campos de receita existente
+- `ExcluirReceita` — remove receita pelo ID
+- `ListarReceitas` — lista receitas do usuário com suporte a filtros
+- `BuscarReceitaPorId` — retorna detalhes de uma receita específica
+- `BuscarReceitaPorNome` — busca receitas por nome parcial
 
-Responsabilidades:
-- Persistência e consulta de dados.
-- Operações transacionais para mudança de status e baixa de estoque.
-- Isolamento da infraestrutura (Supabase/PostgreSQL) da regra de negócio.
+### 5.2 Pedidos
+- `CriarPedido` — cria pedido com status inicial `Pendente`
+- `EditarPedido` — atualiza dados do pedido
+- `ExcluirPedido` — remove pedido pelo ID
+- `ListarPedidos` — lista pedidos do usuário
+- `BuscarPedidoPorId` — retorna detalhes de pedido específico
+- `BuscarPedidoPorNomeCliente` — busca pedidos por nome do cliente
+
+### 5.3 Usuários
+- `RegistrarUsuario` — sincroniza novo usuário do webhook Clerk
+- `BuscarUsuarioPorId` — consulta usuário pelo ID interno ou clerk_id
 
 ---
 
-## 6. Fluxos Técnicos Críticos
+## 6. Contratos de API (Endpoints)
 
-### 6.1 Criação de Receita
+| Método | Endpoint | Autenticação | Descrição |
+|--------|---------|-------------|-----------|
+| GET | `/health` | Não | Status do serviço |
+| GET | `/debug` | Não | Diagnóstico de variáveis de ambiente |
+| POST | `/receitas` | JWT Clerk | Criar receita |
+| GET | `/receitas` | JWT Clerk | Listar receitas do usuário |
+| GET | `/receitas/{id}` | JWT Clerk | Detalhar receita |
+| PUT | `/receitas/{id}` | JWT Clerk | Atualizar receita |
+| DELETE | `/receitas/{id}` | JWT Clerk | Excluir receita |
+| POST | `/pedidos/` | JWT Clerk | Criar pedido |
+| GET | `/pedidos/` | JWT Clerk | Listar pedidos do usuário |
+| GET | `/pedidos/{id}` | JWT Clerk | Detalhar pedido |
+| PUT | `/pedidos/{id}` | JWT Clerk | Atualizar pedido |
+| DELETE | `/pedidos/{id}` | JWT Clerk | Excluir pedido |
+| GET | `/perfil/me` | JWT Clerk | Perfil do usuário autenticado |
+| POST | `/perfil/sincronizar` | Não | Sincronizar perfil via webhook |
+| POST | `/webhooks` | Svix | Webhooks do Clerk |
 
+**Documentação interativa:** disponível em `/docs` (Swagger UI) e `/redoc`.
+
+---
+
+## 7. Observabilidade e Rastreabilidade (RNF-04)
+
+### 7.1 Logging Estruturado
+
+O sistema implementa middleware de logging no FastAPI com as seguintes características:
+
+- **Formato:** JSON estruturado (machine-readable)
+- **request_id:** UUID único por requisição, incluído em todos os logs da mesma chamada
+- **Campos obrigatórios em todo log:**
+
+```json
+{
+  "timestamp": "2026-04-20T10:30:00.123Z",
+  "level": "INFO",
+  "request_id": "550e8400-e29b-41d4-a716-446655440000",
+  "method": "POST",
+  "path": "/pedidos/",
+  "status_code": 201,
+  "duration_ms": 45.2,
+  "service": "confeitaria-api"
+}
 ```
-POST /receitas
-  -> validar payload
-  -> criar entidade Receita
-  -> persistir receita + itens da ficha técnica
-  -> retornar 201
-```
 
-### 6.2 Criação de Pedido
+- **Eventos críticos registrados:** criação/alteração de pedidos, erros de autenticação, falhas de banco, webhooks recebidos.
+- **Níveis de log:** DEBUG (dev), INFO (produção), WARNING (alertas), ERROR (falhas).
 
-```
-POST /pedidos
-  -> validar cliente e itens
-  -> criar pedido com status Pendente
-  -> persistir pedido
-  -> retornar 201
-```
+### 7.2 Health Check
 
-### 6.3 Alteração de Status
+- **Endpoint:** `GET /health`
+- **Resposta:** `{ "status": "ok", "service": "confeitaria-api", "version": "0.1.0" }`
+- **Usado por:** Docker health check, CI/CD pipeline, monitoramento externo.
 
-```
-PATCH /pedidos/{id}/status
-  -> validar transição de status
-  -> persistir novo status
-  -> retornar 200
+---
+
+## 8. Segurança (RNF-02)
+
+### 8.1 Autenticação
+
+- JWT emitido pelo Clerk, validado via **JWKS** (JSON Web Key Set) público.
+- Cada requisição protegida injeta via `FastAPI Depends` o `user_id` extraído do token.
+- Tokens expirados retornam `401 Unauthorized`.
+
+### 8.2 Proteção de Dados
+
+- **Em trânsito:** TLS 1.2+ obrigatório (HTTPS).
+- **Em repouso:** senhas nunca armazenadas no sistema (gerenciadas pelo Clerk).
+- **SQL Injection:** prevenida pelo uso de ORM parametrizado (SQLAlchemy).
+- **CORS:** configurado com origens autorizadas no middleware FastAPI.
+
+### 8.3 Webhooks
+
+- Assinatura Svix verificada no endpoint `/webhooks` antes de processar eventos.
+
+---
+
+## 9. Persistência (RNF-07)
+
+### 9.1 Banco de Dados Relacional
+
+- **Tecnologia:** PostgreSQL 15
+- **Hospedagem produção:** Supabase (managed PostgreSQL)
+- **Hospedagem desenvolvimento:** Docker (PostgreSQL 15 Alpine)
+- **ORM:** SQLAlchemy 2.0 (estilo declarativo)
+- **Migrações:** Alembic — schema versionado com rollback seguro
+
+### 9.2 Modelos de Dados
+
+**Tabela `users`:** id, clerk_id, email, nome, created_at
+**Tabela `receitas`:** id, nome, descricao, tempo_preparo, rendimento, preco_venda_sugerido, usuario_id, created_at, updated_at
+**Tabela `pedidos`:** id, cliente_nome, cliente_telefone, data_entrega, status, descricao, tipo_entrega, preco_total, user_id, endereco_entrega, created_at, updated_at
+
+### 9.3 Estratégia de Backup
+
+- Supabase realiza backups automáticos diários (plano gratuito: 7 dias de retenção).
+- Migrações Alembic permitem recriação do schema em qualquer ambiente.
+
+---
+
+## 10. Portabilidade e Implantação (RNF-06)
+
+### 10.1 Containerização
+
+- **Padrão:** OCI (Open Container Initiative) — Docker.
+- **Backend Dockerfile:** multi-stage build (deps → runtime), usuário não-root `appuser`, Python 3.12 slim.
+- **Frontend Dockerfile:** multi-stage build (deps → build → runtime), usuário não-root `nextjs`, Next.js standalone output.
+- **Docker Compose:** orquestra PostgreSQL + Backend + Frontend para desenvolvimento local.
+
+### 10.2 Infraestrutura como Código (IaC)
+
+- Configurações de infraestrutura versionadas na pasta `infra/terraform/`.
+- Variáveis de ambiente gerenciadas como segredos no GitHub Actions e na Vercel.
+- **Nunca** hardcodar credenciais ou URLs de banco no código.
+
+### 10.3 CI/CD Pipeline (GitHub Actions)
+
+```yaml
+# Fluxo do pipeline em deploy.yml:
+Trigger: push na branch main
+  ↓
+Quality Gate:
+  - Lint frontend (ESLint)
+  - Lint backend (Ruff)
+  - Testes unitários + integração (pytest, cobertura mínima 70%)
+  - Upload de relatório de cobertura
+  ↓
+Deploy Backend → Vercel (serverless FastAPI)
+Deploy Frontend → Vercel (Next.js)
 ```
 
 ---
 
-## 7. Tecnologias e Arquitetura de Integração
+## 11. Manutenibilidade e Testabilidade (RNF-05)
 
-### 7.1 Stack Tecnológico
-- **Frontend:** Next.js (React)
-- **Backend:** FastAPI (Python 3.x)
-- **Banco de dados:** Supabase (PostgreSQL)
-- **Autenticação:** Clerk
-- **Testes:** pytest (Backend) / Jest ou Vitest (Frontend)
-- **Deploy:** Vercel
-- **CI/CD:** GitHub Actions (ou integração nativa da Vercel)
+### 11.1 Estratégia de Testes
 
-### 7.2 Padrões de Integração Next.js x FastAPI
+| Tipo | Cobertura | Ferramentas | Localização |
+|------|-----------|------------|------------|
+| **Unitários — Domínio** | Entidades, regras de negócio | pytest | `test/pedido/`, `test/receita/`, `test/user/` |
+| **Unitários — Use Cases** | Fluxos de aplicação com mocks | pytest + unittest.mock | `test/pedido/test_UseCasePedido.py` etc. |
+| **Unitários — Mappers** | Conversão entidade ↔ ORM | pytest | `test/*/test_*Mapper.py` |
+| **Integração — Presentation** | Endpoints HTTP ponta a ponta | pytest + FastAPI TestClient | `test/test_Presentation.py` |
+| **Integração — Repositórios** | Consultas ao banco (mock de DB) | pytest | `test/infrastructure/test_Repositories.py` |
+| **Aceite** | Fluxos completos de negócio | pytest + TestClient | `test/test_acceptance.py` |
 
-A comunicação entre a interface (Next.js) e a API (FastAPI) seguirá os seguintes padrões:
+**Cobertura mínima:** 70% do código backend (verificada em CI com `pytest-cov`).
 
-1. **Autenticação e Sessão (Clerk):** 
-   - O Next.js gerencia o estado de autenticação utilizando os fluxos e componentes base do Clerk.
-   - O cliente (frontend) obtém um token JWT de sessão atual e o envia via cabeçalho HTTP (`Authorization: Bearer <token>`) em todas as requisições protegidas direcionadas ao backend.
-   - O FastAPI, através de uma dependência (Dependency Injection), valida criptograficamente a assinatura deste JWT (via JWKS público do Clerk), extraindo de forma segura metadados como `user_id`.
+### 11.2 Governança de Código (RNF-08)
 
-2. **CORS (Cross-Origin Resource Sharing):**
-   - O backend FastAPI define as políticas de `CORSMiddleware` restringindo ou autorizando origens ativas (ex: `localhost:3000` em desenvolvimento e domínio customizado no Vercel). Isso viabiliza interações seguras client-side.
-
-3. **Estratégia de Fetching e Estado (Next.js App Router):**
-   - **React Server Components (RSC):** Utilizados para páginas de visualização ou dashboards (ex: painéis de pedidos pendentes). O servidor Next.js faz a requisição diretamente ao FastAPI, pré-renderizando resultados e ocultando possíveis complexidades do cliente.
-   - **Client Components & Data Mutation:** Em interfaces muito interativas (como ajustar itens de uma receita dinamicamente ou manipular tabelas), os dados serão trazidos/atualizados preferencialmente invocando a API FastAPI através de bibliotecas de gerenciamento de estado server-state (como TanStack React Query SWR), para lidar eficientemente com cache no navegador, refetching em foco e estados de loading.
-   - **Server Actions:** Podem atuar como um BFF leve (Backend For Frontend), recebendo submissões de formulário no lado servidor (Next.js) e compondo a chamada final para o FastAPI, encapsulando segredos se aplicável.
-
-4. **Tipagem Estática Ponto a Ponto (Contratos OpenAPI):**
-   - O frontend de Next.js com TypeScript consumirá o schema OpenAPI gerado automaticamente pelo FastAPI (em `/openapi.json`) para derivar os tipos (interfaces/types do TypeScript) via geradores (ex: `openapi-typescript` ou orval). Isso garante que mudanças em DTOs/Schemas no backend imediatamente apontem erros de linting em tempo de build no frontend caso ocorram quebras de contrato.
+- **Linting Python:** Ruff (substitui flake8 + isort + black)
+- **Linting TypeScript:** ESLint com configuração Next.js
+- **Formatação:** Prettier (frontend)
+- **Pre-commit hooks:** configuráveis via `.pre-commit-config.yaml`
+- **Isolamento de dependências:** `venv` Python, `node_modules` com package-lock.json
 
 ---
 
-## 8. Requisitos Não Funcionais Técnicos
+## 12. Padrões de Integração Frontend ↔ Backend
 
-- Tempo de resposta alvo: < 200ms para a maioria das requisições.
-- Cobertura mínima de testes unitários no backend: 80%.
-- API documentada via OpenAPI/Swagger.
-- Logs estruturados para rastreabilidade de erros e movimentações críticas.
-- Arquitetura mobile-first no frontend consumindo endpoints enxutos.
+### 12.1 Autenticação
 
----
+1. Next.js gerencia sessão via Clerk SDK.
+2. Cliente obtém JWT da sessão atual via `useAuth().getToken()`.
+3. JWT enviado no header `Authorization: Bearer <token>` em todas as requisições protegidas.
+4. FastAPI valida JWT via JWKS e injeta `user_id` como dependência.
 
-## 9. Estratégia de Testes
+### 12.2 Fetching de Dados
 
-### 9.1 Domínio
-- Validar regras de receita, pedido e estoque.
-- Garantir que `rendimento` não sofre mutação em leitura.
-- Validar bloqueio de transições de status inválidas.
-
-### 9.2 Use Cases
-- Cenários felizes e de erro para criação/edição/exclusão.
-- Cenários de baixa automática/sugerida de estoque.
-- Cenários de concorrência simples em alteração de status.
-
-### 9.3 Integração
-- Integração FastAPI + repositórios.
-- Fluxo ponta a ponta: receita -> pedido.
+- **React Server Components:** para páginas de listagem (pré-renderizadas no servidor Next.js).
+- **Client Components + Axios:** para mutações e interações em tempo real.
+- **Tipagem ponta a ponta:** schemas OpenAPI do FastAPI usados para gerar types TypeScript.
 
 ---
 
-## 10. Roadmap Técnico
+## 13. Roadmap Técnico
 
-### 10.1 Entregas de Curto Prazo
-- [x] CRUD de receitas completo.
-- [ ] CRUD de pedidos com transição de status válida.
+### Entregas Implementadas
+- [x] CRUD de receitas completo (domínio, use cases, API, frontend)
+- [x] CRUD de pedidos com transição de status
+- [x] Autenticação Clerk integrada (frontend + backend)
+- [x] Sincronização de usuário via webhook
+- [x] Logging estruturado com request_id
+- [x] Testes unitários (domínio, use cases, mappers)
+- [x] Testes de integração (presentation, repositórios)
+- [x] CI/CD com GitHub Actions
+- [x] Docker e Docker Compose
 
-### 10.2 Entregas de Médio Prazo
-- [ ] Painel de produção (dia/semana).
-- [ ] Histórico de movimentação de estoque.
-- [ ] Paginação e filtros avançados.
-
-### 10.3 Qualidade e Operação
-- [ ] CI/CD com testes automatizados.
-- [ ] Monitoramento e logging estruturado.
-- [ ] Hardening de segurança na integração com Clerk.
+### Backlog
+- [ ] Testes de aceite ponta a ponta
+- [ ] Painel de produção (dia/semana)
+- [ ] Gestão de estoque com baixa automática
+- [ ] Notificações de estoque crítico
+- [ ] Paginação e filtros avançados
 
 ---
 
-## 11. Versão do Documento
+## 14. Referências
 
-**Versão:** 1.2  
-**Última Atualização:** 2026-04-09  
-**Autor:** Equipe de Desenvolvimento
+- [PRD](prd.md) — Requisitos funcionais e não funcionais
+- [Modelos C4](modelos_c4.md) — Diagramas de arquitetura
+- [Design System](design_system.md) — Padrões de UI
+- [OpenAPI Docs](http://localhost:9090/docs) — Documentação interativa da API (ambiente local)

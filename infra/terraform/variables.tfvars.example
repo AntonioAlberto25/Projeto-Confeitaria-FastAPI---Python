@@ -1,0 +1,11 @@
+# Arquivo de exemplo para variáveis Terraform
+# Copie para terraform.tfvars e preencha com os valores reais
+# NUNCA commite terraform.tfvars — ele está no .gitignore
+
+vercel_api_token                  = "seu-token-vercel-aqui"
+vercel_team_id                    = ""  # Deixe vazio se não usar team
+database_url                      = "postgresql://user:password@host:5432/dbname"
+clerk_secret_key                  = "sk_live_..."
+clerk_webhook_secret              = "whsec_..."
+next_public_clerk_publishable_key = "pk_live_..."
+next_public_api_url               = "https://seu-backend.vercel.app"
