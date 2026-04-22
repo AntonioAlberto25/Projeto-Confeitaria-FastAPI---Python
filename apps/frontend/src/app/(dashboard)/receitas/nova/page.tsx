@@ -27,6 +27,23 @@ export default function NovaReceitaPage() {
 
   const handleSubmit = async () => {
     if (!form.nome.trim()) { setError('O nome da receita é obrigatório.'); return }
+
+    const rendimento = form.rendimento ? parseInt(form.rendimento) : null
+    if (rendimento !== null && rendimento <= 0) {
+      setError('O rendimento deve ser maior que zero.')
+      return
+    }
+    const tempo_preparo = form.tempo_preparo ? parseInt(form.tempo_preparo) : null
+    if (tempo_preparo !== null && tempo_preparo <= 0) {
+      setError('O tempo de preparo deve ser maior que zero.')
+      return
+    }
+    const preco = form.preco_venda_sugerido ? parseFloat(form.preco_venda_sugerido) : null
+    if (preco !== null && preco <= 0) {
+      setError('O preço de venda deve ser maior que zero.')
+      return
+    }
+
     setSaving(true)
     setError(null)
     try {
@@ -34,8 +51,9 @@ export default function NovaReceitaPage() {
       if (!token) throw new Error('Não autenticado')
       const payload = {
         ...form,
-        tempo_preparo: form.tempo_preparo ? parseInt(form.tempo_preparo) : undefined,
-        preco_venda_sugerido: form.preco_venda_sugerido ? parseFloat(form.preco_venda_sugerido) : undefined,
+        rendimento: rendimento ?? undefined,
+        tempo_preparo: tempo_preparo ?? undefined,
+        preco_venda_sugerido: preco ?? undefined,
       }
       await createReceita(token, payload)
       router.push('/receitas')
@@ -77,11 +95,11 @@ export default function NovaReceitaPage() {
         </div>
 
         {[
-          { label: 'Nome da Receita *', field: 'nome', type: 'text', placeholder: 'Ex: Bolo de Chocolate Belga' },
-          { label: 'Descrição', field: 'descricao', type: 'text', placeholder: 'Breve descrição da receita...' },
-          { label: 'Rendimento', field: 'rendimento', type: 'number', placeholder: 'Insira o numero' },
-          { label: 'Tempo de Preparo (min)', field: 'tempo_preparo', type: 'number', placeholder: '60' },
-          { label: 'Preço de Venda Sugerido (R$)', field: 'preco_venda_sugerido', type: 'number', placeholder: '0,00' },
+          { label: 'Nome da Receita *', field: 'nome', type: 'text', placeholder: 'Ex: Bolo de Chocolate Belga', min: undefined },
+          { label: 'Descrição', field: 'descricao', type: 'text', placeholder: 'Breve descrição da receita...', min: undefined },
+          { label: 'Rendimento (unidades) *', field: 'rendimento', type: 'number', placeholder: 'Ex: 12 (deve ser ≥ 1)', min: '1' },
+          { label: 'Tempo de Preparo (min)', field: 'tempo_preparo', type: 'number', placeholder: '60', min: '1' },
+          { label: 'Preço de Venda Sugerido (R$)', field: 'preco_venda_sugerido', type: 'number', placeholder: '0,00', min: '0.01' },
         ].map(f => (
           <div key={f.field}>
             <label className="block text-xs font-semibold uppercase tracking-widest mb-2"
@@ -101,6 +119,7 @@ export default function NovaReceitaPage() {
                 type={f.type}
                 placeholder={f.placeholder}
                 className="input-field"
+                min={f.min}
                 value={(form as any)[f.field]}
                 onChange={e => update(f.field, e.target.value)}
               />
