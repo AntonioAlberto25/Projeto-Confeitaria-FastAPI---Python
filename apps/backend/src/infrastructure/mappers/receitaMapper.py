@@ -8,14 +8,19 @@ class ReceitaMapper:
     def to_domain(model: ReceitaModel) -> Receita:
         """
         Converte um objeto do ORM (ReceitaModel) para a Entidade de Domínio (Receita).
+        Usa atributo privado diretamente para evitar re-validação de dados históricos do banco.
         """
         receita = Receita()
-        # Nota: a entidade de negócio não tem id publico ou mapeado na v1, mas o model tem.
         receita.nome = model.nome
-        receita.preco_venda_sugerido = model.preco_venda_sugerido
         receita.descricao = model.descricao
-        receita.rendimento = model.rendimento
+        receita.modo_preparo = model.modo_preparo
         receita.idUsuario = model.usuario_id
+
+        # Campos numéricos: bypass do setter para não rejeitar dados históricos com valores como 0
+        receita._Receita__preco_venda_sugerido = float(model.preco_venda_sugerido) if model.preco_venda_sugerido is not None else None
+        receita._Receita__rendimento = int(model.rendimento) if model.rendimento is not None else None
+        receita._Receita__tempo_preparo = int(model.tempo_preparo) if model.tempo_preparo is not None else None
+
         return receita
 
     @staticmethod
@@ -28,5 +33,7 @@ class ReceitaMapper:
             preco_venda_sugerido=entity.preco_venda_sugerido,
             descricao=entity.descricao,
             rendimento=entity.rendimento,
+            tempo_preparo=entity.tempo_preparo,
+            modo_preparo=entity.modo_preparo,
             usuario_id=entity.idUsuario
         )
