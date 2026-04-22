@@ -1,0 +1,87 @@
+Name                                                                Stmts   Miss  Cover   Missing
+-------------------------------------------------------------------------------------------------
+src\__init__.py                                                         0      0   100%
+src\application\__init__.py                                             0      0   100%
+src\application\gateways\__init__.py                                    0      0   100%
+src\application\gateways\repositorioDePedido.py                        22      6    73%   11, 16, 21, 26, 31, 36
+src\application\gateways\repositorioDeReceita.py                       22      6    73%   10, 14, 18, 22, 27, 31
+src\application\gateways\repositorioDeUsuario.py                       10      2    80%   19, 24
+src\application\usecases\__init__.py                                    0      0   100%
+src\application\usecases\pedido\__init__.py                             0      0   100%
+src\application\usecases\pedido\buscarPedidoPorId.py                    8      0   100%
+src\application\usecases\pedido\buscarPedidoPorNomeCliente.py           8      0   100%
+src\application\usecases\pedido\criarPedido.py                          7      0   100%
+src\application\usecases\pedido\editarPedido.py                         7      0   100%
+src\application\usecases\pedido\excluirPedido.py                        6      0   100%
+src\application\usecases\pedido\listarPedidos.py                        8      0   100%
+src\application\usecases\receita\__init__.py                            0      0   100%
+src\application\usecases\receita\buscarReceitaPorId.py                  8      0   100%
+src\application\usecases\receita\buscarReceitaPorNome.py                8      0   100%
+src\application\usecases\receita\criarReceita.py                        7      0   100%
+src\application\usecases\receita\editarReceita.py                       7      0   100%
+src\application\usecases\receita\excluirReceita.py                      7      0   100%
+src\application\usecases\receita\listarReceitas.py                      8      0   100%
+src\application\usecases\user\buscarUsuarioPorId.py                     8      0   100%
+src\application\usecases\user\registrarUsuario.py                       7      0   100%
+src\domain\__init__.py                                                  0      0   100%
+src\domain\entity\__init__.py                                           0      0   100%
+src\domain\entity\pedido\__init__.py                                    0      0   100%
+src\domain\entity\pedido\pedido.py                                     85      0   100%
+src\domain\entity\receita\__init__.py                                   0      0   100%
+src\domain\entity\receita\receita.py                                   78      5    94%   15, 28, 43, 47, 88
+src\domain\entity\user\__init__.py                                      0      0   100%
+src\domain\entity\user\user.py                                         51      1    98%   39
+src\infrastructure\__init__.py                                          0      0   100%
+src\infrastructure\auth\clerk.py                                       46     35    24%   17-31, 38-83
+src\infrastructure\dependencies.py                                     37     10    73%   36-40, 44-45, 56-57, 68-69
+src\infrastructure\gateway\__init__.py                                  4      0   100%
+src\infrastructure\gateway\pedidoRepository.py                         81     43    47%   39-58, 61-64, 69, 86-102, 105-115
+src\infrastructure\gateway\receitaRepository.py                        70     37    47%   35-51, 54-61, 66, 79-92, 95-105
+src\infrastructure\gateway\userRepository.py                           30     21    30%   9, 12-31, 34-44
+src\infrastructure\mappers\__init__.py                                  0      0   100%
+src\infrastructure\mappers\pedidoMapper.py                             18      0   100%
+src\infrastructure\mappers\receitaMapper.py                            15      0   100%
+src\infrastructure\mappers\userMapper.py                               16      0   100%
+src\infrastructure\persistencia\__init__.py                             0      0   100%
+src\infrastructure\persistencia\database.py                             8      0   100%
+src\infrastructure\persistencia\pedidoModel.py                         16      0   100%
+src\infrastructure\persistencia\receitaModel.py                        13      0   100%
+src\infrastructure\persistencia\userModel.py                           12      0   100%
+src\infrastructure\repositorios\__init__.py                             0      0   100%
+src\infrastructure\repositorios\repositorioDePedidoSQLAlchemy.py       45     23    49%   23-40, 43-46, 49-52, 59-63
+src\infrastructure\repositorios\repositorioDeReceitaSQLAlchemy.py      61     34    44%   28-48, 51-57, 60-66, 78-88
+src\infrastructure\repositorios\repositorioDeUsuarioSQLAlchemy.py      20      4    80%   23-26
+src\main.py                                                            25      2    92%   22-23
+src\presentation\__init__.py                                            0      0   100%
+src\presentation\controllers\__init__.py                                4      0   100%
+src\presentation\controllers\pedidoController.py                       75     58    23%   23-28, 31-60, 63-93, 96-114, 117-137, 140-144
+src\presentation\controllers\receitaController.py                      61     45    26%   24-29, 32-57, 60-75, 78-95, 98-109
+src\presentation\controllers\userController.py                         31     22    29%   13-14, 20-41, 47-63
+src\presentation\routes\__init__.py                                     0      0   100%
+src\presentation\routes\health.py                                       5      0   100%
+src\presentation\routes\pedidos.py                                     23      3    87%   43, 51-52
+src\presentation\routes\perfil.py                                      12      2    83%   15, 23
+src\presentation\routes\receitas.py                                    20      2    90%   41-42
+src\presentation\routes\webhooks.py                                    30     20    33%   21-64
+src\presentation\schemas\__init__.py                                    4      0   100%
+src\presentation\schemas\pedido_schema.py                              29      2    93%   20, 27
+src\presentation\schemas\receita_schema.py                             19      1    95%   16
+src\presentation\schemas\user_schema.py                                 9      0   100%
+src\test\__init__.py                                                    0      0   100%
+src\test\infrastructure\test_Repositories.py                          133      0   100%
+src\test\pedido\__init__.py                                             0      0   100%
+src\test\pedido\test_Pedido.py                                         70      0   100%
+src\test\pedido\test_PedidoMapper.py                                   35      0   100%
+src\test\pedido\test_UseCasePedido.py                                  88      0   100%
+src\test\receita\__init__.py                                            0      0   100%
+src\test\receita\test_Receita.py                                       39      0   100%
+src\test\receita\test_ReceitaMapper.py                                 25      0   100%
+src\test\receita\test_UseCaseReceita.py                                63      0   100%
+src\test\test_Presentation.py                                          70      0   100%
+src\test\user\__init__.py                                               0      0   100%
+src\test\user\test_UseCaseUser.py                                      24      0   100%
+src\test\user\test_User.py                                             29      0   100%
+src\test\user\test_UserMapper.py                                       29      0   100%
+-------------------------------------------------------------------------------------------------
+TOTAL                                                                1816    384    79%
+============================= 66 passed in 3.73s ==============================

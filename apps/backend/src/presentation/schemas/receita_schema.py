@@ -5,8 +5,9 @@ class ReceitaBase(BaseModel):
     nome: str = Field(..., min_length=1)
     preco_venda_sugerido: Optional[float] = Field(None, gt=0)
     descricao: Optional[str] = None
-    rendimento: Optional[int] = Field(None, gt=0, description="Deve ser maior que zero")
-    tempo_preparo: Optional[int] = Field(None, gt=0)
+    rendimento: Optional[int] = None
+    tempo_preparo: Optional[int] = None
+
     modo_preparo: Optional[str] = None
 
     @field_validator('preco_venda_sugerido', 'rendimento', 'tempo_preparo', mode='before')

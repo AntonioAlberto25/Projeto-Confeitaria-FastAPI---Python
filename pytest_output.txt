@@ -1,0 +1,56 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.14.3, pytest-9.0.2, pluggy-1.6.0 -- C:\Python314\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\Dell\OneDrive\Documentos\git_test\Projeto-Confeitaria-FastAPI---Python\apps\backend
+configfile: pytest.ini
+plugins: anyio-4.13.0, cov-7.1.0
+collecting ... collected 32 items
+
+apps\backend\src\test\receita\test_UseCaseReceita.py::test_criar_receita_chama_repositorio PASSED [  3%]
+apps\backend\src\test\receita\test_UseCaseReceita.py::test_listar_receitas_chama_repositorio PASSED [  6%]
+apps\backend\src\test\receita\test_UseCaseReceita.py::test_buscar_receita_por_id_chama_repositorio PASSED [  9%]
+apps\backend\src\test\receita\test_UseCaseReceita.py::test_buscar_receita_por_nome_chama_repositorio PASSED [ 12%]
+apps\backend\src\test\receita\test_UseCaseReceita.py::test_editar_receita_chama_repositorio PASSED [ 15%]
+apps\backend\src\test\receita\test_UseCaseReceita.py::test_excluir_receita_chama_repositorio PASSED [ 18%]
+apps\backend\src\test\receita\test_ReceitaMapper.py::test_receita_mapper_to_domain PASSED [ 21%]
+apps\backend\src\test\receita\test_ReceitaMapper.py::test_receita_mapper_to_model PASSED [ 25%]
+apps\backend\src\test\receita\test_Receita.py::test_preco_invalido PASSED [ 28%]
+apps\backend\src\test\receita\test_Receita.py::test_rendimento_valido PASSED [ 31%]
+apps\backend\src\test\receita\test_Receita.py::test_cpf_usuario PASSED   [ 34%]
+apps\backend\src\test\receita\test_Receita.py::test_consumir_abate_porcoes PASSED [ 37%]
+apps\backend\src\test\receita\test_Receita.py::test_consumir_exato_zera_rendimento PASSED [ 40%]
+apps\backend\src\test\receita\test_Receita.py::test_consumir_acima_do_disponivel_levanta_erro PASSED [ 43%]
+apps\backend\src\test\receita\test_Receita.py::test_consumir_quantidade_invalida_levanta_erro PASSED [ 46%]
+apps\backend\src\test\receita\test_Receita.py::test_consumir_sem_rendimento_definido_levanta_erro PASSED [ 50%]
+apps\backend\src\test\infrastructure\test_Repositories.py::test_receita_repository_criar PASSED [ 53%]
+apps\backend\src\test\infrastructure\test_Repositories.py::test_pedido_repository_criar FAILED [ 56%]
+apps\backend\src\test\infrastructure\test_Repositories.py::test_receita_repository_buscar_por_id PASSED [ 59%]
+apps\backend\src\test\infrastructure\test_Repositories.py::test_pedido_repository_buscar_por_id FAILED [ 62%]
+apps\backend\src\test\infrastructure\test_Repositories.py::test_receita_sqlalchemy_repository_criar PASSED [ 65%]
+apps\backend\src\test\infrastructure\test_Repositories.py::test_pedido_sqlalchemy_repository_criar PASSED [ 68%]
+apps\backend\src\test\infrastructure\test_Repositories.py::test_user_sqlalchemy_repository_registrar PASSED [ 71%]
+apps\backend\src\test\infrastructure\test_Repositories.py::test_receita_sqlalchemy_repository_listar PASSED [ 75%]
+apps\backend\src\test\infrastructure\test_Repositories.py::test_pedido_sqlalchemy_repository_listar PASSED [ 78%]
+apps\backend\src\test\test_Presentation.py::test_health_check PASSED     [ 81%]
+apps\backend\src\test\test_Presentation.py::test_listar_receitas_empty PASSED [ 84%]
+apps\backend\src\test\test_Presentation.py::test_criar_receita PASSED    [ 87%]
+apps\backend\src\test\test_Presentation.py::test_listar_pedidos_empty PASSED [ 90%]
+apps\backend\src\test\test_Presentation.py::test_buscar_receita_por_id PASSED [ 93%]
+apps\backend\src\test\test_Presentation.py::test_criar_pedido PASSED     [ 96%]
+apps\backend\src\test\test_Presentation.py::test_buscar_pedido_por_id PASSED [100%]
+
+================================== FAILURES ===================================
+________________________ test_pedido_repository_criar _________________________
+apps\backend\src\test\infrastructure\test_Repositories.py:37: in test_pedido_repository_criar
+    resultado = repo.save(pedido)
+                ^^^^^^^^^
+E   AttributeError: 'PedidoRepository' object has no attribute 'save'
+____________________ test_pedido_repository_buscar_por_id _____________________
+apps\backend\src\test\infrastructure\test_Repositories.py:74: in test_pedido_repository_buscar_por_id
+    resultado = repo.find_by_id(1)
+                ^^^^^^^^^^^^^^^
+E   AttributeError: 'PedidoRepository' object has no attribute 'find_by_id'
+=========================== short test summary info ===========================
+FAILED apps\backend\src\test\infrastructure\test_Repositories.py::test_pedido_repository_criar
+FAILED apps\backend\src\test\infrastructure\test_Repositories.py::test_pedido_repository_buscar_por_id
+======================== 2 failed, 30 passed in 1.90s =========================

@@ -1,0 +1,322 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.14.3, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Users\Dell\OneDrive\Documentos\git_test\Projeto-Confeitaria-FastAPI---Python\apps\backend
+configfile: pytest.ini
+plugins: anyio-4.13.0, cov-7.1.0
+collected 66 items
+
+src\test\infrastructure\test_Repositories.py FFFFFF.FF                   [ 13%]
+src\test\pedido\test_Pedido.py ...............                           [ 36%]
+src\test\pedido\test_PedidoMapper.py FF                                  [ 39%]
+src\test\pedido\test_UseCasePedido.py ........                           [ 51%]
+src\test\receita\test_Receita.py F..FFFFF                                [ 63%]
+src\test\receita\test_ReceitaMapper.py FF                                [ 66%]
+src\test\receita\test_UseCaseReceita.py F.....                           [ 75%]
+src\test\test_Presentation.py ..F.FFF                                    [ 86%]
+src\test\user\test_UseCaseUser.py ..                                     [ 89%]
+src\test\user\test_User.py .....                                         [ 96%]
+src\test\user\test_UserMapper.py ..                                      [100%]
+
+================================== FAILURES ===================================
+________________________ test_receita_repository_criar ________________________
+src\test\infrastructure\test_Repositories.py:18: in test_receita_repository_criar
+    receita.preco = 10.0
+    ^^^^^^^^^^^^^
+E   AttributeError: property 'preco' of 'Receita' object has no setter
+________________________ test_pedido_repository_criar _________________________
+src\test\infrastructure\test_Repositories.py:37: in test_pedido_repository_criar
+    resultado = repo.save(pedido)
+                ^^^^^^^^^
+E   AttributeError: 'PedidoRepository' object has no attribute 'save'
+____________________ test_receita_repository_buscar_por_id ____________________
+src\test\infrastructure\test_Repositories.py:56: in test_receita_repository_buscar_por_id
+    resultado = repo.buscar_por_id(1)
+                ^^^^^^^^^^^^^^^^^^^^^
+src\infrastructure\gateway\receitaRepository.py:70: in buscar_por_id
+    receita.preco_venda_sugerido = float(model.preco_venda_sugerido) if model.preco_venda_sugerido else None
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: float() argument must be a string or a real number, not 'Mock'
+____________________ test_pedido_repository_buscar_por_id _____________________
+src\test\infrastructure\test_Repositories.py:71: in test_pedido_repository_buscar_por_id
+    resultado = repo.find_by_id(1)
+                ^^^^^^^^^^^^^^^
+E   AttributeError: 'PedidoRepository' object has no attribute 'find_by_id'
+__________________ test_receita_sqlalchemy_repository_criar ___________________
+src\test\infrastructure\test_Repositories.py:84: in test_receita_sqlalchemy_repository_criar
+    receita.preco = 10.0
+    ^^^^^^^^^^^^^
+E   AttributeError: property 'preco' of 'Receita' object has no setter
+___________________ test_pedido_sqlalchemy_repository_criar ___________________
+src\test\infrastructure\test_Repositories.py:101: in test_pedido_sqlalchemy_repository_criar
+    repo.criar_pedido(pedido)
+src\infrastructure\repositorios\repositorioDePedidoSQLAlchemy.py:14: in criar_pedido
+    pedido_model = PedidoMapper.to_model(pedido)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\infrastructure\mappers\pedidoMapper.py:28: in to_model
+    return PedidoModel(
+<string>:4: in __init__
+    ???
+C:\Python314\Lib\site-packages\sqlalchemy\orm\state.py:596: in _initialize_instance
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+C:\Python314\Lib\site-packages\sqlalchemy\util\langhelpers.py:121: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+C:\Python314\Lib\site-packages\sqlalchemy\orm\state.py:594: in _initialize_instance
+    manager.original_init(*mixed[1:], **kwargs)
+C:\Python314\Lib\site-packages\sqlalchemy\orm\decl_base.py:2179: in _declarative_constructor
+    raise TypeError(
+E   TypeError: 'user_id' is an invalid keyword argument for PedidoModel
+__________________ test_receita_sqlalchemy_repository_listar __________________
+src\test\infrastructure\test_Repositories.py:134: in test_receita_sqlalchemy_repository_listar
+    resultado = repo.listar_por_usuario("user_1")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\infrastructure\repositorios\repositorioDeReceitaSQLAlchemy.py:69: in listar_por_usuario
+    receitas_model = self._session.query(ReceitaModel).filter(ReceitaModel.id_usuario == user_id).all()
+                                                              ^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: type object 'ReceitaModel' has no attribute 'id_usuario'
+__________________ test_pedido_sqlalchemy_repository_listar ___________________
+src\test\infrastructure\test_Repositories.py:155: in test_pedido_sqlalchemy_repository_listar
+    resultado = repo.listar_por_usuario("user_1")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\infrastructure\repositorios\repositorioDePedidoSQLAlchemy.py:55: in listar_por_usuario
+    pedidos_model = self._session.query(PedidoModel).filter(PedidoModel.user_id == user_id).all()
+                                                            ^^^^^^^^^^^^^^^^^^^
+E   AttributeError: type object 'PedidoModel' has no attribute 'user_id'
+____________________________ test_mapper_to_domain ____________________________
+src\test\pedido\test_PedidoMapper.py:9: in test_mapper_to_domain
+    model = PedidoModel(
+<string>:4: in __init__
+    ???
+C:\Python314\Lib\site-packages\sqlalchemy\orm\state.py:596: in _initialize_instance
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+C:\Python314\Lib\site-packages\sqlalchemy\util\langhelpers.py:121: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+C:\Python314\Lib\site-packages\sqlalchemy\orm\state.py:594: in _initialize_instance
+    manager.original_init(*mixed[1:], **kwargs)
+C:\Python314\Lib\site-packages\sqlalchemy\orm\decl_base.py:2179: in _declarative_constructor
+    raise TypeError(
+E   TypeError: 'user_id' is an invalid keyword argument for PedidoModel
+____________________________ test_mapper_to_model _____________________________
+src\test\pedido\test_PedidoMapper.py:43: in test_mapper_to_model
+    model = PedidoMapper.to_model(domain)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\infrastructure\mappers\pedidoMapper.py:28: in to_model
+    return PedidoModel(
+<string>:4: in __init__
+    ???
+C:\Python314\Lib\site-packages\sqlalchemy\orm\state.py:596: in _initialize_instance
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+C:\Python314\Lib\site-packages\sqlalchemy\util\langhelpers.py:121: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+C:\Python314\Lib\site-packages\sqlalchemy\orm\state.py:594: in _initialize_instance
+    manager.original_init(*mixed[1:], **kwargs)
+C:\Python314\Lib\site-packages\sqlalchemy\orm\decl_base.py:2179: in _declarative_constructor
+    raise TypeError(
+E   TypeError: 'user_id' is an invalid keyword argument for PedidoModel
+_____________________________ test_preco_invalido _____________________________
+src\test\receita\test_Receita.py:7: in test_preco_invalido
+    receitaNova.preco=0
+    ^^^^^^^^^^^^^^^^^
+E   AttributeError: property 'preco' of 'Receita' object has no setter
+_________________________ test_consumir_abate_porcoes _________________________
+src\test\receita\test_Receita.py:27: in test_consumir_abate_porcoes
+    receita.consumir(10)
+    ^^^^^^^^^^^^^^^^
+E   AttributeError: 'Receita' object has no attribute 'consumir'
+_____________________ test_consumir_exato_zera_rendimento _____________________
+src\test\receita\test_Receita.py:33: in test_consumir_exato_zera_rendimento
+    receita.consumir(10)
+    ^^^^^^^^^^^^^^^^
+E   AttributeError: 'Receita' object has no attribute 'consumir'
+_______________ test_consumir_acima_do_disponivel_levanta_erro ________________
+src\test\receita\test_Receita.py:40: in test_consumir_acima_do_disponivel_levanta_erro
+    receita.consumir(6)
+    ^^^^^^^^^^^^^^^^
+E   AttributeError: 'Receita' object has no attribute 'consumir'
+_______________ test_consumir_quantidade_invalida_levanta_erro ________________
+src\test\receita\test_Receita.py:46: in test_consumir_quantidade_invalida_levanta_erro
+    receita.consumir(0)
+    ^^^^^^^^^^^^^^^^
+E   AttributeError: 'Receita' object has no attribute 'consumir'
+_____________ test_consumir_sem_rendimento_definido_levanta_erro ______________
+src\test\receita\test_Receita.py:51: in test_consumir_sem_rendimento_definido_levanta_erro
+    receita.consumir(1)
+    ^^^^^^^^^^^^^^^^
+E   AttributeError: 'Receita' object has no attribute 'consumir'
+________________________ test_receita_mapper_to_domain ________________________
+src\test\receita\test_ReceitaMapper.py:8: in test_receita_mapper_to_domain
+    model = ReceitaModel(
+<string>:4: in __init__
+    ???
+C:\Python314\Lib\site-packages\sqlalchemy\orm\state.py:596: in _initialize_instance
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+C:\Python314\Lib\site-packages\sqlalchemy\util\langhelpers.py:121: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+C:\Python314\Lib\site-packages\sqlalchemy\orm\state.py:594: in _initialize_instance
+    manager.original_init(*mixed[1:], **kwargs)
+C:\Python314\Lib\site-packages\sqlalchemy\orm\decl_base.py:2179: in _declarative_constructor
+    raise TypeError(
+E   TypeError: 'preco' is an invalid keyword argument for ReceitaModel
+________________________ test_receita_mapper_to_model _________________________
+src\test\receita\test_ReceitaMapper.py:29: in test_receita_mapper_to_model
+    domain.preco = Decimal("35.00")
+    ^^^^^^^^^^^^
+E   AttributeError: property 'preco' of 'Receita' object has no setter
+____________________ test_criar_receita_chama_repositorio _____________________
+src\test\receita\test_UseCaseReceita.py:14: in test_criar_receita_chama_repositorio
+    receita_fake.preco=20.0
+    ^^^^^^^^^^^^^^^^^^
+E   AttributeError: property 'preco' of 'Receita' object has no setter
+_____________________________ test_criar_receita ______________________________
+src\test\test_Presentation.py:44: in test_criar_receita
+    mock_response = ReceitaResponse(
+E   pydantic_core._pydantic_core.ValidationError: 2 validation errors for ReceitaResponse
+E   rendimento
+E     Input should be a valid string [type=string_type, input_value=10, input_type=int]
+E       For further information visit https://errors.pydantic.dev/2.12/v/string_type
+E   id
+E     Input should be a valid string [type=string_type, input_value=1, input_type=int]
+E       For further information visit https://errors.pydantic.dev/2.12/v/string_type
+_________________________ test_buscar_receita_por_id __________________________
+src\test\test_Presentation.py:77: in test_buscar_receita_por_id
+    mock_response = ReceitaResponse(
+E   pydantic_core._pydantic_core.ValidationError: 2 validation errors for ReceitaResponse
+E   rendimento
+E     Input should be a valid string [type=string_type, input_value=10, input_type=int]
+E       For further information visit https://errors.pydantic.dev/2.12/v/string_type
+E   id
+E     Input should be a valid string [type=string_type, input_value=1, input_type=int]
+E       For further information visit https://errors.pydantic.dev/2.12/v/string_type
+______________________________ test_criar_pedido ______________________________
+src\test\test_Presentation.py:95: in test_criar_pedido
+    mock_response = PedidoResponse(
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for PedidoResponse
+E   id
+E     Input should be a valid string [type=string_type, input_value=1, input_type=int]
+E       For further information visit https://errors.pydantic.dev/2.12/v/string_type
+__________________________ test_buscar_pedido_por_id __________________________
+src\test\test_Presentation.py:121: in test_buscar_pedido_por_id
+    mock_response = PedidoResponse(
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for PedidoResponse
+E   id
+E     Input should be a valid string [type=string_type, input_value=1, input_type=int]
+E       For further information visit https://errors.pydantic.dev/2.12/v/string_type
+=============================== tests coverage ================================
+_______________ coverage: platform win32, python 3.14.3-final-0 _______________
+
+Name                                                                Stmts   Miss  Cover
+---------------------------------------------------------------------------------------
+src\__init__.py                                                         0      0   100%
+src\application\__init__.py                                             0      0   100%
+src\application\gateways\__init__.py                                    0      0   100%
+src\application\gateways\repositorioDeEstoque.py                       19     19     0%
+src\application\gateways\repositorioDePedido.py                        22      6    73%
+src\application\gateways\repositorioDeReceita.py                       22      6    73%
+src\application\gateways\repositorioDeUsuario.py                       10      2    80%
+src\application\usecases\__init__.py                                    0      0   100%
+src\application\usecases\pedido\__init__.py                             0      0   100%
+src\application\usecases\pedido\buscarPedidoPorId.py                    8      0   100%
+src\application\usecases\pedido\buscarPedidoPorNomeCliente.py           8      0   100%
+src\application\usecases\pedido\criarPedido.py                          7      0   100%
+src\application\usecases\pedido\editarPedido.py                         7      0   100%
+src\application\usecases\pedido\excluirPedido.py                        6      0   100%
+src\application\usecases\pedido\listarPedidos.py                        8      0   100%
+src\application\usecases\receita\__init__.py                            0      0   100%
+src\application\usecases\receita\buscarReceitaPorId.py                  8      0   100%
+src\application\usecases\receita\buscarReceitaPorNome.py                8      0   100%
+src\application\usecases\receita\criarReceita.py                        7      2    71%
+src\application\usecases\receita\editarReceita.py                       7      0   100%
+src\application\usecases\receita\excluirReceita.py                      7      0   100%
+src\application\usecases\receita\listarReceitas.py                      8      0   100%
+src\application\usecases\user\buscarUsuarioPorId.py                     8      0   100%
+src\application\usecases\user\registrarUsuario.py                       7      0   100%
+src\domain\__init__.py                                                  0      0   100%
+src\domain\entity\__init__.py                                           0      0   100%
+src\domain\entity\pedido\__init__.py                                    0      0   100%
+src\domain\entity\pedido\pedido.py                                     85      6    93%
+src\domain\entity\receita\__init__.py                                   0      0   100%
+src\domain\entity\receita\receita.py                                   68     16    76%
+src\domain\entity\user\__init__.py                                      0      0   100%
+src\domain\entity\user\user.py                                         51      1    98%
+src\infrastructure\__init__.py                                          0      0   100%
+src\infrastructure\auth\clerk.py                                       46     35    24%
+src\infrastructure\dependencies.py                                     37     10    73%
+src\infrastructure\gateway\__init__.py                                  4      0   100%
+src\infrastructure\gateway\pedidoRepository.py                         80     64    20%
+src\infrastructure\gateway\receitaRepository.py                        69     49    29%
+src\infrastructure\gateway\userRepository.py                           30     21    30%
+src\infrastructure\mappers\__init__.py                                  0      0   100%
+src\infrastructure\mappers\pedidoMapper.py                             18     10    44%
+src\infrastructure\mappers\receitaMapper.py                            15      8    47%
+src\infrastructure\mappers\userMapper.py                               16      0   100%
+src\infrastructure\persistencia\__init__.py                             0      0   100%
+src\infrastructure\persistencia\database.py                             8      0   100%
+src\infrastructure\persistencia\pedidoModel.py                         16      0   100%
+src\infrastructure\persistencia\receitaModel.py                        13      0   100%
+src\infrastructure\persistencia\userModel.py                           12      0   100%
+src\infrastructure\repositorios\__init__.py                             0      0   100%
+src\infrastructure\repositorios\repositorioDePedidoSQLAlchemy.py       45     28    38%
+src\infrastructure\repositorios\repositorioDeReceitaSQLAlchemy.py      61     45    26%
+src\infrastructure\repositorios\repositorioDeUsuarioSQLAlchemy.py      20      4    80%
+src\main.py                                                            25      2    92%
+src\presentation\__init__.py                                            0      0   100%
+src\presentation\controllers\__init__.py                                4      0   100%
+src\presentation\controllers\pedidoController.py                       75     58    23%
+src\presentation\controllers\receitaController.py                      61     45    26%
+src\presentation\controllers\userController.py                         31     22    29%
+src\presentation\routes\__init__.py                                     0      0   100%
+src\presentation\routes\health.py                                       5      0   100%
+src\presentation\routes\pedidos.py                                     23      5    78%
+src\presentation\routes\perfil.py                                      12      2    83%
+src\presentation\routes\receitas.py                                    20      4    80%
+src\presentation\routes\webhooks.py                                    30     20    33%
+src\presentation\schemas\__init__.py                                    4      0   100%
+src\presentation\schemas\estoque_schema.py                             12     12     0%
+src\presentation\schemas\pedido_schema.py                              29      2    93%
+src\presentation\schemas\receita_schema.py                             19      1    95%
+src\presentation\schemas\user_schema.py                                 9      0   100%
+src\test\__init__.py                                                    0      0   100%
+src\test\infrastructure\test_Repositories.py                          118     24    80%
+src\test\pedido\__init__.py                                             0      0   100%
+src\test\pedido\test_Pedido.py                                         70      0   100%
+src\test\pedido\test_PedidoMapper.py                                   35     17    51%
+src\test\pedido\test_UseCasePedido.py                                  88      0   100%
+src\test\receita\__init__.py                                            0      0   100%
+src\test\receita\test_Receita.py                                       39      2    95%
+src\test\receita\test_ReceitaMapper.py                                 25     15    40%
+src\test\receita\test_UseCaseReceita.py                                63      6    90%
+src\test\test_Presentation.py                                          70     22    69%
+src\test\user\__init__.py                                               0      0   100%
+src\test\user\test_UseCaseUser.py                                      24      0   100%
+src\test\user\test_User.py                                             29      0   100%
+src\test\user\test_UserMapper.py                                       29      0   100%
+---------------------------------------------------------------------------------------
+TOTAL                                                                1820    591    68%
+=========================== short test summary info ===========================
+FAILED src/test/infrastructure/test_Repositories.py::test_receita_repository_criar
+FAILED src/test/infrastructure/test_Repositories.py::test_pedido_repository_criar
+FAILED src/test/infrastructure/test_Repositories.py::test_receita_repository_buscar_por_id
+FAILED src/test/infrastructure/test_Repositories.py::test_pedido_repository_buscar_por_id
+FAILED src/test/infrastructure/test_Repositories.py::test_receita_sqlalchemy_repository_criar
+FAILED src/test/infrastructure/test_Repositories.py::test_pedido_sqlalchemy_repository_criar
+FAILED src/test/infrastructure/test_Repositories.py::test_receita_sqlalchemy_repository_listar
+FAILED src/test/infrastructure/test_Repositories.py::test_pedido_sqlalchemy_repository_listar
+FAILED src/test/pedido/test_PedidoMapper.py::test_mapper_to_domain - TypeErro...
+FAILED src/test/pedido/test_PedidoMapper.py::test_mapper_to_model - TypeError...
+FAILED src/test/receita/test_Receita.py::test_preco_invalido - AttributeError...
+FAILED src/test/receita/test_Receita.py::test_consumir_abate_porcoes - Attrib...
+FAILED src/test/receita/test_Receita.py::test_consumir_exato_zera_rendimento
+FAILED src/test/receita/test_Receita.py::test_consumir_acima_do_disponivel_levanta_erro
+FAILED src/test/receita/test_Receita.py::test_consumir_quantidade_invalida_levanta_erro
+FAILED src/test/receita/test_Receita.py::test_consumir_sem_rendimento_definido_levanta_erro
+FAILED src/test/receita/test_ReceitaMapper.py::test_receita_mapper_to_domain
+FAILED src/test/receita/test_ReceitaMapper.py::test_receita_mapper_to_model
+FAILED src/test/receita/test_UseCaseReceita.py::test_criar_receita_chama_repositorio
+FAILED src/test/test_Presentation.py::test_criar_receita - pydantic_core._pyd...
+FAILED src/test/test_Presentation.py::test_buscar_receita_por_id - pydantic_c...
+FAILED src/test/test_Presentation.py::test_criar_pedido - pydantic_core._pyda...
+FAILED src/test/test_Presentation.py::test_buscar_pedido_por_id - pydantic_co...
+======================== 23 failed, 43 passed in 3.65s ========================
