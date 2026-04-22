@@ -68,12 +68,22 @@ class ReceitaRepository(RepositorioDeReceita):
         receita = Receita()
         receita.id = model.id
         receita.nome = model.nome
-        receita.preco_venda_sugerido = float(model.preco_venda_sugerido) if model.preco_venda_sugerido is not None else None
         receita.descricao = model.descricao
-        receita.rendimento = int(model.rendimento) if model.rendimento is not None else None
-        receita.tempo_preparo = int(model.tempo_preparo) if model.tempo_preparo is not None else None
         receita.modo_preparo = model.modo_preparo
         receita.idUsuario = model.usuario_id
+        # Bypass os setters com validação para não falhar em dados históricos do banco
+        try:
+            receita._Receita__preco_venda_sugerido = float(model.preco_venda_sugerido) if model.preco_venda_sugerido is not None else None
+        except (ValueError, TypeError):
+            receita._Receita__preco_venda_sugerido = None
+        try:
+            receita._Receita__rendimento = int(model.rendimento) if model.rendimento is not None else None
+        except (ValueError, TypeError):
+            receita._Receita__rendimento = None
+        try:
+            receita._Receita__tempo_preparo = int(model.tempo_preparo) if model.tempo_preparo is not None else None
+        except (ValueError, TypeError):
+            receita._Receita__tempo_preparo = None
         return receita
 
     def listar_por_usuario(self, user_id: str) -> List[Receita]:
@@ -83,12 +93,22 @@ class ReceitaRepository(RepositorioDeReceita):
             receita = Receita()
             receita.id = model.id
             receita.nome = model.nome
-            receita.preco_venda_sugerido = float(model.preco_venda_sugerido) if model.preco_venda_sugerido is not None else None
             receita.descricao = model.descricao
-            receita.rendimento = int(model.rendimento) if model.rendimento is not None else None
-            receita.tempo_preparo = int(model.tempo_preparo) if model.tempo_preparo is not None else None
             receita.modo_preparo = model.modo_preparo
             receita.idUsuario = model.usuario_id
+            # Bypass os setters com validação para não falhar em dados históricos do banco
+            try:
+                receita._Receita__preco_venda_sugerido = float(model.preco_venda_sugerido) if model.preco_venda_sugerido is not None else None
+            except (ValueError, TypeError):
+                receita._Receita__preco_venda_sugerido = None
+            try:
+                receita._Receita__rendimento = int(model.rendimento) if model.rendimento is not None else None
+            except (ValueError, TypeError):
+                receita._Receita__rendimento = None
+            try:
+                receita._Receita__tempo_preparo = int(model.tempo_preparo) if model.tempo_preparo is not None else None
+            except (ValueError, TypeError):
+                receita._Receita__tempo_preparo = None
             receitas.append(receita)
         return receitas
 
