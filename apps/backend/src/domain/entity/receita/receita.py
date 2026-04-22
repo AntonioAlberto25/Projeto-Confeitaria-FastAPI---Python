@@ -60,7 +60,7 @@ class Receita:
 
     @rendimento.setter
     def rendimento(self, valor: int) -> None:
-        if valor is not None and valor <= 0:
+        if valor is not None and valor < 0:
             raise ValueError("Rendimento deve ser maior que zero")
         self.__rendimento = valor
 
