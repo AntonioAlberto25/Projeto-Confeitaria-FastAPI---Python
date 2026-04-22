@@ -16,10 +16,21 @@ class ReceitaMapper:
         receita.modo_preparo = model.modo_preparo
         receita.idUsuario = model.usuario_id
 
-        # Campos numéricos: bypass do setter para não rejeitar dados históricos com valores como 0
-        receita._Receita__preco_venda_sugerido = float(model.preco_venda_sugerido) if model.preco_venda_sugerido is not None else None
-        receita._Receita__rendimento = int(model.rendimento) if model.rendimento is not None else None
-        receita._Receita__tempo_preparo = int(model.tempo_preparo) if model.tempo_preparo is not None else None
+        # Campos numéricos: bypass do setter + conversão tolerante a falhas
+        try:
+            receita._Receita__preco_venda_sugerido = float(model.preco_venda_sugerido) if model.preco_venda_sugerido is not None else None
+        except (ValueError, TypeError):
+            receita._Receita__preco_venda_sugerido = None
+
+        try:
+            receita._Receita__rendimento = int(model.rendimento) if model.rendimento is not None else None
+        except (ValueError, TypeError):
+            receita._Receita__rendimento = None
+
+        try:
+            receita._Receita__tempo_preparo = int(model.tempo_preparo) if model.tempo_preparo is not None else None
+        except (ValueError, TypeError):
+            receita._Receita__tempo_preparo = None
 
         return receita
 
