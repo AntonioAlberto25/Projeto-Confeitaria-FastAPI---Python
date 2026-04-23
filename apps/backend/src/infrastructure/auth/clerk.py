@@ -46,22 +46,25 @@ async def get_current_user_id(token: HTTPAuthorizationCredentials = Depends(secu
             raise HTTPException(status_code=401, detail="Token sem 'kid' no header")
 
         # 2. Localizar a chave pública correspondente no JWKS
-        public_key = None
+        public_key_dict = None
         for key in jwks.get("keys", []):
             if key["kid"] == kid:
-                public_key = key
+                public_key_dict = key
                 break
         
-        if not public_key:
+        if not public_key_dict:
             raise HTTPException(status_code=401, detail="Chave pública correspondente não encontrada no JWKS (kid inválido)")
 
         # 3. Decodificar e validar criptograficamente
+        from jose import jwk
+        public_key = jwk.construct(public_key_dict)
+        
         payload = jwt.decode(
             raw_token,
             public_key,
             algorithms=["RS256"],
             issuer=os.getenv("CLERK_ISSUER"),
-            options={"verify_aud": False} # Validar se o issuer bate c/ Clerk
+            options={"verify_aud": False}
         )
         
         user_id = payload.get("sub")
@@ -74,15 +77,21 @@ async def get_current_user_id(token: HTTPAuthorizationCredentials = Depends(secu
         return user_id
 
     except JWTError as e:
+        import logging
+        logging.error(f"JWT Validation Error: {e}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=f"Invalid token: {str(e)}",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    except HTTPException as e:
+        raise e
     except Exception as e:
         import logging
+        import traceback
         logging.error(f"Authentication error: {type(e).__name__}: {e}")
+        logging.error(traceback.format_exc())
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Authentication service unavailable: {type(e).__name__}",
+            detail=f"Authentication service unavailable: {type(e).__name__} - {str(e)}",
         )

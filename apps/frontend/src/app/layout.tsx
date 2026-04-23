@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Plus_Jakarta_Sans, Inter } from 'next/font/google'
 import './globals.css'
 import { ClerkProvider } from '@clerk/nextjs'
+import { ThemeProvider } from '../components/ThemeProvider'
 
 // Plus Jakarta Sans: Display & Headlines (Stitch spec)
 const jakartaSans = Plus_Jakarta_Sans({
@@ -40,7 +41,9 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="pt-BR" className={`${jakartaSans.variable} ${inter.variable}`}>
         <body style={{ fontFamily: 'var(--font-inter), sans-serif' }}>
-          {children}
+          <ThemeProvider>
+            {children}
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>

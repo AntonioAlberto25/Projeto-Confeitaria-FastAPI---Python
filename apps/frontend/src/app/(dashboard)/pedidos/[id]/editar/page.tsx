@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { ArrowLeft, Save } from 'lucide-react'
+import { ArrowLeft, Save, AlertTriangle } from 'lucide-react'
 import { useRouter, useParams } from 'next/navigation'
 import { getPedido, updatePedido, getReceitas } from '../../../../../lib/api'
 import { useAuth } from '@clerk/nextjs'
@@ -117,6 +117,8 @@ export default function EditarPedidoPage() {
     )
   }
 
+  const isEmProducao = form.status === 'em_producao' || form.status === 'producao'
+
   return (
     <div className="max-w-2xl mx-auto space-y-8 animate-fade-in pb-20">
 
@@ -138,6 +140,22 @@ export default function EditarPedidoPage() {
         </h1>
       </div>
 
+      {/* Banner — pedido em produção */}
+      {isEmProducao && (
+        <div className="flex items-start gap-3 p-4 rounded-xl animate-fade-in"
+          style={{ backgroundColor: '#fceeb3', color: '#62582b', fontFamily: 'var(--font-inter)' }}>
+          <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold" style={{ fontFamily: 'var(--font-jakarta)' }}>
+              Pedido em produção
+            </p>
+            <p className="text-xs mt-0.5 opacity-80">
+              Apenas o tipo de entrega e endereço podem ser alterados enquanto o pedido está sendo produzido.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Form card */}
       <div className="layer-card p-8">
         <div className="space-y-6">
@@ -155,7 +173,8 @@ export default function EditarPedidoPage() {
               className="input-field"
               value={form.receita_id}
               onChange={e => handleSelectReceita(e.target.value)}
-              disabled={loadingReceitas}
+              disabled={loadingReceitas || isEmProducao}
+              style={isEmProducao ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
             >
               <option value="">Nenhuma receita selecionada</option>
               {receitas.map(r => (
@@ -188,6 +207,9 @@ export default function EditarPedidoPage() {
                   }
                 }}
                 maxLength={f.field === 'cliente_tel' ? 15 : undefined}
+                min={f.type === 'date' ? new Date().toISOString().split('T')[0] : undefined}
+                disabled={isEmProducao}
+                style={isEmProducao ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
               />
             </div>
           ))}
@@ -249,6 +271,8 @@ export default function EditarPedidoPage() {
               className="input-field h-auto py-3 resize-y min-h-[80px]"
               value={form.descricao}
               onChange={e => update('descricao', e.target.value)}
+              disabled={isEmProducao}
+              style={isEmProducao ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
             />
           </div>
 
@@ -263,6 +287,8 @@ export default function EditarPedidoPage() {
               className="input-field h-auto py-3 resize-y min-h-[80px]"
               value={form.observacoes}
               onChange={e => update('observacoes', e.target.value)}
+              disabled={isEmProducao}
+              style={isEmProducao ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
             />
           </div>
         </div>

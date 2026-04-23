@@ -199,6 +199,7 @@ export default function NovoPedidoPage() {
                     }
                   }}
                   maxLength={f.field === 'cliente_tel' ? 15 : undefined}
+                  min={f.type === 'date' ? new Date().toISOString().split('T')[0] : undefined}
                 />
               </div>
             ))}

@@ -16,12 +16,15 @@ export default async function DashboardLayout({
     <SyncWrapper>
       <div className="flex min-h-screen" style={{ backgroundColor: 'var(--surface)' }}>
         <Sidebar />
-        <main className="ml-64 flex-1 min-h-screen" style={{ backgroundColor: 'var(--surface-container-low)' }}>
-        {/* Padding responsivo interno */}
-        <div className="max-w-[1320px] mx-auto px-8 py-10">
-          {children}
-        </div>
-      </main>
+        <main
+          className="flex-1 min-h-screen ml-0 md:ml-64 pt-[60px] md:pt-0"
+          style={{ backgroundColor: 'var(--surface-container-low)' }}
+        >
+          {/* Padding responsivo interno */}
+          <div className="max-w-[1320px] mx-auto px-4 md:px-8 py-6 md:py-10">
+            {children}
+          </div>
+        </main>
       </div>
     </SyncWrapper>
   )

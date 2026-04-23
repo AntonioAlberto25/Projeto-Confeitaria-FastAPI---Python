@@ -1,10 +1,10 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { UserButton, SignOutButton } from '@clerk/nextjs'
-import { LayoutDashboard, ShoppingCart, BookText, Package, ChefHat, Settings, LogOut, User } from 'lucide-react'
+import { LayoutDashboard, ShoppingCart, BookText, Settings, LogOut, User, ChefHat, Menu, X } from 'lucide-react'
 import { cn } from '../lib/utils'
 
 const navItems = [
@@ -17,13 +17,26 @@ const navItems = [
 
 export const Sidebar = () => {
   const pathname = usePathname()
+  const [mobileOpen, setMobileOpen] = useState(false)
 
-  return (
-    <aside
-      className="w-64 fixed top-0 left-0 h-screen z-50 flex flex-col overflow-y-auto"
-      style={{ backgroundColor: 'var(--surface)', borderRight: '1px solid rgba(188,185,173,0.2)' }}
-    >
-      {/* Logo — glassmorphism leve */}
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileOpen(false)
+  }, [pathname])
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => { document.body.style.overflow = '' }
+  }, [mobileOpen])
+
+  const sidebarContent = (
+    <>
+      {/* Logo */}
       <div
         className="flex items-center gap-3 px-6 py-6 mb-2"
         style={{ borderBottom: '1px solid rgba(188,185,173,0.12)' }}
@@ -48,6 +61,16 @@ export const Sidebar = () => {
             O Ateliê Digital
           </span>
         </div>
+
+        {/* Close button — only visible on mobile */}
+        <button
+          onClick={() => setMobileOpen(false)}
+          className="md:hidden ml-auto p-1.5 rounded-lg transition-colors duration-200"
+          style={{ color: 'var(--on-surface-variant)' }}
+          aria-label="Fechar menu"
+        >
+          <X className="w-5 h-5" />
+        </button>
       </div>
 
       {/* Navigation */}
@@ -117,6 +140,69 @@ export const Sidebar = () => {
           </button>
         </SignOutButton>
       </div>
-    </aside>
+    </>
+  )
+
+  return (
+    <>
+      {/* ── Mobile: Hamburger button (top bar) ── */}
+      <div
+        className="md:hidden fixed top-0 left-0 right-0 z-50 flex items-center gap-3 px-4 py-3"
+        style={{
+          backgroundColor: 'var(--surface)',
+          borderBottom: '1px solid rgba(188,185,173,0.2)',
+          backdropFilter: 'blur(12px)',
+        }}
+      >
+        <button
+          onClick={() => setMobileOpen(true)}
+          className="p-2 rounded-xl transition-colors duration-200"
+          style={{ color: 'var(--on-surface)' }}
+          aria-label="Abrir menu"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+        <div
+          className="flex items-center justify-center w-7 h-7 rounded-lg"
+          style={{ background: 'linear-gradient(135deg, #fbabbc 0%, #ffdcc2 100%)' }}
+        >
+          <ChefHat className="w-4 h-4" style={{ color: '#915160' }} />
+        </div>
+        <span
+          className="text-sm font-bold tracking-tight"
+          style={{ fontFamily: 'var(--font-jakarta)', color: 'var(--primary)' }}
+        >
+          Artisan Baker
+        </span>
+      </div>
+
+      {/* ── Mobile: Backdrop overlay ── */}
+      {mobileOpen && (
+        <div
+          className="md:hidden fixed inset-0 z-[60] transition-opacity duration-300"
+          style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      {/* ── Mobile: Slide-in drawer ── */}
+      <aside
+        className={cn(
+          'md:hidden fixed top-0 left-0 h-screen z-[70] flex flex-col overflow-y-auto transition-transform duration-300 ease-in-out w-72',
+          mobileOpen ? 'translate-x-0' : '-translate-x-full'
+        )}
+        style={{ backgroundColor: 'var(--surface)' }}
+      >
+        {sidebarContent}
+      </aside>
+
+      {/* ── Desktop: Fixed sidebar (unchanged) ── */}
+      <aside
+        className="hidden md:flex w-64 fixed top-0 left-0 h-screen z-50 flex-col overflow-y-auto"
+        style={{ backgroundColor: 'var(--surface)', borderRight: '1px solid rgba(188,185,173,0.2)' }}
+      >
+        {sidebarContent}
+      </aside>
+    </>
   )
 }

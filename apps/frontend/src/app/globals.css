@@ -36,6 +36,28 @@
     --error-container: #f56965;
   }
 
+  /* ── Dark Theme ── */
+  [data-theme='escuro'] {
+    --primary: #d4919f;
+    --primary-dim: #c47f8d;
+    --primary-container: #6b3344;
+    --secondary: #d4b59a;
+    --secondary-container: #5a4234;
+    --tertiary: #c9bd7e;
+    --tertiary-container: #524a22;
+    --surface: #1a1a1a;
+    --surface-container-lowest: #121212;
+    --surface-container-low: #1e1e1e;
+    --surface-container: #242424;
+    --surface-container-high: #2c2c2c;
+    --surface-container-highest: #353535;
+    --on-surface: #e6e1d5;
+    --on-surface-variant: #b0ada3;
+    --outline-variant: #5a5850;
+    --error: #f2807e;
+    --error-container: #8c1d18;
+  }
+
   * {
     box-sizing: border-box;
   }
@@ -225,3 +247,47 @@
   50%       { opacity: 1; }
 }
 .animate-skeleton { animation: skeleton 1.5s ease-in-out infinite; }
+
+/* ============================================================
+   DARK THEME OVERRIDES — hardcoded RGBA adjustments
+   ============================================================ */
+[data-theme='escuro'] .glass {
+  background-color: rgba(26, 26, 26, 0.85);
+  border-bottom-color: rgba(90, 88, 80, 0.25);
+}
+
+[data-theme='escuro'] .layer-card {
+  box-shadow: 0px 12px 48px -4px rgba(0, 0, 0, 0.25);
+}
+[data-theme='escuro'] .layer-card:hover {
+  box-shadow: 0px 8px 32px -4px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme='escuro'] .btn-primary {
+  background-image: linear-gradient(45deg, #c47f8d, #b06a78);
+  box-shadow: 0px 4px 16px -2px rgba(196, 127, 141, 0.30);
+}
+
+[data-theme='escuro'] .btn-secondary {
+  border-color: rgba(90, 88, 80, 0.50);
+  color: var(--secondary);
+}
+[data-theme='escuro'] .btn-secondary:hover {
+  background-color: rgba(212, 181, 154, 0.08);
+  border-color: rgba(196, 127, 141, 0.30);
+}
+
+[data-theme='escuro'] .badge-producao {
+  background-color: #524a22;
+  color: #c9bd7e;
+}
+
+[data-theme='escuro'] .badge-concluido {
+  background-color: #2a3a26;
+  color: #a8c49a;
+}
+
+[data-theme='escuro'] .badge-cancelado {
+  background-color: #5c1a18;
+  color: #f2807e;
+}
