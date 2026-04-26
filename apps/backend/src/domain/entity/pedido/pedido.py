@@ -20,6 +20,7 @@ class Pedido:
         self.__data_inicio_producao = None
         self.__data_conclusao = None
         self.__motivo_cancelamento = None
+        self.__quantidade = None
 
     # ── id ──────────────────────────────────────────────────────────────────
 
@@ -184,3 +185,13 @@ class Pedido:
     @motivo_cancelamento.setter
     def motivo_cancelamento(self, valor: str) -> None:
         self.__motivo_cancelamento = valor
+
+    # ── quantidade ───────────────────────────────────────────────────────────
+
+    @property
+    def quantidade(self) -> int:
+        return self.__quantidade
+
+    @quantidade.setter
+    def quantidade(self, valor: int) -> None:
+        self.__quantidade = valor

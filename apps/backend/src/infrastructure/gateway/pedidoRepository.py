@@ -27,6 +27,7 @@ class PedidoRepository(RepositorioDePedido):
             observacoes=pedido.observacoes,
             usuario_id=str(pedido.user_id),
             receita_id=pedido.receita_id,
+            quantidade=pedido.quantidade,
             status=pedido.status
         )
         self.db.add(pedido_model)
@@ -54,6 +55,7 @@ class PedidoRepository(RepositorioDePedido):
             pedido_model.data_entrega = pedido.data_entrega
             pedido_model.observacoes = pedido.observacoes
             pedido_model.receita_id = pedido.receita_id
+            pedido_model.quantidade = pedido.quantidade
             pedido_model.status = pedido.status
             if pedido.data_inicio_producao:
                 pedido_model.data_inicio_producao = pedido.data_inicio_producao
@@ -91,6 +93,7 @@ class PedidoRepository(RepositorioDePedido):
         pedido.observacoes = model.observacoes
         pedido.user_id = model.usuario_id
         pedido.receita_id = model.receita_id
+        pedido.quantidade = model.quantidade
         pedido.status = model.status
         pedido.data_criacao = model.data_criacao.isoformat() if model.data_criacao else None
         pedido.data_inicio_producao = model.data_inicio_producao.isoformat() if model.data_inicio_producao else None
@@ -115,6 +118,7 @@ class PedidoRepository(RepositorioDePedido):
             pedido.observacoes = model.observacoes
             pedido.user_id = model.usuario_id
             pedido.receita_id = model.receita_id
+            pedido.quantidade = model.quantidade
             pedido.status = model.status
             pedido.data_criacao = model.data_criacao.isoformat() if model.data_criacao else None
             pedido.data_inicio_producao = model.data_inicio_producao.isoformat() if model.data_inicio_producao else None

@@ -13,6 +13,7 @@ class PedidoBase(BaseModel):
     preco_total: Optional[Decimal] = Field(None, ge=0)
     data_entrega: Optional[date] = None
     receita_id: Optional[str] = None
+    quantidade: Optional[int] = 1
 
     @field_validator('data_entrega', mode='before')
     @classmethod

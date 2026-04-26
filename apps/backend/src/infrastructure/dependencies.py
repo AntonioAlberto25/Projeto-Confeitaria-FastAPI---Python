@@ -54,10 +54,11 @@ def get_receita_controller(db: Session = Depends(get_db)) -> ReceitaController:
 # --- Pedido Dependency Functions ---
 def get_pedido_controller(db: Session = Depends(get_db)) -> PedidoController:
     repo = PedidoRepository(db)
+    receita_repo = ReceitaRepository(db)
     return PedidoController(
-        criar_pedido_use_case=CriarPedido(repo),
-        editar_pedido_use_case=EditarPedido(repo),
-        excluir_pedido_use_case=ExcluirPedido(repo),
+        criar_pedido_use_case=CriarPedido(repo, receita_repo),
+        editar_pedido_use_case=EditarPedido(repo, receita_repo),
+        excluir_pedido_use_case=ExcluirPedido(repo, receita_repo),
         listar_pedidos_use_case=ListarPedidos(repo),
         buscar_pedido_por_id_use_case=BuscarPedidoPorId(repo),
         buscar_pedido_por_nome_cliente_use_case=BuscarPedidoPorNomeCliente(repo)

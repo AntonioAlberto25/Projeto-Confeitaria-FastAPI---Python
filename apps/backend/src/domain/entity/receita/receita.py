@@ -99,3 +99,10 @@ class Receita:
             raise ValueError("Rendimento insuficiente")
         self.rendimento -= quantidade
 
+    def retornar_rendimento(self, quantidade: int) -> None:
+        if self.rendimento is None:
+            return  # Or handle as needed, but if it's None, it shouldn't matter
+        if quantidade <= 0:
+            raise ValueError("Quantidade deve ser positiva")
+        self.rendimento += quantidade
+

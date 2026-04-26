@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Text, Numeric, Date, DateTime
+from sqlalchemy import Column, String, Text, Numeric, Date, DateTime, Integer
 from sqlalchemy.sql import func
 from src.infrastructure.persistencia.database import Base
 import uuid

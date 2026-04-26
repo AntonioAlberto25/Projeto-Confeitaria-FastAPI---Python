@@ -178,3 +178,70 @@ def test_pedido_sqlalchemy_repository_listar():
     
     assert len(resultado) == 1
     assert resultado[0].cliente_nome == "Maria"
+
+# --- Testes de regressão: bypass de setter para dados históricos ---
+
+def test_receita_repository_listar_com_preco_zero():
+    """Receitas com preco_venda_sugerido=0 não devem lançar ValueError ao serem lidas."""
+    db_mock = MagicMock()
+    model_mock = Mock()
+    model_mock.id = "abc"
+    model_mock.nome = "Bolo Antigo"
+    model_mock.preco_venda_sugerido = 0.0  # valor que o setter rejeitaria
+    model_mock.descricao = None
+    model_mock.rendimento = 10
+    model_mock.tempo_preparo = 30
+    model_mock.modo_preparo = None
+    model_mock.usuario_id = "user_1"
+
+    db_mock.query().filter().all.return_value = [model_mock]
+
+    repo = ReceitaRepository(db_mock)
+    resultado = repo.listar_por_usuario("user_1")
+
+    assert len(resultado) == 1
+    assert resultado[0].preco_venda_sugerido == 0.0
+    assert resultado[0].nome == "Bolo Antigo"
+
+def test_receita_repository_listar_com_rendimento_zero():
+    """Receitas com rendimento=0 não devem lançar ValueError ao serem lidas."""
+    db_mock = MagicMock()
+    model_mock = Mock()
+    model_mock.id = "def"
+    model_mock.nome = "Torta"
+    model_mock.preco_venda_sugerido = 25.0
+    model_mock.descricao = None
+    model_mock.rendimento = 0  # valor que o setter (com <= 0) rejeitaria
+    model_mock.tempo_preparo = 60
+    model_mock.modo_preparo = "Assar"
+    model_mock.usuario_id = "user_2"
+
+    db_mock.query().filter().all.return_value = [model_mock]
+
+    repo = ReceitaRepository(db_mock)
+    resultado = repo.listar_por_usuario("user_2")
+
+    assert len(resultado) == 1
+    assert resultado[0].rendimento == 0
+
+def test_receita_repository_buscar_por_id_com_dados_invalidos():
+    """valor não-numérico nos campos deve degradar para None sem crashar."""
+    db_mock = MagicMock()
+    model_mock = Mock()
+    model_mock.id = "ghi"
+    model_mock.nome = "Cupcake"
+    model_mock.preco_venda_sugerido = "invalido"  # dado corrompido hipotético
+    model_mock.descricao = None
+    model_mock.rendimento = None
+    model_mock.tempo_preparo = None
+    model_mock.modo_preparo = None
+    model_mock.usuario_id = "user_3"
+
+    db_mock.query().filter().first.return_value = model_mock
+
+    repo = ReceitaRepository(db_mock)
+    resultado = repo.buscar_por_id("ghi")
+
+    assert resultado is not None
+    assert resultado.nome == "Cupcake"
+    assert resultado.preco_venda_sugerido is None  # degradou para None

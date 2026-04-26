@@ -40,6 +40,7 @@ class PedidoController:
             pedido.observacoes = data.observacoes
             pedido.user_id = user_id
             pedido.receita_id = data.receita_id
+            pedido.quantidade = data.quantidade
             pedido.status = data.status or "pendente"
             pedido.data_inicio_producao = data.data_inicio_producao
             pedido.data_conclusao = data.data_conclusao
@@ -58,6 +59,7 @@ class PedidoController:
                 observacoes=resultado.observacoes,
                 user_id=str(resultado.user_id),
                 receita_id=resultado.receita_id,
+                quantidade=resultado.quantidade,
                 status=resultado.status,
                 data_criacao=resultado.data_criacao,
                 data_inicio_producao=resultado.data_inicio_producao,
@@ -80,6 +82,7 @@ class PedidoController:
             pedido.observacoes = data.observacoes
             pedido.user_id = user_id
             pedido.receita_id = data.receita_id
+            pedido.quantidade = data.quantidade
             pedido.status = data.status or "pendente"
             pedido.data_inicio_producao = data.data_inicio_producao
             pedido.data_conclusao = data.data_conclusao
@@ -98,6 +101,7 @@ class PedidoController:
                 observacoes=resultado.observacoes,
                 user_id=str(resultado.user_id),
                 receita_id=resultado.receita_id,
+                quantidade=resultado.quantidade,
                 status=resultado.status,
                 data_criacao=resultado.data_criacao,
                 data_inicio_producao=resultado.data_inicio_producao,
@@ -122,6 +126,7 @@ class PedidoController:
                     observacoes=p.observacoes,
                     user_id=str(p.user_id),
                     receita_id=p.receita_id,
+                    quantidade=p.quantidade,
                     status=p.status,
                     data_criacao=p.data_criacao,
                     data_inicio_producao=p.data_inicio_producao,
@@ -148,6 +153,7 @@ class PedidoController:
                 observacoes=p.observacoes,
                 user_id=str(p.user_id),
                 receita_id=p.receita_id,
+                quantidade=p.quantidade,
                 status=p.status,
                 data_criacao=p.data_criacao,
                 data_inicio_producao=p.data_inicio_producao,
