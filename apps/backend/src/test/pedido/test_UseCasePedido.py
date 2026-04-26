@@ -163,7 +163,7 @@ def test_editar_pedido_cancelado_restaura_rendimento():
     receita_repo_mock.buscar_por_id.return_value = receita_fake
 
     usecase = EditarPedido(repositorio_mock, receita_repo_mock)
-    resultado = usecase.executar(pedido_novo)
+    usecase.executar(pedido_novo)
 
     # 10 original + 2 (restaurado do cancelamento)
     assert receita_fake.rendimento == 12
