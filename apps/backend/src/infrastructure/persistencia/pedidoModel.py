@@ -18,6 +18,7 @@ class PedidoModel(Base):
     usuario_id = Column(String, nullable=False) # Clerk ID
     receita_id = Column(String, nullable=True) # Optional link to recipe
     status = Column(String, nullable=True, default="pendente")
+    quantidade = Column(Integer, nullable=True, default=1)
     
     data_criacao = Column(DateTime(timezone=True), server_default=func.now())
     data_inicio_producao = Column(DateTime(timezone=True), nullable=True)
