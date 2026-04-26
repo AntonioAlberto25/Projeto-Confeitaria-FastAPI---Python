@@ -67,12 +67,13 @@ O **Sistema de Gestão para Confeitaria** é uma aplicação web mobile-first cr
 
 ### 4.3. Gestão de Pedidos
 
-**RF-11** — O sistema deve permitir registrar um pedido com: cliente (nome, telefone), data de entrega, receitas selecionadas (com quantidade) e observações.
+**RF-11** — O sistema deve permitir registrar um pedido com: cliente (nome, telefone), data de entrega, receitas selecionadas (com quantidade), tipo de entrega, endereço de entrega e observações.
 **RF-12** — Todo pedido deve ser criado com status inicial **Pendente**.
 **RF-13** — O sistema deve permitir transições de status: `Pendente → Em Produção → Concluído`. O status `Cancelado` é permitido em qualquer estado exceto `Concluído`.
 **RF-14** — O sistema deve impedir transições de status inválidas (ex: `Pendente → Concluído` sem passar por `Em Produção`).
-**RF-15** — O sistema deve exibir um painel de produção com pedidos do dia e da semana, filtrável por status.
 **RF-16** — A listagem de pedidos deve suportar busca por nome do cliente e filtros por status e data de entrega.
+**RF-16.1** — Controle de rendimento automático: Ao registrar um pedido, a quantidade solicitada deve consumir automaticamente o rendimento da receita.
+**RF-16.2** — Estorno de rendimento: Ao cancelar, deletar ou reduzir a quantidade de um pedido, o rendimento deve ser restaurado proporcionalmente na receita vinculada.
 
 ### 4.4. Gestão de Estoque
 

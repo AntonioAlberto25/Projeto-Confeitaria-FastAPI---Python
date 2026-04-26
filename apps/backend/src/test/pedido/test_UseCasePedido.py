@@ -1,4 +1,4 @@
-from unittest.mock import Mock, call
+from unittest.mock import Mock
 from decimal import Decimal
 from datetime import date
 from src.application.usecases.pedido.criarPedido import CriarPedido
