@@ -7,8 +7,8 @@ from src.application.usecases.pedido.buscarPedidoPorId import BuscarPedidoPorId
 from src.application.usecases.pedido.buscarPedidoPorNomeCliente import BuscarPedidoPorNomeCliente
 
 from src.domain.entity.pedido.pedido import Pedido
-from src.presentation.schemas.pedido_schema import PedidoCreate, PedidoResponse
-from typing import List, Dict
+from src.presentation.schemas.pedido_schema import PedidoCreate, PedidoResponse, PedidoPaginatedResponse
+from typing import List, Dict, Optional
 
 class PedidoController:
     def __init__(
@@ -110,10 +110,10 @@ class PedidoController:
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
-    def handle_listar_meus_pedidos(self, user_id: str) -> List[PedidoResponse]:
+    def handle_listar_meus_pedidos(self, user_id: str, limit: int = 100, skip: int = 0, status_filter: Optional[str] = None, q: Optional[str] = None) -> PedidoPaginatedResponse:
         try:
-            pedidos = self.listar_pedidos_use_case.executar(user_id)
-            return [
+            pedidos, total = self.listar_pedidos_use_case.executar(user_id, limit, skip, status_filter, q)
+            items = [
                 PedidoResponse(
                     id=str(p.id),
                     cliente_nome=p.cliente_nome,
@@ -133,8 +133,10 @@ class PedidoController:
                     data_conclusao=p.data_conclusao
                 ) for p in pedidos
             ]
+            return PedidoPaginatedResponse(items=items, total=total, limit=limit, skip=skip)
         except Exception as e:
-            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+            print("ERROR IN handle_listar_meus_pedidos:", e)
+            raise HTTPException(status_code=500, detail=str(e))
 
     def handle_buscar_pedido_por_id(self, id: str) -> PedidoResponse:
         try:

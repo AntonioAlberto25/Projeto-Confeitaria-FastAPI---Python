@@ -9,8 +9,8 @@
 ## 1. Visão Geral do Projeto
 
 **Nome do Projeto:** Sistema de Gestão para Confeitaria
-**Descrição:** Plataforma web mobile-first para gestão de receitas, pedidos e estoque de confeitarias artesanais, com autenticação integrada via Clerk e persistência em PostgreSQL (Supabase).
-**Objetivo Principal:** API robusta e escalável suportando o fluxo ponta a ponta: ficha técnica de receita → pedido → baixa de estoque → painel de produção.
+**Descrição:** Plataforma web mobile-first para gestão de receitas e pedidos de confeitarias artesanais, com autenticação integrada via Clerk e persistência em PostgreSQL (Supabase).
+**Objetivo Principal:** API robusta e escalável suportando o fluxo ponta a ponta: ficha técnica de receita → pedido → painel de produção.
 
 ---
 
@@ -414,11 +414,8 @@ Deploy Frontend → Vercel (Next.js)
 - [x] Docker e Docker Compose
 
 ### Backlog
-- [ ] Testes de aceite ponta a ponta
-- [ ] Painel de produção (dia/semana)
-- [ ] Gestão de estoque com baixa automática
-- [ ] Notificações de estoque crítico
-- [ ] Paginação e filtros avançados
+- [x] Testes de aceite ponta a ponta
+- [x] Paginação e filtros avançados
 
 ---
 

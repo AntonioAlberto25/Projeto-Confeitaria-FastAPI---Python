@@ -22,8 +22,8 @@ class RepositorioDeReceita(ABC):
         pass
 
     @abstractmethod
-    def listar_por_usuario(self, user_id: str) -> List[Receita]:
-        """Retorna todas as receitas do usuário autenticado. (RF010, RF014)"""
+    def listar_por_usuario(self, user_id: str, limit: int = 100, skip: int = 0, q: Optional[str] = None) -> tuple[List[Receita], int]:
+        """Retorna as receitas do usuário autenticado de forma paginada. (RF010, RF014)"""
         pass
 
     @abstractmethod

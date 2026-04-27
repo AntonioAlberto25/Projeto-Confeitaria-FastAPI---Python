@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, ConfigDict, field_validator
-from typing import Optional, Any
+from typing import Optional, Any, List
 from datetime import date
 from decimal import Decimal
 
@@ -43,3 +43,9 @@ class PedidoResponse(PedidoBase):
     data_conclusao: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
+
+class PedidoPaginatedResponse(BaseModel):
+    items: List[PedidoResponse]
+    total: int
+    limit: int
+    skip: int

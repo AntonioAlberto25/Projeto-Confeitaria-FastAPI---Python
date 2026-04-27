@@ -80,14 +80,13 @@ def test_listar_pedidos_chama_repositorio():
     repositorio_mock = Mock()
     user_id = "user_123"
     pedidos_fake = [_pedido_fake()]
-    repositorio_mock.listar_por_usuario.return_value = pedidos_fake
+    repositorio_mock.listar_por_usuario.return_value = (pedidos_fake, 1)
 
     usecase = ListarPedidos(repositorio_mock)
     resultado = usecase.executar(user_id)
 
-    repositorio_mock.listar_por_usuario.assert_called_once_with(user_id)
-    assert resultado == pedidos_fake
-
+    repositorio_mock.listar_por_usuario.assert_called_once_with(user_id, 100, 0, None, None)
+    assert resultado == (pedidos_fake, 1)
 
 def test_buscar_pedido_por_id_chama_repositorio():
     repositorio_mock = Mock()

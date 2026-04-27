@@ -18,8 +18,11 @@ export const fetchHealth = async () => {
 }
 
 // ─── Receitas ─────────────────────────────────────────────────────────────────
-export const getReceitas = async (token: string) => {
-  const { data } = await api.get('/receitas', authHeaders(token))
+export const getReceitas = async (token: string, limit?: number, skip?: number, q?: string) => {
+  const { data } = await api.get('/receitas', {
+    headers: { Authorization: `Bearer ${token}` },
+    params: { limit, skip, q }
+  })
   return data
 }
 
@@ -41,8 +44,11 @@ export const updateReceita = async (token: string, id: string, receita: any) => 
   return data
 }
 // ─── Pedidos ──────────────────────────────────────────────────────────────────
-export const getPedidos = async (token: string) => {
-  const { data } = await api.get('/pedidos', authHeaders(token))
+export const getPedidos = async (token: string, limit?: number, skip?: number, status?: string, q?: string) => {
+  const { data } = await api.get('/pedidos', {
+    headers: { Authorization: `Bearer ${token}` },
+    params: { limit, skip, status, q }
+  })
   return data
 }
 

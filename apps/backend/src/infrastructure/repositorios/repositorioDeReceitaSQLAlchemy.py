@@ -65,14 +65,20 @@ class RepositorioDeReceitaSQLAlchemy(RepositorioDeReceita):
         setattr(domain, 'id', receita_model.id)
         return domain
 
-    def listar_por_usuario(self, user_id: int) -> List[Receita]:
-        receitas_model = self._session.query(ReceitaModel).filter(ReceitaModel.usuario_id == user_id).all()
+    def listar_por_usuario(self, user_id: str, limit: int = 100, skip: int = 0, q: Optional[str] = None) -> tuple[List[Receita], int]:
+        query = self._session.query(ReceitaModel).filter(ReceitaModel.usuario_id == user_id)
+        if q:
+            query = query.filter(ReceitaModel.nome.ilike(f"%{q}%"))
+        
+        total = query.count()
+        receitas_model = query.offset(skip).limit(limit).all()
+        
         result = []
         for rm in receitas_model:
             domain = ReceitaMapper.to_domain(rm)
             setattr(domain, 'id', rm.id)
             result.append(domain)
-        return result
+        return result, total
 
     def buscar_por_nome(self, user_id: int, nome: str) -> List[Receita]:
         receitas_model = self._session.query(ReceitaModel).filter(

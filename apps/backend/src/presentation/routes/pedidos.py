@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, status
 from src.infrastructure.auth.clerk import get_current_user_id
-from src.presentation.schemas.pedido_schema import PedidoCreate, PedidoResponse
+from src.presentation.schemas.pedido_schema import PedidoCreate, PedidoResponse, PedidoPaginatedResponse
 from src.presentation.controllers.pedidoController import PedidoController
+from typing import List, Optional
 from src.infrastructure.dependencies import get_pedido_controller
 from typing import List
 
@@ -16,13 +17,17 @@ async def criar_pedido(
     """Cria um novo pedido para o usuário logado."""
     return controller.handle_criar_pedido(payload, user_id)
 
-@router.get("/", response_model=List[PedidoResponse])
+@router.get("/", response_model=PedidoPaginatedResponse)
 async def listar_meus_pedidos(
+    limit: int = 100,
+    skip: int = 0,
+    status: Optional[str] = None,
+    q: Optional[str] = None,
     user_id: str = Depends(get_current_user_id),
     controller: PedidoController = Depends(get_pedido_controller)
 ):
     """Retorna a lista de todos os pedidos do usuário autenticado."""
-    return controller.handle_listar_meus_pedidos(user_id)
+    return controller.handle_listar_meus_pedidos(user_id, limit, skip, status, q)
 
 @router.get("/{id}", response_model=PedidoResponse)
 async def buscar_por_id(

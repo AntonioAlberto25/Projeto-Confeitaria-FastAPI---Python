@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, ConfigDict, field_validator
-from typing import Optional, Any
+from typing import Optional, Any, List
 
 class ReceitaBase(BaseModel):
     nome: str = Field(..., min_length=1)
@@ -25,3 +25,9 @@ class ReceitaResponse(ReceitaBase):
     id_usuario: str
 
     model_config = ConfigDict(from_attributes=True)
+
+class ReceitaPaginatedResponse(BaseModel):
+    items: List[ReceitaResponse]
+    total: int
+    limit: int
+    skip: int

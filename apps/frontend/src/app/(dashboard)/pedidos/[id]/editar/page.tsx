@@ -39,7 +39,7 @@ export default function EditarPedidoPage() {
         if (token && id) {
           const [pedidoData, receitasData] = await Promise.all([
             getPedido(token, id as string),
-            getReceitas(token).catch(() => []),
+            getReceitas(token).then(res => res.items || []).catch(() => []),
           ])
           setReceitas(receitasData)
           setForm({
@@ -49,7 +49,7 @@ export default function EditarPedidoPage() {
             tipo_entrega:  pedidoData.tipo_entrega || 'Retirada',
             descricao:     pedidoData.descricao || '',
             observacoes:   pedidoData.observacoes || '',
-            preco_total:   pedidoData.preco_total?.toString() || '',
+            preco_total:   pedidoData.preco_total ? new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(pedidoData.preco_total) : '',
             receita_id:    pedidoData.receita_id || '',
             status:        pedidoData.status || 'pendente',
             endereco_entrega: pedidoData.endereco_entrega || '',
@@ -76,6 +76,18 @@ export default function EditarPedidoPage() {
     return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`
   }
 
+  // Máscara para moeda (BRL) - Previne Numeric Overflow
+  const applyCurrencyMask = (value: string): string => {
+    let digits = String(value).replace(/\D/g, '')
+    if (!digits) return ''
+    if (digits.length > 10) digits = digits.slice(0, 10) // Limita a 10 dígitos (máximo 99.999.999,99)
+    const numberValue = parseInt(digits, 10) / 100
+    return new Intl.NumberFormat('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(numberValue)
+  }
+
   const handleSelectReceita = (receitaId: string) => {
     const r = receitas.find(x => x.id === receitaId)
     if (r) {
@@ -83,7 +95,7 @@ export default function EditarPedidoPage() {
         ...f,
         receita_id: receitaId,
         descricao: f.descricao ? f.descricao : r.nome,
-        preco_total: f.preco_total ? f.preco_total : (r.preco_venda_sugerido?.toString() || '')
+        preco_total: f.preco_total ? f.preco_total : (r.preco_venda_sugerido ? new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(r.preco_venda_sugerido) : '')
       }))
     } else {
       update('receita_id', '')
@@ -98,7 +110,7 @@ export default function EditarPedidoPage() {
       if (!token) throw new Error('Não autenticado')
       const payload = {
         ...form,
-        preco_total: form.preco_total ? parseFloat(form.preco_total) : undefined,
+        preco_total: form.preco_total ? parseFloat(form.preco_total.replace(/\./g, '').replace(',', '.')) : undefined,
       }
       await updatePedido(token, id as string, payload)
       router.push(`/pedidos/${id}`)
@@ -187,7 +199,7 @@ export default function EditarPedidoPage() {
             { label: 'Nome do Cliente *', field: 'cliente_nome', type: 'text', placeholder: 'Ex: Ana Silva' },
             { label: 'Telefone', field: 'cliente_tel', type: 'tel', placeholder: '(11) 99999-9999' },
             { label: 'Data de Entrega', field: 'data_entrega', type: 'date', placeholder: '' },
-            { label: 'Preço Total (R$)', field: 'preco_total', type: 'number', placeholder: '0,00' },
+            { label: 'Preço Total (R$)', field: 'preco_total', type: 'text', placeholder: '0,00' },
           ].map(f => (
             <div key={f.field}>
               <label className="block text-xs font-semibold uppercase tracking-widest mb-2"
@@ -202,6 +214,8 @@ export default function EditarPedidoPage() {
                 onChange={e => {
                   if (f.field === 'cliente_tel') {
                     update(f.field, applyPhoneMask(e.target.value))
+                  } else if (f.field === 'preco_total') {
+                    update(f.field, applyCurrencyMask(e.target.value))
                   } else {
                     update(f.field, e.target.value)
                   }

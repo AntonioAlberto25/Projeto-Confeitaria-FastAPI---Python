@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from src.domain.entity.pedido.pedido import Pedido
 
 
@@ -26,8 +26,8 @@ class RepositorioDePedido(ABC):
         pass
 
     @abstractmethod
-    def listar_por_usuario(self, user_id: str) -> List[Pedido]:
-        """Retorna todos os pedidos do usuário autenticado. (RF006, RF009)"""
+    def listar_por_usuario(self, user_id: str, limit: int = 100, skip: int = 0, status: Optional[str] = None, q: Optional[str] = None) -> Tuple[List[Pedido], int]:
+        """Retorna os pedidos do usuário autenticado paginados. (RF006, RF009)"""
         pass
 
     @abstractmethod

@@ -100,11 +100,27 @@ class PedidoRepository(RepositorioDePedido):
         pedido.data_conclusao = model.data_conclusao.isoformat() if model.data_conclusao else None
         return pedido
 
-    def listar_por_usuario(self, user_id: str) -> List[Pedido]:
-        models = self.db.query(PedidoModel)\
-            .filter(PedidoModel.usuario_id == user_id)\
-            .order_by(desc(PedidoModel.data_criacao))\
-            .all()
+    def listar_por_usuario(self, user_id: str, limit: int = 100, skip: int = 0, status: Optional[str] = None, q: Optional[str] = None) -> tuple[List[Pedido], int]:
+        from sqlalchemy import or_
+        query = self.db.query(PedidoModel).filter(PedidoModel.usuario_id == user_id)
+        
+        if status:
+            if status == 'ativos':
+                query = query.filter(PedidoModel.status.notin_(['cancelado', 'concluido']))
+            else:
+                query = query.filter(PedidoModel.status == status)
+                
+        if q:
+            query = query.filter(
+                or_(
+                    PedidoModel.cliente_nome.ilike(f"%{q}%"),
+                    PedidoModel.descricao.ilike(f"%{q}%")
+                )
+            )
+            
+        total = query.count()
+        models = query.order_by(desc(PedidoModel.data_criacao)).offset(skip).limit(limit).all()
+        
         pedidos = []
         for model in models:
             pedido = Pedido()
@@ -124,7 +140,7 @@ class PedidoRepository(RepositorioDePedido):
             pedido.data_inicio_producao = model.data_inicio_producao.isoformat() if model.data_inicio_producao else None
             pedido.data_conclusao = model.data_conclusao.isoformat() if model.data_conclusao else None
             pedidos.append(pedido)
-        return pedidos
+        return pedidos, total
 
     def buscar_por_nome_cliente(self, user_id: str, nome_cliente: str) -> List[Pedido]:
         models = self.db.query(PedidoModel).filter(

@@ -13,30 +13,40 @@ export default function ReceitasPage() {
   const [receitas, setReceitas] = useState<any[]>([])
   const [loading, setLoading]   = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
+  const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(6)
+  const [total, setTotal] = useState(0)
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm)
+      setPage(1)
+    }, 500)
+    return () => clearTimeout(handler)
+  }, [searchTerm])
 
   useEffect(() => {
     const load = async () => {
+      setLoading(true)
       try {
         const token = await getToken()
         if (token) {
-          const data = await getReceitas(token)
-          setReceitas(data)
+          const skip = (page - 1) * limit
+          const data = await getReceitas(token, limit, skip, debouncedSearch)
+          setReceitas(data.items || [])
+          setTotal(data.total || (data.items ? data.items.length : data.length))
         }
       } catch (e) {
         console.error('Erro ao carregar receitas:', e)
-        // Sem mock — empty state
       } finally {
         setLoading(false)
       }
     }
     load()
-  }, [getToken])
+  }, [getToken, page, limit, debouncedSearch])
 
-  const filtered = receitas.filter(r =>
-    !searchTerm ||
-    r.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    r.descricao?.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filtered = receitas // Backend já faz o filtro
 
   const router = useRouter()
 
@@ -48,7 +58,9 @@ export default function ReceitasPage() {
       .replace(',', '.')
 
     const numberValue = parseFloat(normalized)
-    return Number.isFinite(numberValue) ? `R$ ${numberValue.toFixed(2)}` : null
+    return Number.isFinite(numberValue) 
+      ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(numberValue)
+      : null
   }
 
   return (
@@ -229,6 +241,52 @@ export default function ReceitasPage() {
             ))}
           </div>
         </AnimatePresence>
+      )}
+
+      {/* Pagination Controls */}
+      {!loading && receitas.length > 0 && (
+        <section className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t" style={{ borderColor: 'var(--surface-container-high)' }}>
+          <div className="flex items-center gap-4 text-sm" style={{ color: 'var(--on-surface-variant)' }}>
+            <span>Total: {total}</span>
+            <div className="flex items-center gap-2">
+              <label htmlFor="limit-select">Por página:</label>
+              <select
+                id="limit-select"
+                value={limit}
+                onChange={(e) => {
+                  setLimit(Number(e.target.value))
+                  setPage(1)
+                }}
+                className="bg-transparent border rounded p-1"
+                style={{ borderColor: 'var(--outline-variant)' }}
+              >
+                <option value={6}>6</option>
+                <option value={12}>12</option>
+                <option value={24}>24</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-4 py-2 rounded-lg text-sm font-semibold transition-all disabled:opacity-50"
+              style={{ backgroundColor: 'var(--surface-container-high)', color: 'var(--on-surface-variant)' }}
+            >
+              Anterior
+            </button>
+            <span className="text-sm font-semibold mx-2">Página {page} de {Math.ceil(total / limit) || 1}</span>
+            <button
+              onClick={() => setPage(p => p + 1)}
+              disabled={page >= Math.ceil(total / limit)}
+              className="px-4 py-2 rounded-lg text-sm font-semibold transition-all disabled:opacity-50"
+              style={{ backgroundColor: 'var(--surface-container-high)', color: 'var(--on-surface-variant)' }}
+            >
+              Próxima
+            </button>
+          </div>
+        </section>
       )}
     </div>
   )

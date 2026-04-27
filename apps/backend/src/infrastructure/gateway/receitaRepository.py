@@ -86,8 +86,15 @@ class ReceitaRepository(RepositorioDeReceita):
             receita._Receita__tempo_preparo = None
         return receita
 
-    def listar_por_usuario(self, user_id: str) -> List[Receita]:
-        models = self.db.query(ReceitaModel).filter(ReceitaModel.usuario_id == user_id).all()
+    def listar_por_usuario(self, user_id: str, limit: int = 100, skip: int = 0, q: Optional[str] = None) -> tuple[List[Receita], int]:
+        query = self.db.query(ReceitaModel).filter(ReceitaModel.usuario_id == user_id)
+        
+        if q:
+            query = query.filter(ReceitaModel.nome.ilike(f"%{q}%"))
+            
+        total = query.count()
+        models = query.offset(skip).limit(limit).all()
+        
         receitas = []
         for model in models:
             receita = Receita()
@@ -110,7 +117,7 @@ class ReceitaRepository(RepositorioDeReceita):
             except (ValueError, TypeError):
                 receita._Receita__tempo_preparo = None
             receitas.append(receita)
-        return receitas
+        return receitas, total
 
     def buscar_por_nome(self, user_id: str, nome: str) -> List[Receita]:
         models = self.db.query(ReceitaModel).filter(

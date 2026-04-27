@@ -1,5 +1,5 @@
-from typing import List, Optional
-from sqlalchemy import desc
+from typing import List, Optional, Tuple
+from sqlalchemy import desc, or_
 from sqlalchemy.orm import Session
 from src.application.gateways.repositorioDePedido import RepositorioDePedido
 from src.domain.entity.pedido.pedido import Pedido
@@ -52,12 +52,26 @@ class RepositorioDePedidoSQLAlchemy(RepositorioDePedido):
             return None
         return PedidoMapper.to_domain(pedido_model)
 
-    def listar_por_usuario(self, user_id: str) -> List[Pedido]:
-        pedidos_model = self._session.query(PedidoModel)\
-            .filter(PedidoModel.usuario_id == user_id)\
-            .order_by(desc(PedidoModel.data_criacao))\
-            .all()
-        return [PedidoMapper.to_domain(pm) for pm in pedidos_model]
+    def listar_por_usuario(self, user_id: str, limit: int = 100, skip: int = 0, status: Optional[str] = None, q: Optional[str] = None) -> Tuple[List[Pedido], int]:
+        query = self._session.query(PedidoModel).filter(PedidoModel.usuario_id == user_id)
+        
+        if status:
+            if status == 'ativos':
+                query = query.filter(PedidoModel.status.notin_(['cancelado', 'concluido']))
+            else:
+                query = query.filter(PedidoModel.status == status)
+                
+        if q:
+            query = query.filter(
+                or_(
+                    PedidoModel.cliente_nome.ilike(f"%{q}%"),
+                    PedidoModel.descricao.ilike(f"%{q}%")
+                )
+            )
+            
+        total = query.count()
+        pedidos_model = query.order_by(desc(PedidoModel.data_criacao)).offset(skip).limit(limit).all()
+        return [PedidoMapper.to_domain(pm) for pm in pedidos_model], total
 
     def buscar_por_nome_cliente(self, user_id: str, nome_cliente: str) -> List[Pedido]:
         pedidos_model = self._session.query(PedidoModel).filter(

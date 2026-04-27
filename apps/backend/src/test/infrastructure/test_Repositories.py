@@ -143,13 +143,15 @@ def test_receita_sqlalchemy_repository_listar():
     model_mock.tempo_preparo = 60
     model_mock.modo_preparo = "Assar"
     
-    db_mock.query().filter().all.return_value = [model_mock]
+    db_mock.query().filter().count.return_value = 1
+    db_mock.query().filter().offset().limit().all.return_value = [model_mock]
     
-    resultado = repo.listar_por_usuario("user_1")
+    items, total = repo.listar_por_usuario("user_1")
     
-    assert len(resultado) == 1
-    assert resultado[0].nome == "Bolo"
-    assert resultado[0].preco_venda_sugerido == 10.5
+    assert len(items) == 1
+    assert total == 1
+    assert items[0].nome == "Bolo"
+    assert items[0].preco_venda_sugerido == 10.5
 
 def test_pedido_sqlalchemy_repository_listar():
     db_mock = MagicMock()
@@ -172,12 +174,14 @@ def test_pedido_sqlalchemy_repository_listar():
     model_mock.data_inicio_producao = None
     model_mock.data_conclusao = None
     
-    db_mock.query().filter().order_by().all.return_value = [model_mock]
+    db_mock.query().filter().count.return_value = 1
+    db_mock.query().filter().order_by().offset().limit().all.return_value = [model_mock]
     
-    resultado = repo.listar_por_usuario("user_1")
+    items, total = repo.listar_por_usuario("user_1")
     
-    assert len(resultado) == 1
-    assert resultado[0].cliente_nome == "Maria"
+    assert len(items) == 1
+    assert total == 1
+    assert items[0].cliente_nome == "Maria"
 
 # --- Testes de regressão: bypass de setter para dados históricos ---
 
@@ -194,14 +198,15 @@ def test_receita_repository_listar_com_preco_zero():
     model_mock.modo_preparo = None
     model_mock.usuario_id = "user_1"
 
-    db_mock.query().filter().all.return_value = [model_mock]
+    db_mock.query().filter().count.return_value = 1
+    db_mock.query().filter().offset().limit().all.return_value = [model_mock]
 
     repo = ReceitaRepository(db_mock)
-    resultado = repo.listar_por_usuario("user_1")
+    items, total = repo.listar_por_usuario("user_1")
 
-    assert len(resultado) == 1
-    assert resultado[0].preco_venda_sugerido == 0.0
-    assert resultado[0].nome == "Bolo Antigo"
+    assert len(items) == 1
+    assert items[0].preco_venda_sugerido == 0.0
+    assert items[0].nome == "Bolo Antigo"
 
 def test_receita_repository_listar_com_rendimento_zero():
     """Receitas com rendimento=0 não devem lançar ValueError ao serem lidas."""
@@ -216,13 +221,14 @@ def test_receita_repository_listar_com_rendimento_zero():
     model_mock.modo_preparo = "Assar"
     model_mock.usuario_id = "user_2"
 
-    db_mock.query().filter().all.return_value = [model_mock]
+    db_mock.query().filter().count.return_value = 1
+    db_mock.query().filter().offset().limit().all.return_value = [model_mock]
 
     repo = ReceitaRepository(db_mock)
-    resultado = repo.listar_por_usuario("user_2")
+    items, total = repo.listar_por_usuario("user_2")
 
-    assert len(resultado) == 1
-    assert resultado[0].rendimento == 0
+    assert len(items) == 1
+    assert items[0].rendimento == 0
 
 def test_receita_repository_buscar_por_id_com_dados_invalidos():
     """valor não-numérico nos campos deve degradar para None sem crashar."""

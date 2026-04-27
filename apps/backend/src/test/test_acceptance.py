@@ -72,16 +72,22 @@ class TestFluxoPrimarioPedido:
     def test_ac02_listar_pedidos_do_usuario(self, client):
         """AC-02: Usuário deve ver apenas seus próprios pedidos (RF-16)."""
         mock_controller = Mock()
-        mock_controller.handle_listar_meus_pedidos.return_value = [
-            self._mock_pedido("Pendente"),
-            self._mock_pedido("Em Producao"),
-        ]
+        mock_controller.handle_listar_meus_pedidos.return_value = {
+            "items": [
+                self._mock_pedido("Pendente"),
+                self._mock_pedido("Em Producao"),
+            ],
+            "total": 2,
+            "limit": 100,
+            "skip": 0
+        }
         app.dependency_overrides[get_pedido_controller] = lambda: mock_controller
 
         response = client.get("/pedidos/")
 
         assert response.status_code == 200
-        pedidos = response.json()
+        data = response.json()
+        pedidos = data["items"]
         assert len(pedidos) == 2
         assert all(p["user_id"] == MOCK_USER_ID for p in pedidos)
 
@@ -172,16 +178,22 @@ class TestFluxoSecundarioReceitas:
     def test_ac07_listar_receitas_do_usuario(self, client):
         """AC-07: Usuário deve ver apenas suas próprias receitas (RF-10)."""
         mock_controller = Mock()
-        mock_controller.handle_listar_receitas.return_value = [
-            self._mock_receita("Bolo de Chocolate"),
-            self._mock_receita("Brigadeiro Gourmet"),
-        ]
+        mock_controller.handle_listar_receitas.return_value = {
+            "items": [
+                self._mock_receita("Bolo de Chocolate"),
+                self._mock_receita("Brigadeiro Gourmet"),
+            ],
+            "total": 2,
+            "limit": 100,
+            "skip": 0
+        }
         app.dependency_overrides[get_receita_controller] = lambda: mock_controller
 
         response = client.get("/receitas")
 
         assert response.status_code == 200
-        receitas = response.json()
+        data = response.json()
+        receitas = data["items"]
         assert len(receitas) == 2
         assert all(r["id_usuario"] == MOCK_USER_ID for r in receitas)
 

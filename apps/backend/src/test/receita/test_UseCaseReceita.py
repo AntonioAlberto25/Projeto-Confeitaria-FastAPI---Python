@@ -27,13 +27,13 @@ def test_listar_receitas_chama_repositorio():
     repositorio_mock = Mock()
     user_id = "user_123"
     receitas_fake = [Receita(), Receita()]
-    repositorio_mock.listar_por_usuario.return_value = receitas_fake
+    repositorio_mock.listar_por_usuario.return_value = (receitas_fake, 2)
 
     usecase = ListarReceitas(repositorio_mock)
     resultado = usecase.executar(user_id)
 
-    repositorio_mock.listar_por_usuario.assert_called_once_with(user_id)
-    assert resultado == receitas_fake
+    repositorio_mock.listar_por_usuario.assert_called_once_with(user_id, 100, 0, None)
+    assert resultado == (receitas_fake, 2)
 
 def test_buscar_receita_por_id_chama_repositorio():
     repositorio_mock = Mock()

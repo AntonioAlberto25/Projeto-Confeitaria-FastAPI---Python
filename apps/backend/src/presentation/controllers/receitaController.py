@@ -62,21 +62,26 @@ class ReceitaController:
             logger.exception(f"Erro ao criar receita: {e}")
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Erro ao criar receita: {str(e)}")
 
-    def handle_listar_receitas(self, user_id: str) -> List[ReceitaResponse]:
+    def handle_listar_receitas(self, user_id: str, limit: int = 100, skip: int = 0, q: str = None) -> Dict:
         try:
-            resultado = self.listar_receitas_use_case.executar(user_id)
-            return [
-                ReceitaResponse(
-                    id=str(r.id),
-                    nome=r.nome,
-                    preco_venda_sugerido=r.preco_venda_sugerido,
-                    descricao=r.descricao,
-                    rendimento=r.rendimento,
-                    tempo_preparo=r.tempo_preparo,
-                    modo_preparo=r.modo_preparo,
-                    id_usuario=str(r.idUsuario)
-                ) for r in resultado
-            ]
+            items, total = self.listar_receitas_use_case.executar(user_id, limit, skip, q)
+            return {
+                "items": [
+                    ReceitaResponse(
+                        id=str(r.id),
+                        nome=r.nome,
+                        preco_venda_sugerido=r.preco_venda_sugerido,
+                        descricao=r.descricao,
+                        rendimento=r.rendimento,
+                        tempo_preparo=r.tempo_preparo,
+                        modo_preparo=r.modo_preparo,
+                        id_usuario=str(r.idUsuario)
+                    ) for r in items
+                ],
+                "total": total,
+                "limit": limit,
+                "skip": skip
+            }
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 

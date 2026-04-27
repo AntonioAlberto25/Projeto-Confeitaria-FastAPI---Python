@@ -15,27 +15,77 @@ export default function PedidosPage() {
   const [pedidos, setPedidos]       = useState<any[]>([])
   const [loading, setLoading]       = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>(searchParams.get('status') || 'todos')
   const [pedidoToDelete, setPedidoToDelete] = useState<any>(null)
   const [deleting, setDeleting] = useState(false)
+  
+  const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(5)
+  const [total, setTotal] = useState(0)
+  const [allCounts, setAllCounts] = useState<Record<string, number>>({
+    todos: 0,
+    pendente: 0,
+    em_producao: 0,
+    concluido: 0
+  })
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm)
+      setPage(1)
+    }, 500)
+    return () => clearTimeout(handler)
+  }, [searchTerm])
+
+  useEffect(() => {
+    setPage(1)
+  }, [statusFilter, limit])
 
   useEffect(() => {
     const load = async () => {
+      setLoading(true)
       try {
         const token = await getToken()
         if (token) {
-          const data = await getPedidos(token)
-          setPedidos(data)
+          const skip = (page - 1) * limit
+          const data = await getPedidos(token, limit, skip, statusFilter === 'todos' ? 'ativos' : statusFilter, debouncedSearch)
+          setPedidos(data.items ? data.items : data)
+          setTotal(data.total !== undefined ? data.total : (data.items ? data.items.length : data.length))
         }
       } catch (e) {
         console.error('Erro ao carregar pedidos:', e)
-        // Sem mock data — empty state apresentado
       } finally {
         setLoading(false)
       }
     }
     load()
-  }, [getToken])
+  }, [getToken, page, limit, statusFilter, debouncedSearch])
+
+  // Efeito separado para carregar os quantitativos de todas as abas
+  useEffect(() => {
+    const loadCounts = async () => {
+      try {
+        const token = await getToken()
+        if (token) {
+          // Busca um volume maior de uma vez para calcular os totais das abas
+          const data = await getPedidos(token, 1000, 0, undefined)
+          const items = data.items || []
+          
+          const counts = {
+            todos: items.filter((p: any) => p.status !== 'cancelado' && p.status !== 'concluido').length,
+            pendente: items.filter((p: any) => p.status === 'pendente').length,
+            em_producao: items.filter((p: any) => p.status === 'em_producao' || p.status === 'producao').length,
+            concluido: items.filter((p: any) => p.status === 'concluido').length
+          }
+          setAllCounts(counts)
+        }
+      } catch (e) {
+        console.error('Erro ao carregar quantitativos:', e)
+      }
+    }
+    loadCounts()
+  }, [getToken, pedidos]) // Recarrega se a lista de pedidos mudar (ex: ao excluir ou mudar status)
 
   const handleDelete = async () => {
     if (!pedidoToDelete) return
@@ -60,18 +110,7 @@ export default function PedidosPage() {
     concluido: 'Concluídos'
   }
 
-  const filtered = pedidos.filter(p => {
-    const matchSearch = !searchTerm ||
-      p.cliente_nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.descricao?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      String(p.id || '').includes(searchTerm)
-
-    const matchStatus = statusFilter === 'todos' 
-      ? p.status !== 'cancelado' && p.status !== 'concluido'
-      : p.status === statusFilter
-    
-    return matchSearch && matchStatus
-  })
+  const filtered = pedidos // O backend já está filtrando e paginando
 
   return (
     <div className="space-y-10 animate-fade-in pb-20">
@@ -110,9 +149,6 @@ export default function PedidosPage() {
         {/* Status pills */}
         <div className="flex gap-2 flex-wrap">
           {statusOptions.map(s => {
-            const count = s === 'todos'
-              ? pedidos.filter(p => p.status !== 'cancelado' && p.status !== 'concluido').length
-              : pedidos.filter(p => p.status === s).length
             const isActive = statusFilter === s
 
             return (
@@ -132,16 +168,13 @@ export default function PedidosPage() {
               >
                 {statusLabel[s]}
                 <span
-                  className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold"
-                  style={isActive ? {
-                    backgroundColor: 'rgba(255,255,255,0.25)',
-                    color: '#fff',
-                  } : {
-                    backgroundColor: 'var(--surface-container-highest)',
-                    color: 'var(--on-surface-variant)',
+                  className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold transition-all"
+                  style={{
+                    backgroundColor: isActive ? 'rgba(255,255,255,0.25)' : 'var(--surface-container-highest)',
+                    color: isActive ? '#fff' : 'var(--on-surface-variant)',
                   }}
                 >
-                  {count}
+                  {allCounts[s] || 0}
                 </span>
               </button>
             )
@@ -260,7 +293,7 @@ export default function PedidosPage() {
                         {pedido.preco_total != null && (
                           <span className="text-lg font-bold"
                             style={{ fontFamily: 'var(--font-jakarta)', color: 'var(--primary)' }}>
-                            R$ {Number(pedido.preco_total).toFixed(2)}
+                            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(pedido.preco_total))}
                           </span>
                         )}
                       </div>
@@ -272,6 +305,53 @@ export default function PedidosPage() {
           </AnimatePresence>
         )}
       </section>
+
+      {/* Pagination Controls */}
+      {!loading && filtered.length > 0 && (
+        <section className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t" style={{ borderColor: 'var(--surface-container-high)' }}>
+          <div className="flex items-center gap-4 text-sm" style={{ color: 'var(--on-surface-variant)' }}>
+            <span>Total: {total}</span>
+            <div className="flex items-center gap-2">
+              <label htmlFor="limit-select">Por página:</label>
+              <select
+                id="limit-select"
+                value={limit}
+                onChange={(e) => {
+                  setLimit(Number(e.target.value))
+                  setPage(1)
+                }}
+                className="bg-transparent border rounded p-1"
+                style={{ borderColor: 'var(--outline-variant)' }}
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-4 py-2 rounded-lg text-sm font-semibold transition-all disabled:opacity-50"
+              style={{ backgroundColor: 'var(--surface-container-high)', color: 'var(--on-surface-variant)' }}
+            >
+              Anterior
+            </button>
+            <span className="text-sm font-semibold mx-2">Página {page} de {Math.ceil(total / limit) || 1}</span>
+            <button
+              onClick={() => setPage(p => p + 1)}
+              disabled={page >= Math.ceil(total / limit)}
+              className="px-4 py-2 rounded-lg text-sm font-semibold transition-all disabled:opacity-50"
+              style={{ backgroundColor: 'var(--surface-container-high)', color: 'var(--on-surface-variant)' }}
+            >
+              Próxima
+            </button>
+          </div>
+        </section>
+      )}
 
       {/* Delete Confirmation Modal */}
       {pedidoToDelete && (

@@ -358,7 +358,7 @@ export default function DetalhesPedidoPage() {
               </p>
               <p className="text-4xl font-bold tracking-tight"
                 style={{ fontFamily: 'var(--font-jakarta)', color: 'var(--primary)' }}>
-                R$ {pedido.preco_total ? Number(pedido.preco_total).toFixed(2) : '0.00'}
+                {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(pedido.preco_total || 0))}
               </p>
             </div>
           )}

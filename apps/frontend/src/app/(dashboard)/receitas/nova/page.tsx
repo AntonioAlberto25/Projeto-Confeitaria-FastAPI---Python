@@ -23,7 +23,28 @@ export default function NovaReceitaPage() {
     preco_venda_sugerido: '',
   })
 
-  const update = (field: string, val: string) => setForm(f => ({ ...f, [field]: val }))
+  const applyCurrencyMask = (value: string) => {
+    const cleanValue = value.replace(/\D/g, '').slice(0, 10)
+    const numberValue = parseInt(cleanValue || '0', 10) / 100
+    return new Intl.NumberFormat('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(numberValue)
+  }
+
+  const applyNumericMask = (value: string) => {
+    return value.replace(/\D/g, '').slice(0, 6)
+  }
+
+  const update = (field: string, val: string) => {
+    let finalValue = val
+    if (field === 'preco_venda_sugerido') {
+      finalValue = applyCurrencyMask(val)
+    } else if (field === 'rendimento' || field === 'tempo_preparo') {
+      finalValue = applyNumericMask(val)
+    }
+    setForm(f => ({ ...f, [field]: finalValue }))
+  }
 
   const handleSubmit = async () => {
     if (!form.nome.trim()) { setError('O nome da receita é obrigatório.'); return }
@@ -38,7 +59,9 @@ export default function NovaReceitaPage() {
       setError('O tempo de preparo deve ser maior que zero.')
       return
     }
-    const preco = form.preco_venda_sugerido ? parseFloat(form.preco_venda_sugerido) : null
+    const preco = form.preco_venda_sugerido 
+      ? parseFloat(form.preco_venda_sugerido.replace(/\./g, '').replace(',', '.')) 
+      : null
     if (preco !== null && preco <= 0) {
       setError('O preço de venda deve ser maior que zero.')
       return
@@ -97,9 +120,9 @@ export default function NovaReceitaPage() {
         {[
           { label: 'Nome da Receita *', field: 'nome', type: 'text', placeholder: 'Ex: Bolo de Chocolate Belga', min: undefined },
           { label: 'Descrição', field: 'descricao', type: 'text', placeholder: 'Breve descrição da receita...', min: undefined },
-          { label: 'Rendimento (unidades) *', field: 'rendimento', type: 'number', placeholder: 'Ex: 12 (deve ser ≥ 1)', min: '1' },
-          { label: 'Tempo de Preparo (min)', field: 'tempo_preparo', type: 'number', placeholder: '60', min: '1' },
-          { label: 'Preço de Venda Sugerido (R$)', field: 'preco_venda_sugerido', type: 'number', placeholder: '0,00', min: '0.01' },
+          { label: 'Rendimento (unidades) *', field: 'rendimento', type: 'text', placeholder: 'Ex: 12 (deve ser ≥ 1)', min: undefined },
+          { label: 'Tempo de Preparo (min)', field: 'tempo_preparo', type: 'text', placeholder: '60', min: undefined },
+          { label: 'Preço de Venda Sugerido (R$)', field: 'preco_venda_sugerido', type: 'text', placeholder: '0,00', min: undefined },
         ].map(f => (
           <div key={f.field}>
             <label className="block text-xs font-semibold uppercase tracking-widest mb-2"

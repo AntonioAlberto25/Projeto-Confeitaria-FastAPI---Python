@@ -39,7 +39,7 @@ export default function NovoPedidoPage() {
         const token = await getToken()
         if (token) {
           const data = await getReceitas(token)
-          setReceitas(data)
+          setReceitas(data.items || [])
         }
       } catch (e) {
         console.error('Erro ao carregar receitas:', e)
@@ -57,7 +57,7 @@ export default function NovoPedidoPage() {
         ...f,
         receita_id: id,
         descricao: f.descricao ? f.descricao : r.nome,
-        preco_total: f.preco_total ? f.preco_total : (r.preco_venda_sugerido?.toString() || '')
+        preco_total: f.preco_total ? f.preco_total : (r.preco_venda_sugerido ? new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(r.preco_venda_sugerido) : '')
       }))
     } else {
       update('receita_id', '')
@@ -76,6 +76,18 @@ export default function NovoPedidoPage() {
     return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`
   }
 
+  // Máscara para moeda (BRL) - Previne Numeric Overflow
+  const applyCurrencyMask = (value: string): string => {
+    let digits = String(value).replace(/\D/g, '')
+    if (!digits) return ''
+    if (digits.length > 10) digits = digits.slice(0, 10) // Limita a 10 dígitos (máximo 99.999.999,99)
+    const numberValue = parseInt(digits, 10) / 100
+    return new Intl.NumberFormat('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(numberValue)
+  }
+
   const canNext = step === 0 ? form.cliente_nome.trim() !== '' : true
 
   const handleSubmit = async () => {
@@ -86,7 +98,7 @@ export default function NovoPedidoPage() {
       if (!token) throw new Error('Não autenticado')
       const payload = {
         ...form,
-        preco_total: form.preco_total ? parseFloat(form.preco_total) : undefined,
+        preco_total: form.preco_total ? parseFloat(form.preco_total.replace(/\./g, '').replace(',', '.')) : undefined,
         status: 'pendente',
       }
       const created = await createPedido(token, payload)
@@ -179,7 +191,7 @@ export default function NovoPedidoPage() {
               { label: 'Nome do Cliente *', field: 'cliente_nome', type: 'text', placeholder: 'Ex: Ana Silva' },
               { label: 'Telefone', field: 'cliente_tel', type: 'tel', placeholder: '(11) 99999-9999' },
               { label: 'Data de Entrega', field: 'data_entrega', type: 'date', placeholder: '' },
-              { label: 'Preço Total (R$)', field: 'preco_total', type: 'number', placeholder: '0,00' },
+              { label: 'Preço Total (R$)', field: 'preco_total', type: 'text', placeholder: '0,00' },
             ].map(f => (
               <div key={f.field}>
                 <label className="block text-xs font-semibold uppercase tracking-widest mb-2"
@@ -194,6 +206,8 @@ export default function NovoPedidoPage() {
                   onChange={e => {
                     if (f.field === 'cliente_tel') {
                       update(f.field, applyPhoneMask(e.target.value))
+                    } else if (f.field === 'preco_total') {
+                      update(f.field, applyCurrencyMask(e.target.value))
                     } else {
                       update(f.field, e.target.value)
                     }
@@ -311,7 +325,7 @@ export default function NovoPedidoPage() {
                 <div className="flex justify-between items-center pt-2" style={{ borderTop: '1px solid rgba(188,185,173,0.20)' }}>
                   <span className="text-sm font-bold" style={{ fontFamily: 'var(--font-jakarta)', color: 'var(--on-surface)' }}>Total</span>
                   <span className="text-2xl font-bold" style={{ fontFamily: 'var(--font-jakarta)', color: 'var(--primary)' }}>
-                    R$ {parseFloat(form.preco_total).toFixed(2)}
+                    R$ {form.preco_total}
                   </span>
                 </div>
               )}

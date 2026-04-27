@@ -14,33 +14,58 @@ export default function DashboardPage() {
   const [pedidos, setPedidos]   = useState<any[]>([])
   const [receitas, setReceitas] = useState<any[]>([])
   const [loading, setLoading]   = useState(true)
+  const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(5)
+  const [total, setTotal] = useState(0)
+  const [allAtivos, setAllAtivos] = useState<any[]>([])
 
   useEffect(() => {
-    const load = async () => {
+    const loadData = async () => {
       try {
         const token = await getToken()
-        if (token) {
-          const [p, r] = await Promise.allSettled([getPedidos(token), getReceitas(token)])
-          if (p.status === 'fulfilled') setPedidos(p.value)
-          if (r.status === 'fulfilled') setReceitas(r.value)
-        }
+        if (!token) return
+        
+        // Fetch para KPIs (todos os ativos)
+        const allData = await getPedidos(token, 1000, 0, 'ativos')
+        setAllAtivos(allData.items || [])
+        
+        // Fetch inicial para a tabela (paginado)
+        const paginatedData = await getPedidos(token, limit, (page - 1) * limit, 'ativos')
+        setPedidos(paginatedData.items || [])
+        setTotal(paginatedData.total || 0)
+        
+        const rData = await getReceitas(token)
+        setReceitas(rData.items || [])
       } catch (e) {
         console.error(e)
       } finally {
         setLoading(false)
       }
     }
-    load()
+    loadData()
   }, [getToken])
 
-  const pendentes   = pedidos.filter(p => p.status === 'pendente').length
-  const emProducao  = pedidos.filter(p => p.status === 'producao' || p.status === 'em_producao').length
-  const totalHoje   = pedidos.filter(p => p.status !== 'cancelado' && p.status !== 'concluido').length
+  // Atualiza apenas a tabela quando a página ou limite muda
+  useEffect(() => {
+    const updateTable = async () => {
+      const token = await getToken()
+      if (token) {
+        const data = await getPedidos(token, limit, (page - 1) * limit, 'ativos')
+        setPedidos(data.items || [])
+        setTotal(data.total || 0)
+      }
+    }
+    if (!loading) updateTable()
+  }, [page, limit, getToken])
+
+  const totalAtivos = allAtivos.length
+  const pendentes = allAtivos.filter(p => p.status === 'pendente').length
+  const emProducao = allAtivos.filter(p => p.status === 'producao' || p.status === 'em_producao').length
 
   const kpis = [
     {
-      label: 'Pedidos Hoje',
-      value: totalHoje,
+      label: 'Pedidos Ativos',
+      value: totalAtivos,
       icon: ClipboardList,
       accent: '#fbabbc',
       iconColor: '#915160',
@@ -71,11 +96,6 @@ export default function DashboardPage() {
       link: '/receitas',
     },
   ]
-
-  // Últimos 10 pedidos ativos para o painel de produção
-  const recentes = pedidos
-    .filter(p => p.status !== 'cancelado' && p.status !== 'concluido')
-    .slice(0, 10)
 
   return (
     <div className="space-y-10 animate-fade-in">
@@ -173,7 +193,7 @@ export default function DashboardPage() {
                   <div key={i} className="h-12 rounded-lg animate-skeleton" style={{ backgroundColor: 'var(--surface-container-low)' }} />
                 ))}
               </div>
-            ) : recentes.length === 0 ? (
+            ) : pedidos.length === 0 ? (
               /* Empty state — sem dados, nada aparece */
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <div
@@ -194,20 +214,20 @@ export default function DashboardPage() {
               <div>
                 <div
                   className="grid px-6 py-3"
-                  style={{ gridTemplateColumns: '0.8fr 1.2fr 1fr 0.8fr', backgroundColor: 'var(--surface-container-low)' }}
+                  style={{ gridTemplateColumns: '0.6fr 1fr 0.8fr 0.8fr 0.8fr', backgroundColor: 'var(--surface-container-low)' }}
                 >
-                  {['Pedido', 'Cliente', 'Status', 'Entrega'].map(h => (
+                  {['Pedido', 'Cliente', 'Status', 'Criado em', 'Entrega'].map(h => (
                     <span key={h} className="text-xs font-semibold uppercase tracking-widest" style={{ fontFamily: 'var(--font-inter)', color: 'var(--on-surface-variant)' }}>
                       {h}
                     </span>
                   ))}
                 </div>
-                {recentes.map((pedido) => (
+                {pedidos.map((pedido) => (
                   <Link
                     key={pedido.id}
                     href={`/pedidos/${pedido.id}`}
                     className="grid items-center px-6 py-4 transition-colors"
-                    style={{ gridTemplateColumns: '0.8fr 1.2fr 1fr 0.8fr', borderTop: '1px solid transparent' }}
+                    style={{ gridTemplateColumns: '0.6fr 1fr 0.8fr 0.8fr 0.8fr', borderTop: '1px solid transparent' }}
                     onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--surface-container-low)')}
                     onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
                   >
@@ -218,11 +238,51 @@ export default function DashboardPage() {
                       {pedido.cliente_nome}
                     </span>
                     <StatusBadge status={pedido.status} />
-                    <span className="text-sm" style={{ fontFamily: 'var(--font-inter)', color: 'var(--on-surface-variant)' }}>
+                    <span className="text-xs" style={{ fontFamily: 'var(--font-inter)', color: 'var(--on-surface-variant)' }}>
+                      {pedido.data_criacao ? new Date(pedido.data_criacao).toLocaleDateString('pt-BR') : '—'}
+                    </span>
+                    <span className="text-sm font-medium" style={{ fontFamily: 'var(--font-inter)', color: 'var(--on-surface)' }}>
                       {pedido.data_entrega ? new Date(pedido.data_entrega).toLocaleDateString('pt-BR') : '—'}
                     </span>
                   </Link>
                 ))}
+
+                {/* Controles de Paginação na Dashboard */}
+                {total > 0 && (
+                  <div className="px-6 py-4 border-t flex items-center justify-between gap-4" style={{ borderColor: 'var(--surface-container-high)' }}>
+                    <div className="flex items-center gap-2 text-xs font-medium" style={{ color: 'var(--on-surface-variant)' }}>
+                      <span>Total: {total}</span>
+                      <select
+                        value={limit}
+                        onChange={(e) => { setLimit(Number(e.target.value)); setPage(1) }}
+                        className="bg-transparent border rounded px-1 py-0.5 ml-2"
+                        style={{ borderColor: 'var(--outline-variant)' }}
+                      >
+                        <option value={5}>5</option>
+                        <option value={10}>10</option>
+                      </select>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setPage(p => Math.max(1, p - 1))}
+                        disabled={page === 1}
+                        className="p-1 rounded hover:bg-[var(--surface-container-high)] disabled:opacity-30"
+                      >
+                        <ArrowRight className="w-4 h-4 rotate-180" />
+                      </button>
+                      <span className="text-[10px] font-bold uppercase tracking-widest">
+                        {page} / {Math.ceil(total / limit) || 1}
+                      </span>
+                      <button
+                        onClick={() => setPage(p => p + 1)}
+                        disabled={page >= Math.ceil(total / limit)}
+                        className="p-1 rounded hover:bg-[var(--surface-container-high)] disabled:opacity-30"
+                      >
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -271,7 +331,9 @@ export default function DashboardPage() {
                         {receita.nome}
                       </p>
                       <p className="text-xs" style={{ fontFamily: 'var(--font-inter)', color: 'var(--on-surface-variant)' }}>
-                        {receita.preco_venda_sugerido ? `R$ ${Number(receita.preco_venda_sugerido).toFixed(2)}` : 'Preço não definido'}
+                        {receita.preco_venda_sugerido 
+                          ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(receita.preco_venda_sugerido)) 
+                          : 'Preço não definido'}
                       </p>
                     </div>
                   </Link>

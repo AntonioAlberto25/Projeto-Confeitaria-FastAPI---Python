@@ -29,14 +29,21 @@ def test_health_check(client):
     assert response.json()["service"] == "confeitaria-api"
 
 def test_listar_receitas_empty(client):
-    # Mock controller to return empty list
+    # Mock controller to return paginated response structure
     mock_controller = Mock()
-    mock_controller.handle_listar_receitas.return_value = []
+    mock_controller.handle_listar_receitas.return_value = {
+        "items": [],
+        "total": 0,
+        "limit": 100,
+        "skip": 0
+    }
     app.dependency_overrides[get_receita_controller] = lambda: mock_controller
     
     response = client.get("/receitas")
     assert response.status_code == 200
-    assert response.json() == []
+    data = response.json()
+    assert data["items"] == []
+    assert data["total"] == 0
 
 def test_criar_receita(client):
     # Mock controller response
@@ -63,14 +70,21 @@ def test_criar_receita(client):
     assert response.json()["nome"] == "Bolo"
 
 def test_listar_pedidos_empty(client):
-    # Mock controller to return empty list
+    # Mock controller to return paginated response structure
     mock_controller = Mock()
-    mock_controller.handle_listar_meus_pedidos.return_value = []
+    mock_controller.handle_listar_meus_pedidos.return_value = {
+        "items": [],
+        "total": 0,
+        "limit": 100,
+        "skip": 0
+    }
     app.dependency_overrides[get_pedido_controller] = lambda: mock_controller
     
     response = client.get("/pedidos/")
     assert response.status_code == 200
-    assert response.json() == []
+    data = response.json()
+    assert data["items"] == []
+    assert data["total"] == 0
 
 def test_buscar_receita_por_id(client):
     mock_controller = Mock()

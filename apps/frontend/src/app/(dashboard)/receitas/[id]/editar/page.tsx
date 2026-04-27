@@ -33,10 +33,10 @@ export default function EditarReceitaPage() {
         setForm({
           nome: data.nome || '',
           descricao: data.descricao || '',
-          tempo_preparo: data.tempo_preparo != null ? String(data.tempo_preparo) : '',
-          rendimento: data.rendimento != null ? String(data.rendimento) : '',
+          tempo_preparo: data.tempo_preparo != null ? applyNumericMask(String(data.tempo_preparo)) : '',
+          rendimento: data.rendimento != null ? applyNumericMask(String(data.rendimento)) : '',
           modo_preparo: data.modo_preparo || '',
-          preco_venda_sugerido: data.preco_venda_sugerido != null ? String(data.preco_venda_sugerido) : '',
+          preco_venda_sugerido: data.preco_venda_sugerido != null ? applyCurrencyMask(data.preco_venda_sugerido.toFixed(2)) : '',
         })
       } catch (e) {
         setError('Erro ao carregar receita. Tente novamente.')
@@ -48,7 +48,28 @@ export default function EditarReceitaPage() {
     load()
   }, [getToken, id])
 
-  const updateField = (field: string, value: string) => setForm(prev => ({ ...prev, [field]: value }))
+  const applyCurrencyMask = (value: string) => {
+    const cleanValue = value.replace(/\D/g, '').slice(0, 10)
+    const numberValue = parseInt(cleanValue || '0', 10) / 100
+    return new Intl.NumberFormat('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(numberValue)
+  }
+
+  const applyNumericMask = (value: string) => {
+    return value.replace(/\D/g, '').slice(0, 6)
+  }
+
+  const updateField = (field: string, value: string) => {
+    let finalValue = value
+    if (field === 'preco_venda_sugerido') {
+      finalValue = applyCurrencyMask(value)
+    } else if (field === 'rendimento' || field === 'tempo_preparo') {
+      finalValue = applyNumericMask(value)
+    }
+    setForm(prev => ({ ...prev, [field]: finalValue }))
+  }
 
   const handleSubmit = async () => {
     if (!form.nome.trim()) {
@@ -66,10 +87,10 @@ export default function EditarReceitaPage() {
       const payload = {
         nome: form.nome,
         descricao: form.descricao || undefined,
-        rendimento: form.rendimento ? parseInt(form.rendimento, 10) : undefined,
-        tempo_preparo: form.tempo_preparo ? parseInt(form.tempo_preparo, 10) : undefined,
+        rendimento: form.rendimento ? parseInt(form.rendimento.replace(/\D/g, ''), 10) : undefined,
+        tempo_preparo: form.tempo_preparo ? parseInt(form.tempo_preparo.replace(/\D/g, ''), 10) : undefined,
         modo_preparo: form.modo_preparo || undefined,
-        preco_venda_sugerido: form.preco_venda_sugerido ? parseFloat(form.preco_venda_sugerido) : undefined,
+        preco_venda_sugerido: form.preco_venda_sugerido ? parseFloat(form.preco_venda_sugerido.replace(/\./g, '').replace(',', '.')) : undefined,
       }
 
       await updateReceita(token, id as string, payload)
@@ -129,9 +150,9 @@ export default function EditarReceitaPage() {
         {[
           { label: 'Nome da Receita *', field: 'nome', type: 'text', placeholder: 'Ex: Bolo de Chocolate Belga' },
           { label: 'Descrição', field: 'descricao', type: 'text', placeholder: 'Breve descrição da receita...' },
-          { label: 'Rendimento', field: 'rendimento', type: 'number', placeholder: 'Insira o numero' },
-          { label: 'Tempo de Preparo (min)', field: 'tempo_preparo', type: 'number', placeholder: '60' },
-          { label: 'Preço de Venda Sugerido (R$)', field: 'preco_venda_sugerido', type: 'number', placeholder: '0,00' },
+          { label: 'Rendimento', field: 'rendimento', type: 'text', placeholder: 'Insira o numero' },
+          { label: 'Tempo de Preparo (min)', field: 'tempo_preparo', type: 'text', placeholder: '60' },
+          { label: 'Preço de Venda Sugerido (R$)', field: 'preco_venda_sugerido', type: 'text', placeholder: '0,00' },
         ].map(f => (
           <div key={f.field}>
             <label className="block text-xs font-semibold uppercase tracking-widest mb-2"

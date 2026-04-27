@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, status
 from src.infrastructure.auth.clerk import get_current_user_id
-from src.presentation.schemas.receita_schema import ReceitaCreate, ReceitaResponse
+from src.presentation.schemas.receita_schema import ReceitaCreate, ReceitaResponse, ReceitaPaginatedResponse
 from src.presentation.controllers.receitaController import ReceitaController
 from src.infrastructure.dependencies import get_receita_controller
-from typing import List
+from typing import List, Optional
 
 router = APIRouter(prefix="/receitas", tags=["receitas"])
 
@@ -16,13 +16,16 @@ async def criar_receita(
     """Cria uma nova receita para o usuário autenticado via Clerk."""
     return controller.handle_criar_receita(payload, user_id)
 
-@router.get("", response_model=List[ReceitaResponse])
+@router.get("", response_model=ReceitaPaginatedResponse)
 async def listar_receitas(
+    limit: int = 100,
+    skip: int = 0,
+    q: Optional[str] = None,
     user_id: str = Depends(get_current_user_id),
     controller: ReceitaController = Depends(get_receita_controller)
 ):
-    """Lista todas as receitas do usuário autenticado."""
-    return controller.handle_listar_receitas(user_id)
+    """Lista todas as receitas do usuário autenticado de forma paginada."""
+    return controller.handle_listar_receitas(user_id, limit, skip, q)
 
 @router.get("/{id}", response_model=ReceitaResponse)
 async def buscar_por_id(
