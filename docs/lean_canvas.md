@@ -2,14 +2,14 @@
 
 | # | Bloco | Conteúdo |
 |---|-------|----------|
-| 1 | **Problema** | Confeiteiras artesanais gerenciam pedidos, receitas e estoque de forma manual (cadernos, planilhas, mensagens), o que gera desorganização, perda de ingredientes, atrasos em entregas e dificuldade de rastrear o andamento da produção. **Alternativas existentes:** planilhas Excel, cadernos físicos, anotações em WhatsApp. |
+| 1 | **Problema** | Confeiteiras artesanais gerenciam pedidos e receitas de forma manual (cadernos, planilhas, mensagens), o que gera desorganização, atrasos em entregas e dificuldade de rastrear o andamento da produção. **Alternativas existentes:** planilhas Excel, cadernos físicos, anotações em WhatsApp. |
 | 2 | **Segmento de Clientes** | **Cliente principal:** Confeiteiras artesanais autônomas ou micro-empreendedoras que gerenciam sozinhas (ou com 1-2 colaboradores) o ciclo completo de produção e venda. **Early adopters:** Confeiteiras que já usam celular para anotar pedidos e sentem dor concreta com a falta de organização. |
-| 3 | **Proposta de Valor Única** | Um sistema de gestão simples, rápido e mobile-first que centraliza pedidos, receitas (fichas técnicas) e estoque em um único lugar — eliminando cadernos, planilhas e retrabalho. **Tagline:** "Da receita ao pedido entregue, tudo em um só lugar." |
-| 4 | **Solução** | (1) Cadastro e acompanhamento de pedidos com status (Pendente → Em Produção → Concluído). (2) Fichas técnicas de receitas com ingredientes e quantidades. (3) Controle de estoque com baixa automática/sugerida ao iniciar produção. (4) Painel de produção diário/semanal acessível do celular. |
+| 3 | **Proposta de Valor Única** | Um sistema de gestão simples, rápido e mobile-first que centraliza pedidos e receitas (fichas técnicas) em um único lugar — eliminando cadernos, planilhas e retrabalho. **Tagline:** "Da receita ao pedido entregue, tudo em um só lugar." |
+| 4 | **Solução** | (1) Cadastro e acompanhamento de pedidos com status (Pendente → Em Produção → Concluído). (2) Fichas técnicas de receitas com ingredientes e quantidades. (3) Painel de produção diário/semanal acessível do celular. |
 | 5 | **Canais** | Acesso via navegador web (qualquer dispositivo). Captação inicial via indicação direta entre confeiteiras e redes sociais (Instagram, grupos de WhatsApp de confeitaria). |
 | 6 | **Fontes de Receita** | MVP gratuito (fase de validação). Modelo futuro: assinatura mensal (SaaS) com planos por volume de pedidos ou usuários adicionais. |
 | 7 | **Estrutura de Custos** | Hospedagem Vercel (gratuito no plano hobby/inicial). Banco de dados Supabase (gratuito na camada free). Serviço de autenticação Clerk (gratuito até 10.000 MAU). Custo de desenvolvimento (equipe). |
-| 8 | **Métricas-Chave** | Pedidos registrados por semana por usuário ativo. Receitas cadastradas com ficha técnica completa. Taxa de conclusão do fluxo ponta a ponta (receita → pedido → baixa de estoque). Retenção de usuários ativas no 30º dia. |
+| 8 | **Métricas-Chave** | Pedidos registrados por semana por usuário ativo. Receitas cadastradas com ficha técnica completa. Taxa de conclusão do fluxo ponta a ponta (receita → pedido). Retenção de usuários ativas no 30º dia. |
 | 9 | **Vantagem Injusta** | Foco exclusivo na dor operacional da confeitaria artesanal: fluxos desenhados para quem trabalha na cozinha, com as mãos sujas, em um celular. Não é um ERP genérico adaptado — é uma ferramenta feita para esse contexto específico. |
 
 ---
@@ -20,7 +20,6 @@
 |----------|-------------|
 | Confeiteiras sentem dor suficiente para mudar de planilha/caderno | Entrevistas qualitativas com 5-10 confeiteiras antes do MVP |
 | O fluxo mobile-first é suficientemente simples para adoção sem treinamento | Teste de usabilidade com protótipo (< 5 minutos para criar primeiro pedido) |
-| A baixa automática de estoque é percebida como valiosa | Observar uso real no primeiro mês de MVP |
 | Modelo freemium converte para pago após 30 dias | Medir taxa de upgrade após período de gratuidade |
 
 ---

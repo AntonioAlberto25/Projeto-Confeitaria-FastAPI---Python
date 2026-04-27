@@ -39,7 +39,6 @@ Ana Paula começou a confeitaria como hobby há 6 anos e transformou em renda pr
 | Caderno físico | Anota pedidos com nome, data e valor | Perde ou esquece em casa; difícil buscar informações |
 | WhatsApp | Recebe pedidos e confirma com clientes | Pedidos se perdem nas conversas; sem rastreamento |
 | Planilha Excel (celular) | Controle básico de receitas | Difícil atualizar na correria; sem cálculo automático |
-| Memória | Controle de estoque | Principal causa de compras duplicadas ou ingredientes em falta |
 
 ---
 
@@ -47,7 +46,6 @@ Ana Paula começou a confeitaria como hobby há 6 anos e transformou em renda pr
 
 1. **Nunca mais perder um pedido** — ter todos registrados e visíveis em um só lugar.
 2. **Saber exatamente o que produzir cada dia** — painel de produção claro e rápido.
-3. **Controlar o estoque sem planilha** — saber antes de comprar se tem ingrediente suficiente.
 4. **Precificar com confiança** — ter o custo real de cada receita calculado.
 5. **Atender mais com menos esforço administrativo** — dedicar mais tempo à produção.
 
@@ -86,13 +84,13 @@ Ana Paula começou a confeitaria como hobby há 6 anos e transformou em renda pr
 
 **Momento:** 06h30, tomando café, verificando o dia no celular.
 
-**Ação:** Ana abre o sistema, vê o painel de produção do dia com 4 pedidos. Percebe que um tem entrega amanhã e o estoque de farinha está no limite. Ela adiciona farinha à lista de compras dentro do próprio sistema. Às 19h, ao registrar um novo pedido recebido no WhatsApp, ela já consegue ver a data de entrega disponível no calendário de produção.
+**Ação:** Ana abre o sistema, vê o painel de produção do dia com 4 pedidos. Percebe que um tem entrega amanhã. Às 19h, ao registrar um novo pedido recebido no WhatsApp, ela já consegue ver a data de entrega disponível no calendário de produção.
 
 ---
 
 ### Critério de Sucesso para Ana Paula
 
-> O sistema é bem-sucedido se Ana conseguir registrar um novo pedido, visualizar o painel do dia e verificar o estoque necessário **em menos de 3 minutos, usando apenas o celular**, sem nenhum treinamento formal.
+> O sistema é bem-sucedido se Ana conseguir registrar um novo pedido e visualizar o painel do dia **em menos de 3 minutos, usando apenas o celular**, sem nenhum treinamento formal.
 
 ---
 

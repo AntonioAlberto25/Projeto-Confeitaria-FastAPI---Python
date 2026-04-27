@@ -15,9 +15,8 @@ class UserMapper:
         user.first_name = model.first_name
         user.last_name = model.last_name
         user.role = model.role
-        # Nota: entity tem property created_at mas o setter não está exposto (é gerado no __init__). 
-        # Dependendo da implementação, pode ser necessário setar private variable.
-        user._User__created_at = model.created_at # Hack para popular campos ocultos read-only do DB se preciso.
+        # Atribuição do timestamp de criação persistido
+        user._User__created_at = model.created_at
         
         return user
 

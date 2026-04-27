@@ -49,7 +49,6 @@ O Design System do Sistema de Gestão para Confeitaria define os padrões visuai
 | Token | Valor Hex | Uso |
 |-------|-----------|-----|
 | `feedback-success` | `#4CAF50` | Confirmações, toasts de sucesso |
-| `feedback-warning` | `#FF9800` | Alertas de estoque baixo |
 | `feedback-error` | `#F44336` | Erros de formulário, ações destrutivas |
 | `feedback-info` | `#2196F3` | Informativos neutros |
 
@@ -173,7 +172,7 @@ const variants = {
 ### 6.3 Navegação
 
 - **Desktop:** Sidebar vertical com ícone + label.
-- **Mobile:** Bottom Navigation Bar com 4 ícones: Dashboard, Pedidos, Receitas, Estoque.
+- **Mobile:** Bottom Navigation Bar com 3 ícones: Dashboard, Pedidos, Receitas.
 - Item ativo: destaque com `text-pink-600` e `bg-pink-50`.
 
 ---
@@ -187,7 +186,6 @@ const variants = {
 | Dashboard | `LayoutDashboard` |
 | Pedidos | `ClipboardList` |
 | Receitas | `BookOpen` |
-| Estoque | `Package` |
 | Perfil | `User` |
 | Configurações | `Settings` |
 | Adicionar | `Plus` |

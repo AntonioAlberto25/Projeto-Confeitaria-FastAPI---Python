@@ -47,17 +47,14 @@
 
 ---
 
-## Fluxo 4 — Produção e Baixa de Estoque
+## Fluxo 4 — Produção e Entrega
 
 | Etapa | Ação do Usuário | Ponto de Contato | Pensamento / Emoção | Oportunidade de Melhoria |
 |-------|----------------|-----------------|--------------------|-----------------------------|
-| 1. Verificar dia | Abre Dashboard às 6h e vê pedidos do dia | Dashboard | "Hoje tenho 2 pedidos, preciso checar ingredientes" 🧐 | Alertas de ingredientes insuficientes destacados |
-| 2. Checar estoque | Sistema mostra alerta: "Manteiga abaixo do mínimo" | Dashboard / Painel | "Menos mal que alertou antes de eu começar" 😮‍💨 | Notificação push no celular |
-| 3. Comprar | Anota no celular e vai ao mercado | — | — | Lista de compras gerada pelo sistema |
-| 4. Atualizar estoque | Atualiza estoque de manteiga no sistema | Tela de estoque | "Pronto, atualizado" ✅ | — |
-| 5. Iniciar produção | Muda status do pedido para "Em Produção" | Detalhe do pedido | "O sistema pede para confirmar a baixa de estoque, faz sentido" 🤔 | Modal de confirmação claro |
-| 6. Confirmar baixa | Confirma o consumo dos ingredientes da receita | Modal de confirmação | "Estoque atualizado automaticamente. Incrível!" 🤩 | — |
-| 7. Concluir | Marca pedido como "Concluído" após entrega | Detalhe do pedido | "Fim do ciclo. Organizadíssimo" 😄 | Histórico de pedidos concluídos acessível |
+| 1. Verificar dia | Abre Dashboard às 6h e vê pedidos do dia | Dashboard | "Hoje tenho 2 pedidos, vamos começar" 🧐 | Barra de progresso visual |
+| 2. Iniciar produção | Prepara os ingredientes conforme ficha técnica | Cozinha / Sistema | "Mãos à obra" 🥣 | — |
+| 3. Iniciar produção | Muda status do pedido para "Em Produção" | Detalhe do pedido | "Vou marcar como iniciado para me organizar" 😊 | — |
+| 4. Concluir | Marca pedido como "Concluído" após entrega | Detalhe do pedido | "Fim do ciclo. Organizadíssimo" 😄 | Histórico de pedidos concluídos acessível |
 
 ---
 
@@ -66,11 +63,11 @@
 ```
 Emoção Positiva ↑
 
-         [Cadastra receita]     [Baixa automática]
+         [Cadastra receita]     [Pedido entregue]
               ★★★★★                   ★★★★★
                     [Pedido criado]
                          ★★★★
-[Primeiro acesso]                          [Produção concluída]
+[Primeiro acesso]                          [Produção iniciada]
        ★★★                                      ★★★★★
 [Tela vazia inicial]
        ★★ ← ponto de abandono se não houver onboarding

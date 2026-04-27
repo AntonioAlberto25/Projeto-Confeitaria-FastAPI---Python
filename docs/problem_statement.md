@@ -9,7 +9,7 @@
 
 Confeitarias artesanais de pequeno porte representam um segmento crescente de micro-empreendedoras no Brasil. A maioria opera de forma autônoma ou com poucos colaboradores, gerenciando simultaneamente a produção artesanal, o atendimento ao cliente, o controle de ingredientes e a logística de entrega.
 
-A informalidade nos processos é a norma: pedidos são anotados em cadernos ou recebidos por mensagens de texto, receitas ficam em folhas avulsas ou na memória da confeiteira, e o estoque de ingredientes é gerenciado intuitivamente, sem controle sistemático.
+A informalidade nos processos é a norma: pedidos são anotados em cadernos ou recebidos por mensagens de texto, e receitas ficam em folhas avulsas ou na memória da confeiteira.
 
 ---
 
@@ -17,10 +17,9 @@ A informalidade nos processos é a norma: pedidos são anotados em cadernos ou r
 
 ### 2.1 Problema Principal
 
-Confeitarias artesanais de pequeno porte realizam o controle de **pedidos, receitas e estoque de ingredientes de forma manual e descentralizada** — utilizando cadernos físicos, planilhas simples, mensagens no WhatsApp e memória pessoal. Esse processo fragmentado gera:
+Confeitarias artesanais de pequeno porte realizam o controle de **pedidos e receitas de forma manual e descentralizada** — utilizando cadernos físicos, planilhas simples, mensagens no WhatsApp e memória pessoal. Esse processo fragmentado gera:
 
 - **Pedidos perdidos ou duplicados:** informações espalhadas em vários meios sem rastreamento centralizado.
-- **Falta de ingredientes na hora da produção:** sem controle de estoque, a confeiteira descobre a falta de insumos somente durante a execução da receita.
 - **Dificuldade de precificação:** sem ficha técnica precisa, o preço de venda é estimado sem base no custo real, comprometendo a margem de lucro.
 - **Baixa rastreabilidade de pedidos:** difícil saber em que etapa está cada pedido (pendente, em produção, concluído ou cancelado).
 - **Sobrecarga operacional:** tempo excessivo gasto em controles manuais que poderiam ser automatizados.
@@ -67,7 +66,6 @@ Desenvolver um **sistema de gestão web mobile-first** para confeitarias artesan
 1. **Autenticação segura** — acesso individualizado e protegido ao sistema.
 2. **Gestão de pedidos** — registro, acompanhamento e atualização de status em tempo real.
 3. **Fichas técnicas de receitas** — cadastro completo com ingredientes, quantidades e custo calculado.
-4. **Controle de estoque** — monitoramento de ingredientes com alertas de nível mínimo e baixa automática vinculada à produção.
 5. **Painel de produção** — visão consolidada dos pedidos do dia e da semana.
 
 **Critério de sucesso:** A confeiteira consegue registrar um novo pedido em menos de 2 minutos, do celular, sem treinamento formal.
@@ -94,7 +92,6 @@ Desenvolver um **sistema de gestão web mobile-first** para confeitarias artesan
 |---------|---------------|
 | Confeiteiras adotam ferramenta digital se for simples o suficiente | Baixa adoção; produto não resolve o problema |
 | O celular é o dispositivo primário de acesso durante a produção | Mobile-first perde relevância |
-| A baixa automática de estoque é percebida como valor (não como complexidade) | Feature ignorada; usuária mantém controle manual paralelo |
 | O preço do plano free das plataformas suporta o crescimento inicial | Custos operacionais inviabilizam o MVP |
 
 ---

@@ -12,9 +12,9 @@ Mostra o sistema como uma caixa preta e suas relações com usuários e sistemas
 C4Context
     title Sistema de Gestão para Confeitaria — Contexto
 
-    Person(confeiteira, "Confeiteira / Administradora", "Usuária principal que gerencia pedidos, receitas e estoque via navegador web")
+    Person(confeiteira, "Confeiteira / Administradora", "Usuária principal que gerencia pedidos e receitas via navegador web")
 
-    System(confeitariaApp, "Sistema de Gestão para Confeitaria", "Aplicação web para gerenciar pedidos, receitas (fichas técnicas) e estoque de ingredientes de confeitarias artesanais")
+    System(confeitariaApp, "Sistema de Gestão para Confeitaria", "Aplicação web para gerenciar pedidos e receitas (fichas técnicas) de confeitarias artesanais")
 
     System_Ext(clerk, "Clerk", "Serviço de autenticação e gestão de identidade (Auth as a Service)")
     System_Ext(supabase, "Supabase / PostgreSQL", "Banco de dados relacional gerenciado na nuvem")
@@ -22,7 +22,7 @@ C4Context
 
     Rel(confeiteira, confeitariaApp, "Acessa via navegador web (mobile e desktop)", "HTTPS")
     Rel(confeitariaApp, clerk, "Autentica usuários, valida JWTs, sincroniza perfis via webhook", "HTTPS / JWT")
-    Rel(confeitariaApp, supabase, "Persiste e consulta dados (pedidos, receitas, estoque, usuários)", "PostgreSQL / TCP")
+    Rel(confeitariaApp, supabase, "Persiste e consulta dados (pedidos, receitas, usuários)", "PostgreSQL / TCP")
     Rel(confeitariaApp, vercel, "Hospedado e implantado automaticamente via CI/CD", "GitHub Actions")
 ```
 
@@ -39,9 +39,9 @@ C4Container
     Person(confeiteira, "Confeiteira", "Acessa pelo celular ou navegador")
 
     System_Boundary(confeitariaApp, "Sistema de Gestão para Confeitaria") {
-        Container(frontend, "Frontend Web", "Next.js 14 / TypeScript / Tailwind CSS", "Interface responsiva (mobile-first) para gestão de pedidos, receitas e estoque. Hospedada na Vercel.")
-        Container(backend, "Backend API", "Python / FastAPI", "API RESTful com Clean Architecture. Expõe endpoints para pedidos, receitas, estoque e perfil. Hospedada na Vercel (serverless).")
-        ContainerDb(db, "Banco de Dados", "PostgreSQL (Supabase)", "Armazena usuários, pedidos, receitas e estoque. Schema versionado via Alembic.")
+        Container(frontend, "Frontend Web", "Next.js 14 / TypeScript / Tailwind CSS", "Interface responsiva (mobile-first) para gestão de pedidos e receitas. Hospedada na Vercel.")
+        Container(backend, "Backend API", "Python / FastAPI", "API RESTful com Clean Architecture. Expõe endpoints para pedidos, receitas e perfil. Hospedada na Vercel (serverless).")
+        ContainerDb(db, "Banco de Dados", "PostgreSQL (Supabase)", "Armazena usuários, pedidos e receitas. Schema versionado via Alembic.")
     }
 
     System_Ext(clerk, "Clerk", "Auth as a Service — SSO, JWT, webhooks")
@@ -108,7 +108,7 @@ C4Component
 
     Container_Boundary(frontend, "Frontend Web — Next.js 14") {
         Component(middleware, "Middleware de Auth", "Next.js Middleware / Clerk", "Protege rotas autenticadas, redireciona para login se sessão inválida")
-        Component(pages, "Pages / App Router", "React Server Components + Client Components", "Telas: Dashboard, Pedidos, Receitas, Estoque, Perfil, Configurações")
+        Component(pages, "Pages / App Router", "React Server Components + Client Components", "Telas: Dashboard, Pedidos, Receitas, Perfil, Configurações")
         Component(components, "Componentes de UI", "React / Tailwind CSS", "Navbar, Sidebar, StatusBadge, DonutProgress, Cards, Formulários responsivos")
         Component(apiClient, "API Client", "Axios / Fetch", "Encapsula chamadas HTTP ao Backend FastAPI com JWT no header Authorization")
         Component(authProvider, "Auth Provider", "Clerk Next.js SDK", "Gerencia estado de sessão, token JWT e dados do perfil do usuário logado")

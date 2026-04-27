@@ -27,6 +27,16 @@ apps/backend/*.egg-info/
 *.log
 *.txt
 !requirements.txt
-!readme.md
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+*.tfvars.json
+override.tf
+override.tf.json
+.terraformrc
+terraform.rc
 .coverage
 htmlcov/

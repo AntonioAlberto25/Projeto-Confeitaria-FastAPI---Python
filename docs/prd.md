@@ -9,7 +9,7 @@
 
 ## 1. Visão Geral do Produto
 
-O **Sistema de Gestão para Confeitaria** é uma aplicação web mobile-first criada para confeitarias artesanais de pequeno porte. A ferramenta centraliza o gerenciamento de pedidos, receitas (fichas técnicas) e estoque de ingredientes, eliminando controles manuais (cadernos, planilhas e mensagens) e reduzindo erros operacionais.
+O **Sistema de Gestão para Confeitaria** é uma aplicação web mobile-first criada para confeitarias artesanais de pequeno porte. A ferramenta centraliza o gerenciamento de pedidos e receitas (fichas técnicas), eliminando controles manuais (cadernos, planilhas e mensagens) e reduzindo erros operacionais.
 
 **Proposta de valor central:** Da receita ao pedido entregue — tudo em um só lugar, acessível do celular, em tempo real.
 
@@ -35,8 +35,8 @@ O **Sistema de Gestão para Confeitaria** é uma aplicação web mobile-first cr
 
 | # | Objetivo | Métrica de Sucesso |
 |---|----------|-------------------|
-| O1 | **Centralização** — consolidar pedidos, receitas e estoque em um único sistema | 100% dos pedidos registrados no sistema (zero cadernos paralelos) |
-| O2 | **Rastreabilidade** — eliminar pedidos esquecidos e ingredientes em falta | Zero pedidos sem status atualizado; alertas de estoque ativos |
+| O1 | **Centralização** — consolidar pedidos e receitas em um único sistema | 100% dos pedidos registrados no sistema (zero cadernos paralelos) |
+| O2 | **Rastreabilidade** — eliminar pedidos esquecidos | Zero pedidos sem status atualizado |
 | O3 | **Eficiência operacional** — reduzir tempo de gestão administrativa | Redução de 50% no tempo gasto em controles manuais ao 30º dia |
 | O4 | **Precificação assertiva** — custo real calculado automaticamente | 100% das receitas com ficha técnica e custo calculado |
 | O5 | **Escalabilidade pessoal** — permitir delegar tarefas com sistema estruturado | Pelo menos 1 colaborador adicional consegue operar o sistema sem treinamento |
@@ -75,12 +75,6 @@ O **Sistema de Gestão para Confeitaria** é uma aplicação web mobile-first cr
 **RF-16.1** — Controle de rendimento automático: Ao registrar um pedido, a quantidade solicitada deve consumir automaticamente o rendimento da receita.
 **RF-16.2** — Estorno de rendimento: Ao cancelar, deletar ou reduzir a quantidade de um pedido, o rendimento deve ser restaurado proporcionalmente na receita vinculada.
 
-### 4.4. Gestão de Estoque
-
-**RF-17** — O sistema deve permitir cadastrar ingredientes com: nome, unidade de medida (kg, g, l, ml, un) e quantidade em estoque.
-**RF-18** — O sistema deve definir um estoque mínimo por ingrediente e emitir alerta visual quando atingido.
-**RF-19** — Ao alterar o status de um pedido para `Em Produção` ou `Concluído`, o sistema deve realizar (ou sugerir) a baixa automática de estoque com base na ficha técnica da receita.
-**RF-20** — O sistema deve impedir quantidade de estoque negativa.
 
 ### 4.5. Perfil do Usuário
 
@@ -114,7 +108,7 @@ O **Sistema de Gestão para Confeitaria** é uma aplicação web mobile-first cr
 ### 5.4. Observabilidade e Rastreabilidade (RNF-04)
 - Logs estruturados em formato JSON com campos: `timestamp`, `level`, `request_id`, `method`, `path`, `status_code`, `duration_ms`.
 - Cada requisição recebe um `request_id` único (UUID) para correlação.
-- Registro de todos os eventos críticos: criação/alteração de pedidos, baixa de estoque, erros de autenticação.
+- Registro de todos os eventos críticos: criação/alteração de pedidos, erros de autenticação.
 - Endpoint `/health` para verificação de disponibilidade do serviço.
 
 ### 5.5. Manutenibilidade e Testabilidade (RNF-05)
@@ -154,20 +148,10 @@ O **Sistema de Gestão para Confeitaria** é uma aplicação web mobile-first cr
 2. Confeiteira cria novo pedido vinculando receitas e definindo data de entrega (RF-11, RF-12)
 3. Sistema gera pedido com status "Pendente" automaticamente (RF-12)
 4. Confeiteira atualiza status para "Em Produção" (RF-13)
-5. Sistema executa (ou sugere) baixa automática de estoque (RF-19)
-6. Confeiteira marca pedido como "Concluído" após entrega (RF-13)
-7. Histórico do pedido fica acessível para consulta
+5. Confeiteira marca pedido como "Concluído" após entrega (RF-13)
+6. Histórico do pedido fica acessível para consulta
 ```
 
-### Fluxo Secundário — Controle de Estoque (RF-17 a RF-20)
-
-```
-1. Confeiteira cadastra ingrediente com quantidade inicial (RF-17)
-2. Sistema monitora nível de estoque em relação ao mínimo configurado (RF-18)
-3. Dashboard exibe alerta visual para ingredientes críticos (RF-18)
-4. Ao produzir um pedido, sistema abate automaticamente os ingredientes usados (RF-19)
-5. Confeiteira pode ajustar estoque manualmente após compras (RF-17)
-```
 
 ---
 

@@ -42,8 +42,6 @@ class RepositorioDeReceitaSQLAlchemy(RepositorioDeReceita):
         self._session.refresh(receita_model)
         
         domain_result = ReceitaMapper.to_domain(receita_model)
-        # Hack rápido temporário se a entidade não tiver ID nativo
-        setattr(domain_result, 'id', receita_model.id) 
         
         return domain_result
 

@@ -6,18 +6,13 @@
 [![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
 [![Clerk](https://img.shields.io/badge/Clerk-6C47FF?style=for-the-badge&logo=clerk&logoColor=white)](https://clerk.com/)
 
-Uma plataforma especializada para confeitarias artesanais gerenciarem receitas, pedidos de produção e movimentações de estoque de forma eficiente.
-
+Uma plataforma especializada para confeitarias artesanais gerenciarem receitas e pedidos de produção de forma eficiente.
 ---
-
 ## 🚀 Visão Geral
-
-O **Sistema de Gestão para Confeitaria** foi criado para eliminar controles manuais (como cadernos ou planilhas simples) para pequenas confeitarias. Ele centraliza dados de clientes, fichas técnicas de receitas e níveis de estoque em tempo real.
-
+O **Sistema de Gestão para Confeitaria** foi criado para eliminar controles manuais (como cadernos ou planilhas simples) para pequenas confeitarias. Ele centraliza dados de clientes e fichas técnicas de receitas em tempo real.
 ### Principais Funcionalidades
 - **Gestão de Receitas:** Fichas técnicas detalhadas com quantidades exatas de ingredientes e rendimento esperado.
 - **Rastreamento de Pedidos:** Gerenciamento do ciclo de vida do pedido, de *Pendente* a *Concluído*.
-- **Controle de Estoque:** Dedução de estoque automática ou sugerida baseada nos requisitos da receita durante a produção.
 - **Autenticação:** Gerenciamento de acesso seguro via **Clerk**.
 
 ---
@@ -86,8 +81,8 @@ As aplicações estarão disponíveis em:
 
 Documentos detalhados podem ser encontrados na pasta `/docs`:
 - [Requisitos de Produto (PRD)](./docs/prd.md)
-- [Especificação Técnica](./docs/spech_tech.md)
-- [Especificação de UI/UX](./docs/spech_ui.md)
+- [Especificação Técnica](./docs/spec_tech.md)
+- [Especificação de UI/UX](./docs/spec_ui.md)
 
 ---
 

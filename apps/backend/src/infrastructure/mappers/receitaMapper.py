@@ -15,6 +15,7 @@ class ReceitaMapper:
         receita.descricao = model.descricao
         receita.modo_preparo = model.modo_preparo
         receita.idUsuario = model.usuario_id
+        receita.id = model.id
 
         # Campos numéricos: bypass do setter + conversão tolerante a falhas
         try:
