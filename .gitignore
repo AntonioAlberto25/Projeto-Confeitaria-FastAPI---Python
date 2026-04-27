@@ -22,3 +22,11 @@ apps/backend/*.egg-info/
 # Agents
 .agents/
 .agent/
+
+# Logs and Reports
+*.log
+*.txt
+!requirements.txt
+!readme.md
+.coverage
+htmlcov/

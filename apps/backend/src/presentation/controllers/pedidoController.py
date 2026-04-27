@@ -8,7 +8,7 @@ from src.application.usecases.pedido.buscarPedidoPorNomeCliente import BuscarPed
 
 from src.domain.entity.pedido.pedido import Pedido
 from src.presentation.schemas.pedido_schema import PedidoCreate, PedidoResponse, PedidoPaginatedResponse
-from typing import List, Dict, Optional
+from typing import Dict, Optional
 
 class PedidoController:
     def __init__(

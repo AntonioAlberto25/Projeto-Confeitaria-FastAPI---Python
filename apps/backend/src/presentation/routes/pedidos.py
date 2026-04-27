@@ -2,9 +2,8 @@ from fastapi import APIRouter, Depends, status
 from src.infrastructure.auth.clerk import get_current_user_id
 from src.presentation.schemas.pedido_schema import PedidoCreate, PedidoResponse, PedidoPaginatedResponse
 from src.presentation.controllers.pedidoController import PedidoController
-from typing import List, Optional
+from typing import Optional
 from src.infrastructure.dependencies import get_pedido_controller
-from typing import List
 
 router = APIRouter(prefix="/pedidos", tags=["pedidos"])
 

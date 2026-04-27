@@ -2,7 +2,6 @@ import src.infrastructure.persistencia.pedidoModel # noqa: F401
 import src.infrastructure.persistencia.receitaModel # noqa: F401
 import src.infrastructure.persistencia.userModel # noqa: F401
 
-import os
 import uuid
 import time
 import json
@@ -103,47 +102,4 @@ app.include_router(perfil_router)
 app.include_router(webhooks_router)
 
 
-# ─── Endpoint de Diagnóstico (REMOVER em produção estável) ─────────────────────
-@app.get("/debug")
-async def debug_env():
-    """Verifica se as variáveis de ambiente críticas estão configuradas e se há conectividade."""
-    import httpx
-    vars_to_check = [
-        "DATABASE_URL",
-        "CLERK_SECRET_KEY",
-        "CLERK_ISSUER",
-        "CLERK_JWKS_URL",
-        "CLERK_WEBHOOK_SECRET",
-    ]
-    status = {}
-    connectivity = {}
-    
-    for var in vars_to_check:
-        val = os.getenv(var)
-        if not val:
-            status[var] = "❌ NÃO CONFIGURADA"
-        elif var == "DATABASE_URL":
-            try:
-                from urllib.parse import urlparse
-                parsed = urlparse(val)
-                status[var] = f"✅ host={parsed.hostname}, db={parsed.path.lstrip('/')}"
-            except Exception:
-                status[var] = "✅ configurada (formato inválido)"
-        else:
-            status[var] = f"✅ configurada ({len(val)} chars)"
-
-    # Testar conectividade com Clerk JWKS
-    jwks_url = os.getenv("CLERK_JWKS_URL")
-    if jwks_url:
-        try:
-            async with httpx.AsyncClient(timeout=5.0) as client:
-                resp = await client.get(jwks_url)
-                connectivity["CLERK_JWKS"] = f"✅ Success ({resp.status_code})" if resp.status_code == 200 else f"❌ Failed ({resp.status_code})"
-        except Exception as e:
-            connectivity["CLERK_JWKS"] = f"❌ Error: {type(e).__name__}"
-
-    return {
-        "environment": status, 
-        "connectivity": connectivity,
-        "python_path": __import__('sys').path[:3]
-    }
+# ─── Endpoint de Diagnóstico (REMOVIDO para produção) ─────────────────────────

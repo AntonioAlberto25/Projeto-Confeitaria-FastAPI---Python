@@ -3,7 +3,7 @@ from src.infrastructure.auth.clerk import get_current_user_id
 from src.presentation.schemas.receita_schema import ReceitaCreate, ReceitaResponse, ReceitaPaginatedResponse
 from src.presentation.controllers.receitaController import ReceitaController
 from src.infrastructure.dependencies import get_receita_controller
-from typing import List, Optional
+from typing import Optional
 
 router = APIRouter(prefix="/receitas", tags=["receitas"])
 
